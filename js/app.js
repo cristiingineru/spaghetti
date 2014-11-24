@@ -1,4 +1,4 @@
-/* global requirejs  */
+/* global requirejs,SVG  */
 
 requirejs.config({
   baseUrl: 'js/lib',
@@ -7,7 +7,8 @@ requirejs.config({
   }
 });
 
-alert('aa');
-
-requirejs([], function() {
+requirejs(['svg', 'svg.draggable'], function() {
+  var cookerSVG = SVG('cookerPlaceholder');  
+  var circle = cookerSVG.circle(25, 25, 10);
+  circle.draggable();
 });
