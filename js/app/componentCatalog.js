@@ -24,7 +24,13 @@ define(function () {
       var leg2 = svg.rect(legWidth, legHeight)
         .move(x - legWidth / 2, y + (bodyHeight / 2));
       var finger1 = svg.circle(fingerRadius, fingerRadius)
-        .move(x - fingerRadius / 2, y - (bodyHeight / 2 + legHeight + fingerRadius / 2));
+        .move(x - fingerRadius / 2, y - (bodyHeight / 2 + legHeight + fingerRadius / 2))
+        .draggable();
+
+      finger1.beforedrag = function (event) {
+        event.stopPropagation();
+      };
+
       var finger2 = svg.circle(fingerRadius, fingerRadius)
         .move(x - fingerRadius / 2, y + (bodyHeight / 2 + legHeight - fingerRadius / 2));
       var body = svg.rect(bodyWidth, bodyHeight)
