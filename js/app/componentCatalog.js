@@ -28,14 +28,25 @@ define(function () {
           .move(x - model.legWidth / 2, y + (model.bodyHeight / 2));
         var finger1 = svg.circle(model.fingerRadius, model.fingerRadius)
           .move(x - model.fingerRadius / 2, y - (model.bodyHeight / 2 + model.legHeight + model.fingerRadius / 2))
-          .draggable();
+          .draggable(function(x, y) {
+            var parentBox = finger1.parent.node.getBBox();
+            return {
+              x: parentBox.x - 50 < x && x < parentBox.x + 50,
+              y: parentBox.y - 50 < y && y < parentBox.y + 50
+            };
+          });
 
         finger1.beforedrag = function (event) {
           event.stopPropagation();
         };
+        
+        finger1.dragmove = function (delta, event) {
+          finger1RelativeX = delta.x;
+          finger2RelativeY = delta.y;
+        }
 
         var finger2 = svg.circle(model.fingerRadius, model.fingerRadius)
-          .move(x - model.fingerRadius / 2, y + (model.bodyHeight / 2 + model.legHeight - model.$fingerRadius / 2));
+          .move(x - model.fingerRadius / 2, y + (model.bodyHeight / 2 + model.legHeight - model.fingerRadius / 2));
         var body = svg.rect(model.bodyWidth, model.bodyHeight)
           .radius(model.cornerRadius)
           .move(x - model.bodyWidth / 2, y - model.bodyHeight / 2);
