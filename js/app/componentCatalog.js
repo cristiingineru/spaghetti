@@ -13,26 +13,62 @@ define(function () {
     this.fingerRadius = 8;
     this.cornerRadius = 3;
   }
+  
+  function Coordinates() {
+    this.x = 0;
+    this.y = 0;
+  }
+  
+  function Moveable() {
+    this.move = function (x, y) {
+      this.x = x;
+      this.y = y;
+      if (this.view) {
+        this.view.move(x, y);
+      }
+    }
+  }
+
+  function Drawable() {
+    this.draw = function(svg) {
+      this.defaultDraw(svg);
+      if (this.ondraw) {
+        this.ondraw();
+      }
+    }
+  }
+
+  function Draggable() {
+    this.draggable = true;
+    if (this.view) {      
+      this.view.draggable();
+    }
+    else {
+      this.ondraw = function () {
+        this.view.draggable();
+      }
+    }
+  }
 
   privateCatalog.push({
 
     name: 'resistor',
 
-    create: function (x, y) {
+    create: function () {
 
-      var draw = function (svg) {
+      var defaultDraw = function (svg) {
 
         var leg1 = svg.rect(model.legWidth, model.legHeight)
-          .move(x - model.legWidth / 2, y - (model.bodyHeight / 2 + model.legHeight));
+          .move(- model.legWidth / 2, - (model.bodyHeight / 2 + model.legHeight));
         var leg2 = svg.rect(model.legWidth, model.legHeight)
-          .move(x - model.legWidth / 2, y + (model.bodyHeight / 2));
+          .move(- model.legWidth / 2, (model.bodyHeight / 2));
   
         
-        var finger1_original_relative_x = x + model.fingerRadius / 2;
-        var finger1_original_relative_y = y - (model.bodyHeight / 2 + model.legHeight + model.fingerRadius / 2);
+        var finger1_original_relative_x = - model.fingerRadius / 2;
+        var finger1_original_relative_y = - (model.bodyHeight / 2 + model.legHeight + model.fingerRadius / 2);
                             
         var finger1 = svg.circle(model.fingerRadius, model.fingerRadius)
-          .move(x - model.fingerRadius / 2, y - (model.bodyHeight / 2 + model.legHeight + model.fingerRadius / 2))
+          .move(- model.fingerRadius / 2, - (model.bodyHeight / 2 + model.legHeight + model.fingerRadius / 2))
           .draggable(function(x, y) {
             
             var parentBox = finger1.parent.bbox();
@@ -51,10 +87,10 @@ define(function () {
         };
 
         var finger2 = svg.circle(model.fingerRadius, model.fingerRadius)
-          .move(x - model.fingerRadius / 2, y + (model.bodyHeight / 2 + model.legHeight - model.fingerRadius / 2));
+          .move(- model.fingerRadius / 2, (model.bodyHeight / 2 + model.legHeight - model.fingerRadius / 2));
         var body = svg.rect(model.bodyWidth, model.bodyHeight)
           .radius(model.cornerRadius)
-          .move(x - model.bodyWidth / 2, y - model.bodyHeight / 2);
+          .move(- model.bodyWidth / 2, - model.bodyHeight / 2);
 
         var view = svg.group()
           .add(leg1)
@@ -62,18 +98,22 @@ define(function () {
           .add(finger1)
           .add(finger2)
           .add(body);
+        
+        this.view = view;
 
         return view;
       };
 
 
       function Model() {
+        this.defaultDraw = defaultDraw;
         DefaultSizes.apply(this);
-        this.draw = draw;
+        Coordinates.apply(this);
+        Moveable.apply(this);
+        Drawable.apply(this);
+        Draggable.apply(this);        
         return this;
       };
-      
-      Model.prototype = DefaultSizes.prototype;
       
       var model = new Model();
 

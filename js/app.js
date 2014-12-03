@@ -9,6 +9,7 @@ requirejs.config({
 
 requirejs(['svg', 'svg.draggable', 'app/componentCatalog'], function (s, g, catalog) {
   var cookerSVG = SVG('cookerPlaceholder');
-  var resistor = catalog('resistor').create(100, 100).draw(cookerSVG);
-  resistor.draggable();
+  var resistor = catalog('resistor').create();
+  var view = resistor.draw(cookerSVG);
+  resistor.move(200, 200);
 });
