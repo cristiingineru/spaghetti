@@ -26,24 +26,29 @@ define(function () {
           .move(x - model.legWidth / 2, y - (model.bodyHeight / 2 + model.legHeight));
         var leg2 = svg.rect(model.legWidth, model.legHeight)
           .move(x - model.legWidth / 2, y + (model.bodyHeight / 2));
+  
+        
+        var finger1_original_relative_x = x + model.fingerRadius / 2;
+        var finger1_original_relative_y = y - (model.bodyHeight / 2 + model.legHeight + model.fingerRadius / 2);
+                            
         var finger1 = svg.circle(model.fingerRadius, model.fingerRadius)
           .move(x - model.fingerRadius / 2, y - (model.bodyHeight / 2 + model.legHeight + model.fingerRadius / 2))
           .draggable(function(x, y) {
-            var parentBox = finger1.parent.node.getBBox();
+            
+            var parentBox = finger1.parent.bbox();
+            var relative_delta_x = finger1_original_relative_x;
+            var relative_delta_y = finger1_original_relative_y;
+            
             return {
-              x: parentBox.x - 50 < x && x < parentBox.x + 50,
-              y: parentBox.y - 50 < y && y < parentBox.y + 50
+              x: relative_delta_x - 50 < x && x < relative_delta_x + 50,
+              y: relative_delta_y - 50 < y && y < relative_delta_y + 50
             };
           });
+        
 
         finger1.beforedrag = function (event) {
           event.stopPropagation();
         };
-        
-        finger1.dragmove = function (delta, event) {
-          finger1RelativeX = delta.x;
-          finger2RelativeY = delta.y;
-        }
 
         var finger2 = svg.circle(model.fingerRadius, model.fingerRadius)
           .move(x - model.fingerRadius / 2, y + (model.bodyHeight / 2 + model.legHeight - model.fingerRadius / 2));
