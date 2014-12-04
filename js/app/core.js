@@ -12,8 +12,8 @@ define(function () {
 
     is: function (source, reference) {
       var is = true;
-      Object.keys(source).forEach(function (key) {
-        if (reference[key] !== undefined) {
+      Object.keys(reference).forEach(function (key) {
+        if (source[key] === undefined) {
           is = false;
         }
       });

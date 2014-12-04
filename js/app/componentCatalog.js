@@ -5,48 +5,42 @@ define(['app/core'], function (core) {
 
   var privateCatalog = [];
 
-  DefaultSizes = function () {};
-  DefaultSizes.prototype.bodyHeight = 50;
-  this.bodyWidth = 20;
-  this.legHeight = 40;
-  this.legWidth = 3;
-  this.fingerRadius = 8;
-  this.cornerRadius = 3;
+  var DefaultSizes = {
+    bodyHeight: 50,
+    bodyWidth: 20,
+    legHeight: 40,
+    legWidth: 3,
+    fingerRadius: 8,
+    cornerRadius: 3,
+  };
 
-  function Coordinates() {
-    this.x = 0;
-    this.y = 0;
-  }
+  var Coordinates = {
+    x: 0,
+    y: 0,
+  };
 
-  function Moveable() {
-    this.move = function (x, y) {
+  var Moveable = {
+    move: function (x, y) {
       this.x = x;
       this.y = y;
       if (this.view) {
         this.view.move(x, y);
       }
-    };
-  }
+    },
+  };
 
-  function Drawable() {
-    this.draw = function (svg) {
+  var Drawable = {
+    draw: function (svg) {
       this.defaultDraw(svg);
       if (this.ondraw) {
         this.ondraw();
       }
-    };
-  }
+    },
+  };
 
-  function Draggable() {
-    this.draggable = true;
-    if (this.view) {
-      this.view.draggable();
-    } else {
-      this.ondraw = function () {
-        this.view.draggable();
-      };
-    }
-  }
+  var Draggable = {
+    draggable: true,
+  };
 
   privateCatalog.push({
 
@@ -105,11 +99,6 @@ define(['app/core'], function (core) {
 
       function Model() {
         this.defaultDraw = defaultDraw;
-        //DefaultSizes.apply(this);
-        //Coordinates.apply(this);
-        //Moveable.apply(this);
-        //Drawable.apply(this);
-        //Draggable.apply(this);
 
         core.mixin(DefaultSizes, this);
         core.mixin(Coordinates, this);
