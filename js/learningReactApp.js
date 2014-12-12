@@ -66,7 +66,7 @@ requirejs(['react'], function (React) {
     },
     render: function () {
       var radius = 10;
-      return React.createElement('cicle', {
+      return React.createElement('circle', {
         r: 10,
         cx: this.props.x + radius / 2,
         cy: this.props.y + radius / 2,
@@ -107,15 +107,15 @@ requirejs(['react'], function (React) {
     },
     render: function () {
       var finger1 = React.createElement(fingerClass, {
-        x: this.props.x + 30,
+        x: this.props.x + 100,
         y: this.props.y
       });
       var finger2 = React.createElement(fingerClass, {
         x: this.props.x + 30,
-        y: this.props.y + 100
+        y: this.props.y + 200
       });
       var body = React.createElement(bodyClass, {
-        x: this.props.x + 15,
+        x: this.props.x + 200,
         y: this.props.y + 20
       });
       return React.createElement('g', null, [finger1, finger2, body]);

@@ -7,6 +7,14 @@ requirejs.config({
   }
 });
 
-requirejs(['react'], function (React) {
+requirejs(['react', 'app/component-catalog'], function (React, catalog) {
 
+  var component = catalog('resistor');
+
+  var element = React.createElement(component.class, {
+    x: 100,
+    y: 100
+  });
+
+  React.render(element, document.getElementById('svg'));
 });
