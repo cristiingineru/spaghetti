@@ -10,7 +10,7 @@ define(['react', 'app/part-finger'], function (React, partFinger) {
         x: 0,
         y: 0,
         direction: 'up',
-        length: 20
+        length: 30
       };
     },
     render: function () {
@@ -24,8 +24,8 @@ define(['react', 'app/part-finger'], function (React, partFinger) {
         y: this.props.direction === 'down' ? this.props.y : (this.props.y - this.props.length),
         width: width,
         height: this.props.length,
-        stroke: '#662200',
-        fill: '#662200'
+        stroke: '#777777',
+        fill: '#777777'
       });
       return React.createElement('g', null, [rect, finger]);
     }

@@ -17,8 +17,8 @@ define(['react'], function (React) {
         r: radius,
         cx: this.props.x,
         cy: this.props.y,
-        stroke: '#004400',
-        fill: '#004400'
+        stroke: '#333333',
+        fill: '#333333'
       });
     }
   });

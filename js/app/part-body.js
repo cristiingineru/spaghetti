@@ -18,10 +18,10 @@ define(['react', 'app/part-body'], function (React) {
         y: this.props.y,
         width: this.props.width,
         height: this.props.height,
-        stroke: '#005500',
-        fill: '#005500',
-        rx: 2,
-        ry: 2
+        stroke: '#E6C88C',
+        fill: '#E6C88C',
+        rx: 4,
+        ry: 4
       });
     }
   });

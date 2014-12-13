@@ -12,8 +12,8 @@ requirejs(['react', 'app/component-catalog'], function (React, catalog) {
   var component = catalog('resistor');
 
   var element = React.createElement(component.class, {
-    x: 100,
-    y: 100
+    x: 100.5,
+    y: 100.5
   });
 
   React.render(element, document.getElementById('svg'));
