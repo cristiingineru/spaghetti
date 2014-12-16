@@ -7,7 +7,7 @@ requirejs.config({
   }
 });
 
-requirejs(['react'], function (React) {
+requirejs(['react', 'immutable.min'], function (React, Immutable) {
 
   /* test1 */
   var text = React.createElement('a', null, 'text');
