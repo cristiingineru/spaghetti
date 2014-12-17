@@ -7,7 +7,7 @@ requirejs.config({
   }
 });
 
-requirejs(['react', 'immutable.min'], function (React, Immutable) {
+requirejs(['react', 'immutable.min', 'immutable.cursor'], function (React, Immutable, Cursor) {
 
   /* test1 */
   var text = React.createElement('a', null, 'text');
@@ -124,5 +124,25 @@ requirejs(['react', 'immutable.min'], function (React, Immutable) {
 
   var resistor = React.createElement(resistorClass);
   React.render(resistor, document.getElementById('test5'));
+
+
+  /* test 6 */
+
+  var state = Immutable.fromJS({
+    a: 'a',
+    b: {
+      b00: 'b00',
+      b01: 'b01'
+    },
+    c: ['c0', 'c1', 'c2']
+  });
+
+
+  var cursor = Cursor.from(state, function(newState) {
+    state = newState;
+  });
+  cursor.update('b', function (x) {
+    return 'new b';
+  });
 
 });
