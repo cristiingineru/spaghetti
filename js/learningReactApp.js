@@ -126,23 +126,55 @@ requirejs(['react', 'immutable.min', 'immutable.cursor'], function (React, Immut
   React.render(resistor, document.getElementById('test5'));
 
 
-  /* test 6 */
+  /* test 6 - getting from the cursor */
 
   var state = Immutable.fromJS({
-    a: 'a',
+    a: 'A',
     b: {
-      b00: 'b00',
-      b01: 'b01'
+      b00: 'B00',
+      b01: {g: 'G'}
     },
-    c: ['c0', 'c1', 'c2']
+    c: ['C0', 'C1', 'C2']
   });
-
 
   var cursor = Cursor.from(state, function(newState) {
     state = newState;
   });
-  cursor.update('b', function (x) {
-    return 'new b';
+  var b_v1 = cursor.getIn('b');
+  var b_v2 = cursor.getIn(['b']);
+  var b00_v1 = cursor.getIn(['b', 'b00']);
+
+  var g_v1 = b_v1.getIn(['b01', 'g']);
+
+  //don't call the getIn of a subcorsuor and passing a simple string, it doesn't work
+  //var g_v2 = b_v1.getIn(['b01']).deref();
+
+  var g_v2 = b_v1.getIn(['b01']).deref();
+
+
+  /* test 7 - changing using the cursor */
+
+  var state = Immutable.fromJS({
+    a: 'A',
+    b: {
+      b00: 'B00',
+      b01: {g: 'G'}
+    },
+    c: ['C0', 'C1', 'C2']
   });
 
+  var cursor2 = Cursor.from(state, function(newState) {
+    state = newState;
+  });
+
+  // updating a direct child
+  var r1 = cursor2.update('c', function(v) { return 'new C'; });
+
+  // updating a deep element
+  var b_v3 = cursor2.getIn(['b']);
+  var r2 = b_v3.update('b00', function(v) { return 'new B00'; });
+
+  // deleting an element
+  var b_v4 = cursor2.getIn('b');
+  var r3 = b_v4.delete('b01');
 });
