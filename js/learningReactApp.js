@@ -177,4 +177,14 @@ requirejs(['react', 'immutable.min', 'immutable.cursor'], function (React, Immut
   // deleting an element
   var b_v4 = cursor2.getIn('b');
   var r3 = b_v4.delete('b01');
+
+  // adding an element to a map
+  var b_v5 = cursor2.getIn('b');
+  var r4 = b_v5.set('b02', 'the new B02');
+
+  // adding an element to an array
+  var c_v1 = cursor2.getIn('c');
+  var r5 = c_v1.set(0, 'new C0'); // note the channing!
+  var r6 = r5.set(3, 'new C3');
+  var r7 = r6.set(5, 'new C5');
 });

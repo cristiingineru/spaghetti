@@ -7,9 +7,9 @@ requirejs.config({
   }
 });
 
-requirejs(['react', 'app/component-catalog'], function (React, catalog) {
+requirejs(['react', 'app/component-catalog'], function (React, Catalog) {
 
-  var component = catalog('resistor');
+  var component = Catalog('resistor');
 
   var element = React.createElement(component.class, {
     x: 100.5,

@@ -1,7 +1,7 @@
 /* global define */
 
 
-define(['react', 'app/part-leg', 'app/part-body'], function (React, partLeg, partBody) {
+define(['react', 'immutable.min', 'app/part-leg', 'app/part-body'], function (React, Immutable, partLeg, partBody) {
 
   var resistorClass = React.createClass({
     displayName: 'component-resistor',
@@ -34,7 +34,19 @@ define(['react', 'app/part-leg', 'app/part-body'], function (React, partLeg, par
     }
   });
 
-  var resistorModel = 'TODO';
+  var body = partBody.model;
+  var leg1 = partLeg.model.withMutations(function(leg) {
+    leg.set('x', 99).set('y', 88);
+  });
+  var leg2 = partLeg.model;
+  var resistorModel = Immutable.fromJS({
+    x: 0,
+    y: 0,
+    width: 20,
+    height: 40,
+    body: body,
+    legs: [leg1, leg2]
+  });
 
   return {
     class: resistorClass,

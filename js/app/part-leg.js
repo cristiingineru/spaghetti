@@ -1,7 +1,7 @@
 /* global define */
 
 
-define(['react', 'app/part-finger'], function (React, partFinger) {
+define(['react', 'immutable.min', 'app/part-finger'], function (React, Immutable, partFinger) {
 
   var legClass = React.createClass({
     displayName: 'part-leg',
@@ -31,7 +31,13 @@ define(['react', 'app/part-finger'], function (React, partFinger) {
     }
   });
 
-  var legModel = 'TODO';
+  var legModel = Immutable.fromJS({
+    x: 0,
+    y: 0,
+    direction: 'up',
+    length: 30,
+    finger: partFinger.model
+  });
 
   return {
     class: legClass,

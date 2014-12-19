@@ -1,6 +1,6 @@
 /* global define */
 
-define(['react', 'app/part-body'], function (React) {
+define(['react', 'immutable.min', 'app/part-body'], function (React, Immutable) {
 
   var bodyClass = React.createClass({
     displayName: 'part-body',
@@ -26,7 +26,12 @@ define(['react', 'app/part-body'], function (React) {
     }
   });
 
-  var bodyModel = 'TODO';
+  var bodyModel = Immutable.fromJS({
+    x: 0,
+    y: 0,
+    width: 20,
+    height: 60
+  });
 
   return {
     class: bodyClass,

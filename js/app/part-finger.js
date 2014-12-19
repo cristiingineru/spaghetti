@@ -1,7 +1,7 @@
 /* global define */
 
 
-define(['react'], function (React) {
+define(['react', 'immutable.min'], function (React, Immutable) {
 
   var fingerClass = React.createClass({
     displayName: 'part-finger',
@@ -23,7 +23,10 @@ define(['react'], function (React) {
     }
   });
 
-  var fingerModel = 'TODO';
+  var fingerModel = Immutable.fromJS({
+    x: 0,
+    y: 0
+  });
 
   return {
     class: fingerClass,
