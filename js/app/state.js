@@ -1,17 +1,30 @@
 /* global define */
 
 
-define(['immutable', 'immutable.cursor'], function (Immutable, Cursor) {
+define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
-  var state = Immutable.fromJS({});
-  var cursor = Cursor.from(state, function (newState) {
-    state = newState;
+  var state = Immutable.fromJS({
+    components: []
   });
+  
+  var cursorFor = function (keys) {
+    return Cursor.from(state, keys, function (newState, prevState) {
+      if (prevState !== state) {
+        throw new Error('Attempted to alter an expired cursor.');
+      }
+      state = newState;
+    });
+  };
 
   return {
-    cursor: cursor,
-    toString: function() {
-      state.toString();
+    state: function () {
+      return cursorFor([]);
+    },
+    components: function () {
+      return cursorFor(['components']);
+    },
+    toString: function () {
+      return state.toString();
     }
   };
 });

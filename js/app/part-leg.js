@@ -7,23 +7,19 @@ define(['react', 'immutable.min', 'app/part-finger'], function (React, Immutable
     displayName: 'part-leg',
     getDefaultProps: function () {
       return {
-        x: 0,
-        y: 0,
-        direction: 'up',
-        length: 30
+        model: null
       };
     },
     render: function () {
       var width = 2;
       var finger = React.createElement(partFinger.class, {
-        x: this.props.x,
-        y: this.props.direction === 'down' ? (this.props.y + this.props.length) : (this.props.y - this.props.length)
+        model: this.props.model.get('finger')
       });
       var rect = React.createElement('rect', {
-        x: this.props.x - width / 2,
-        y: this.props.direction === 'down' ? this.props.y : (this.props.y - this.props.length),
+        x: this.props.model.get('x'),
+        y: this.props.model.get('y'),
         width: width,
-        height: this.props.length,
+        height: this.props.model.get('length'),
         stroke: '#777777',
         fill: '#777777'
       });
@@ -31,16 +27,35 @@ define(['react', 'immutable.min', 'app/part-finger'], function (React, Immutable
     }
   });
 
+  var finger = partFinger.model();
+  finger = finger.get('setX')(finger, 0);
+  finger = finger.get('setY')(finger, 0);
   var legModel = Immutable.fromJS({
     x: 0,
     y: 0,
     direction: 'up',
     length: 30,
-    finger: partFinger.model
+    finger: finger,
+    setX: function (body, x) {
+      return body.set('x', x);
+    },
+    setY: function (body, y) {
+      return body.set('y', y);
+    },
+    setDirection: function (body, direction) {
+      return body.set('direction', direction);
+    },
+    setLength: function (body, length) {
+      return body.set('length', length);
+    }
   });
 
   return {
-    class: legClass,
-    model: legModel
+    class: function () {
+      return legClass;
+    },
+    model: function () {
+      return legModel;
+    }
   };
 });

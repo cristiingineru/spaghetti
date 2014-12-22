@@ -187,4 +187,38 @@ requirejs(['react', 'immutable.min', 'immutable.cursor'], function (React, Immut
   var r5 = c_v1.set(0, 'new C0'); // note the channing!
   var r6 = r5.set(3, 'new C3');
   var r7 = r6.set(5, 'new C5');
+
+
+  /* test 8 - changing using the 2 cursors */
+
+  var state = Immutable.fromJS(
+    {points: [{x: 3, y: 0}, {x: 7, y: 0}]}
+  );
+
+  var points = Cursor.from(state, 'points', function(newState) {
+    state = newState;
+  });
+  
+  var p1 = points.cursor(0);
+  var p2 = points.cursor(1);
+
+  var newX = (p1.get('x') + p2.get('x')) / 2;
+  p1 = p1.set('x', newX); //state: "Map { points: List [ Map { x: 5, y: 0 }, Map { x: 7, y: 0 } ] }"
+  p2 = p2.set('x', newX); //state: "Map { points: List [ Map { x: 3, y: 0 }, Map { x: 5, y: 0 } ] }"
+
+  
+  var state = Immutable.fromJS(
+    {points: [{x: 3, y: 0}, {x: 7, y: 0}]}
+  );
+  
+  var points = Cursor.from(
+    function () {
+      return state;
+    },
+    'points',
+    function (newState) {
+      state = newState;
+    });
+  
+
 });

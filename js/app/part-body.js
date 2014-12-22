@@ -6,18 +6,15 @@ define(['react', 'immutable.min', 'app/part-body'], function (React, Immutable) 
     displayName: 'part-body',
     getDefaultProps: function () {
       return {
-        x: 0,
-        y: 0,
-        width: 20,
-        height: 60
+        model: null
       };
     },
     render: function () {
       return React.createElement('rect', {
-        x: this.props.x,
-        y: this.props.y,
-        width: this.props.width,
-        height: this.props.height,
+        x: this.props.model.get('x'),
+        y: this.props.model.get('y'),
+        width: this.props.model.get('width'),
+        height: this.props.model.get('height'),
         stroke: '#E6C88C',
         fill: '#E6C88C',
         rx: 4,
@@ -30,11 +27,27 @@ define(['react', 'immutable.min', 'app/part-body'], function (React, Immutable) 
     x: 0,
     y: 0,
     width: 20,
-    height: 60
+    height: 60,
+    setX: function (body, x) {
+      return body.set('x', x);
+    },
+    setY: function (body, y) {
+      return body.set('y', y);
+    },
+    setWidth: function (body, width) {
+      return body.set('width', width);
+    },
+    setHeight: function (body, height) {
+      return body.set('height', height);
+    }
   });
 
   return {
-    class: bodyClass,
-    model: bodyModel
+    class: function () {
+      return bodyClass;
+    },
+    model: function () {
+      return bodyModel;
+    }
   };
 });
