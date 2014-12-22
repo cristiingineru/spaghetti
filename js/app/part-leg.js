@@ -12,7 +12,7 @@ define(['react', 'immutable.min', 'app/part-finger'], function (React, Immutable
     },
     render: function () {
       var width = 2;
-      var finger = React.createElement(partFinger.class, {
+      var finger = React.createElement(partFinger.class(), {
         model: this.props.model.get('finger')
       });
       var rect = React.createElement('rect', {

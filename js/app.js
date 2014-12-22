@@ -11,13 +11,12 @@ requirejs(['react', 'app/component-catalog', 'app/state'], function (React, Cata
 
   var resistor = Catalog('resistor');
 
-  State.components().set(State.components().count(), resistor);
+  State.components().set(State.components().count(), resistor.model());
 
   var x = State.toString();
 
   var element = React.createElement(resistor.class(), {
-    x: 100.5,
-    y: 100.5
+    model: State.components().get(0)
   });
 
   React.render(element, document.getElementById('svg'));

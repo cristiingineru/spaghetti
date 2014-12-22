@@ -11,13 +11,13 @@ define(['react', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], 
       };
     },
     render: function () {
-      var leg1 = React.createElement(partLeg.class, {
-        model: this.props.model.get(['legs', 0])
+      var leg1 = React.createElement(partLeg.class(), {
+        model: this.props.model.getIn(['legs', 0])
       });
-      var leg2 = React.createElement(partLeg.class, {
-        model: this.props.model.get(['legs', 1])
+      var leg2 = React.createElement(partLeg.class(), {
+        model: this.props.model.getIn(['legs', 1])
       });
-      var body = React.createElement(partBody.class, {
+      var body = React.createElement(partBody.class(), {
         model: this.props.model.get('body')
       });
       return React.createElement('g', null, [leg1, leg2, body]);
