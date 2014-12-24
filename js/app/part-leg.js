@@ -36,17 +36,19 @@ define(['react', 'immutable.min', 'app/part-finger'], function (React, Immutable
     direction: 'up',
     length: 30,
     finger: finger,
-    setX: function (body, x) {
-      return body.set('x', x);
+    setX: function (leg, x) {
+      var a = leg.set('x', x);
+      //var finger = leg.cursor(['finger']).set;
+      return a;
     },
-    setY: function (body, y) {
-      return body.set('y', y);
+    setY: function (leg, y) {
+      return leg.set('y', y);
     },
-    setDirection: function (body, direction) {
-      return body.set('direction', direction);
+    setDirection: function (leg, direction) {
+      return leg.set('direction', direction);
     },
-    setLength: function (body, length) {
-      return body.set('length', length);
+    setLength: function (leg, length) {
+      return leg.set('length', length);
     }
   });
 
