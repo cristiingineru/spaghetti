@@ -37,9 +37,10 @@ define(['react', 'immutable.min', 'app/part-finger'], function (React, Immutable
     length: 30,
     finger: finger,
     setX: function (leg, x) {
-      var a = leg.set('x', x);
-      //var finger = leg.cursor(['finger']).set;
-      return a;
+      leg = leg.set('x', x);
+      var finger = leg.getIn(['finger']);
+      finger.get('setX')(finger, x);
+      return leg;
     },
     setY: function (leg, y) {
       return leg.set('y', y);

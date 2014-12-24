@@ -25,11 +25,11 @@ define(['react', 'immutable.min'], function (React, Immutable) {
   var fingerModel = Immutable.fromJS({
     x: 0,
     y: 0,
-    setX: function (body, x) {
-      return body.set('x', x);
+    setX: function (finger, x) {
+      return finger.set('x', x);
     },
-    setY: function (body, y) {
-      return body.set('y', y);
+    setY: function (finger, y) {
+      return finger.set('y', y);
     }
   });
 
