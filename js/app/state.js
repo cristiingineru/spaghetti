@@ -21,7 +21,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
   };
 
   return {
-    state: function () {
+    cursor: function () {
       return cursorFor([]);
     },
     components: function () {

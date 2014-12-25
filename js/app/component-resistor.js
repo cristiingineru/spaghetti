@@ -24,16 +24,16 @@ define(['react', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], 
     }
   });
 
-  var body = partBody.model();
+  var body = Core.cursorify(partBody.model()).cursor();
   body = body.get('setX')(body, 0);
   body = body.get('setY')(body, 0);
   body = body.get('setWidth')(body, 20);
   body = body.get('setHeight')(body, 40);
-  var leg1 = partLeg.model();
+  var leg1 = Core.cursorify(partLeg.model()).cursor();
   leg1 = leg1.get('setX')(leg1, 10);
   leg1 = leg1.get('setY')(leg1, 0);
   leg1 = leg1.get('setDirection')(leg1, 'up');
-  var leg2 = partLeg.model();
+  var leg2 = Core.cursorify(partLeg.model()).cursor();
   leg2 = leg2.get('setX')(leg2, 10);
   leg2 = leg2.get('setY')(leg2, 40);
   leg2 = leg2.get('setDirection')(leg2, 'down');
@@ -42,8 +42,8 @@ define(['react', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], 
     y: 0,
     width: 20,
     height: 40,
-    body: body,
-    legs: [leg1, leg2]
+    body: body.deref(),
+    legs: [leg1.deref(), leg2.deref()]
   });
 
   return {
