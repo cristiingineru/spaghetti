@@ -24,16 +24,22 @@ define(['react', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], 
     }
   });
 
-  var body = Core.cursorify(partBody.model()).cursor();
+  var body = partBody.model().cursor();
   body = body.get('setX')(body, 0);
   body = body.get('setY')(body, 0);
   body = body.get('setWidth')(body, 20);
   body = body.get('setHeight')(body, 40);
-  var leg1 = Core.cursorify(partLeg.model()).cursor();
+  //var b = body.asObject()
+  //  .setX(0)
+  //  .setY(0)
+  //  .setWidth(20)
+  //  .setHeight(40)
+  //.asImmutable();
+  var leg1 = partLeg.model().cursor();
   leg1 = leg1.get('setX')(leg1, 10);
   leg1 = leg1.get('setY')(leg1, 0);
   leg1 = leg1.get('setDirection')(leg1, 'up');
-  var leg2 = Core.cursorify(partLeg.model()).cursor();
+  var leg2 = partLeg.model().cursor();
   leg2 = leg2.get('setX')(leg2, 10);
   leg2 = leg2.get('setY')(leg2, 40);
   leg2 = leg2.get('setDirection')(leg2, 'down');

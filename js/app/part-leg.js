@@ -58,7 +58,7 @@ define(['react', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
       var direction = leg.get('direction');
       var length = leg.get('length');
       var finger = leg.getIn(['finger']);
-      var fingerX = Core.cursorify(finger.deref()).cursor();
+      var fingerX = finger.deref().cursor();
       fingerX = fingerX.get('setX')(fingerX, x);
       fingerX = fingerX.get('setY')(fingerX, (direction === 'up' ? (y - length) : (y + length)));
       leg = leg.set('finger', fingerX.deref());

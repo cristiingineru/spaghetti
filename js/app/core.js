@@ -1,6 +1,26 @@
 /* global define */
 
-define(['immutable.cursor'], function (Cursor) {
+define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
+
+  var x = Immutable.fromJS({});
+  
+  Immutable.List.prototype.cursor = 
+  Immutable.Map.prototype.cursor = function () {
+    var state = this;
+    var cursor = Cursor.from(state, function (newState, prevState) {
+      if (prevState !== state) {
+        throw new Error('Attempted to alter an expired cursor.');
+      }
+      state = newState;
+    });
+
+    return cursor;
+  };
+
+  Immutable.List.prototype.asObject = 
+  Immutable.Map.prototype.asObject = function () {
+    
+  };
 
   return {
 
@@ -20,7 +40,7 @@ define(['immutable.cursor'], function (Cursor) {
       return is;
     },
 
-    cursorify: function (collection) {
+    _d_cursorify: function (collection) {
       var state = collection;
       var cursor = Cursor.from(collection, function (newState, prevState) {
         if (prevState !== state) {
