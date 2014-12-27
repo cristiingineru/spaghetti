@@ -24,26 +24,13 @@ define(['react', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], 
     }
   });
 
-  var body = partBody.model().cursor().objectify()
-    .setX(0)
-    .setY(0)
-    .setWidth(20)
-    .setHeight(40);
-  var leg1 = partLeg.model().cursor().objectify()
-    .setX(10)
-    .setY(0)
-    .setDirection('up');
-  var leg2 = partLeg.model().cursor().objectify()
-    .setX(10)
-    .setY(40)
-    .setDirection('down');
   var resistorModel = Immutable.fromJS({
     x: 0,
     y: 0,
     width: 20,
     height: 40,
-    body: body.deref(),
-    legs: [leg1.deref(), leg2.deref()],
+    body: partBody.model(),
+    legs: [partLeg.model(), partLeg.model()],
     setX: function (resistor, x) {
       resistor = resistor.set('x', x);
       resistor = resistor.get('updateParts')(resistor);
@@ -55,9 +42,35 @@ define(['react', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], 
       return resistor;
     },
     updateParts: function (resistor) {
+      var x = resistor.get('x');
+      var y = resistor.get('y');
+
+      var body = resistor.getIn(['body']).deref().cursor().objectify()
+        .setX(x)
+        .setY(y)
+        .setWidth(20)
+        .setHeight(40);
+      resistor = resistor.set('body', body.deref());
+
+      var leg0 = resistor.getIn(['legs', 0]).deref().cursor().objectify()
+        .setX(x + 10)
+        .setY(y)
+        .setDirection('up');
+      var leg1 = resistor.getIn(['legs', 1]).deref().cursor().objectify()
+        .setX(x + 10)
+        .setY(y + 40)
+        .setDirection('down');
+      var legs = Immutable.fromJS([leg0.deref(), leg1.deref()]);
+      resistor = resistor.set('legs', legs);
+
       return resistor;
+    },
+    init: function (resistor) {
+      return resistor.get('updateParts')(resistor);
     }
   });
+  resistorModel = resistorModel.cursor();
+  resistorModel = resistorModel.get('init')(resistorModel).deref();
 
   return {
     name: function () {
