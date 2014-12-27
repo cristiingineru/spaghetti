@@ -2,59 +2,65 @@
 
 define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
-  var x = Immutable.fromJS({});
-  
-  Immutable.List.prototype.cursor = 
-  Immutable.Map.prototype.cursor = function () {
-    var state = this;
-    var cursor = Cursor.from(state, function (newState, prevState) {
-      if (prevState !== state) {
-        throw new Error('Attempted to alter an expired cursor.');
-      }
-      state = newState;
+  var mixin = function (source, destination) {
+    Object.keys(source).forEach(function (key) {
+      destination[key] = source[key];
     });
-
-    return cursor;
   };
 
-  Immutable.List.prototype.asObject = 
-  Immutable.Map.prototype.asObject = function () {
-    
+  var is = function (source, reference) {
+    var is = true;
+    Object.keys(reference).forEach(function (key) {
+      if (source[key] === undefined) {
+        is = false;
+      }
+    });
+    return is;
   };
 
-  return {
-
-    mixin: function (source, destination) {
-      Object.keys(source).forEach(function (key) {
-        destination[key] = source[key];
-      });
-    },
-
-    is: function (source, reference) {
-      var is = true;
-      Object.keys(reference).forEach(function (key) {
-        if (source[key] === undefined) {
-          is = false;
-        }
-      });
-      return is;
-    },
-
-    _d_cursorify: function (collection) {
-      var state = collection;
-      var cursor = Cursor.from(collection, function (newState, prevState) {
+  Immutable.List.prototype.cursor =
+    Immutable.Map.prototype.cursor = function () {
+      var state = this;
+      var cursor = Cursor.from(state, function (newState, prevState) {
         if (prevState !== state) {
           throw new Error('Attempted to alter an expired cursor.');
         }
         state = newState;
       });
 
-      // TODO add optimization and freshness pattern
-      return {
-        cursor: function (keys) {
-          return cursor;
-        }
-      };
+      return cursor;
+  };
+
+  Immutable.Seq.Keyed.prototype.objectify = function () {
+    var map = this.toJS();
+    var functions = {};
+    for (var key in map) {
+      var value = map[key];
+      if (map.hasOwnProperty(key) && typeof (value) == 'function') {
+        var f = value;
+        functions[key] = (function (f) {
+          return function () {
+            var newArguments = [this];
+            for (var i = 0; i < arguments.length; i++) {
+              newArguments.push(arguments[i]);
+            }
+            var mutatedObject = f.apply(null, newArguments);
+            // decorating the mutated object with functions as well as the initial object
+            mixin(functions, mutatedObject);
+            return mutatedObject;
+          };
+        })(f);
+      }
     }
+    // decorating the current object with functions
+    mixin(functions, this);
+    return this;
+  };
+
+  return {
+
+    mixin: mixin,
+
+    is: is
   };
 });

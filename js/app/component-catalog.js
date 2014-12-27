@@ -7,7 +7,7 @@ define(['app/core', 'app/component-resistor'], function (core, componentResistor
 
   privateCatalog.push({
 
-    name: 'resistor',
+    name: componentResistor.name,
     class: componentResistor.class,
     model: componentResistor.model
   });
@@ -15,7 +15,7 @@ define(['app/core', 'app/component-resistor'], function (core, componentResistor
   return function (name) {
     var found = null;
     for (var component of privateCatalog) {
-      if (component.name === name) {
+      if (component.name() === name) {
         return component;
       }
     }

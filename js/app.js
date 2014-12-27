@@ -11,8 +11,13 @@ requirejs(['react', 'app/component-catalog', 'app/state'], function (React, Cata
 
   var resistor = Catalog('resistor');
 
+  var myResistorModel = resistor.model().cursor().objectify()
+      .setX(50)
+      .setY(50)
+    .deref();
+
   State.components().withMutations(function (cs) {
-    cs.push(resistor.model());
+    cs.push(myResistorModel);
   });
 
   var element = React.createElement(resistor.class(), {
