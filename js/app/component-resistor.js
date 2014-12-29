@@ -67,6 +67,9 @@ define(['react', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], 
     },
     init: function (resistor) {
       return resistor.get('updateParts')(resistor);
+    },
+    getName: function (resistor) {
+      return 'resistor';
     }
   });
   resistorModel = resistorModel.cursor();
@@ -74,7 +77,7 @@ define(['react', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], 
 
   return {
     name: function () {
-      return 'resistor';
+      return resistorModel.get('getName')();
     },
     class: function () {
       return resistorClass;

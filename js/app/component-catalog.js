@@ -12,12 +12,24 @@ define(['app/core', 'app/component-resistor'], function (core, componentResistor
     model: componentResistor.model
   });
 
-  return function (name) {
+  function findByName(name) {
     var found = null;
     for (var component of privateCatalog) {
       if (component.name() === name) {
         return component;
       }
+    }
+    return null;
+  }
+
+  return function (nameOrModel) {
+    var found = null;
+    if (typeof nameOrModel === 'string' || nameOrModel instanceof String) {
+      return findByName(nameOrModel);
+    }
+    else {
+      nameOrModel = nameOrModel.get('getName')(nameOrModel);
+      return findByName(nameOrModel);
     }
     return null;
   };

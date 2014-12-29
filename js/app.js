@@ -7,7 +7,7 @@ requirejs.config({
   }
 });
 
-requirejs(['react', 'app/component-catalog', 'app/state', 'app/diagram'], function (React, Catalog, State, diagram) {
+requirejs(['react', 'app/component-catalog', 'app/state', 'app/diagram'], function (React, Catalog, State, Diagram) {
 
   var resistor = Catalog('resistor');
 
@@ -16,7 +16,7 @@ requirejs(['react', 'app/component-catalog', 'app/state', 'app/diagram'], functi
     .setY(50)
     .deref();
 
-  var myTopDiagram = diagram.model().cursor().objectify()
+  var myTopDiagram = Diagram.model().cursor().objectify()
     .addComponent(myResistorModel)
     .deref();
 
@@ -24,7 +24,7 @@ requirejs(['react', 'app/component-catalog', 'app/state', 'app/diagram'], functi
     s.set('diagram', myTopDiagram);
   });
 
-  var element = React.createElement(diagram.class(), {
+  var element = React.createElement(Diagram.class(), {
     model: State.cursor().get('diagram')
   });
 

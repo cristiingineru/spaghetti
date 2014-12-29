@@ -1,7 +1,7 @@
 /* global define */
 
 
-define(['react', 'immutable.min', 'app/core', 'app/component-resistor'], function (React, Immutable, Core, resistor) {
+define(['react', 'immutable.min', 'app/core', 'app/component-catalog'], function (React, Immutable, Core, Catalog) {
 
   var diagramClass = React.createClass({
     displayName: 'diagram',
@@ -17,13 +17,13 @@ define(['react', 'immutable.min', 'app/core', 'app/component-resistor'], functio
         width: '100%',
         height: '100%',
         stroke: '#AAAAAA',
-        fill: '#CCCCCC'
+        fill: '#EEEEEE'
       });
       var components = [];
       var models = this.props.model.getIn(['components']);
       for (var i = 0; i < models.count(); i++) {
         var model = models.getIn([i]);
-        var component = React.createElement(resistor.class(), {
+        var component = React.createElement(Catalog(model).class(), {
           model: model
         });
         components.push(component);

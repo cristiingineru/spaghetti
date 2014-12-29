@@ -15,7 +15,7 @@ define(['react', 'immutable.min', 'app/core'], function (React, Immutable, Core)
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
-        stroke: '#E6C88C',
+        stroke: '#ceb27a',
         fill: '#E6C88C',
         rx: 4,
         ry: 4
