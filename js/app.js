@@ -7,21 +7,25 @@ requirejs.config({
   }
 });
 
-requirejs(['react', 'app/component-catalog', 'app/state'], function (React, Catalog, State) {
+requirejs(['react', 'app/component-catalog', 'app/state', 'app/diagram'], function (React, Catalog, State, diagram) {
 
   var resistor = Catalog('resistor');
 
   var myResistorModel = resistor.model().cursor().objectify()
-      .setX(50)
-      .setY(50)
+    .setX(50)
+    .setY(50)
     .deref();
 
-  State.components().withMutations(function (cs) {
-    cs.push(myResistorModel);
+  var myTopDiagram = diagram.model().cursor().objectify()
+    .addComponent(myResistorModel)
+    .deref();
+
+  State.cursor().withMutations(function (s) {
+    s.set('diagram', myTopDiagram);
   });
 
-  var element = React.createElement(resistor.class(), {
-    model: State.components().get(0)
+  var element = React.createElement(diagram.class(), {
+    model: State.cursor().get('diagram')
   });
 
   React.render(element, document.getElementById('svg'));

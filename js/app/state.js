@@ -3,9 +3,7 @@
 
 define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
-  var state = Immutable.fromJS({
-    components: []
-  });
+  var state = Immutable.fromJS({});
 
   var onChange = function (newState, prevState) {
     if (prevState !== state) {
@@ -23,9 +21,6 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
   return {
     cursor: function () {
       return cursorFor([]);
-    },
-    components: function () {
-      return cursorFor(['components']);
     },
     toString: function () {
       return state.toString();
