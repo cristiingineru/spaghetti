@@ -1,4 +1,4 @@
-/* global define */
+/* global define, require */
 
 
 define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, partLeg, partBody) {
@@ -11,6 +11,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       };
     },
     render: function () {
+
+      var LayoutManager = require('app/layoutManager');
+      var dragAdapter = LayoutManager.reactDraggableAdapter(this.props.model);
+
       var leg1 = React.createElement(partLeg.class(), {
         model: this.props.model.getIn(['legs', 0])
       });
@@ -20,49 +24,15 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       var body = React.createElement(partBody.class(), {
         model: this.props.model.get('body')
       });
-      //return React.createElement('g', null, [leg1, leg2, body]);
+      var resistor = React.createElement('g', null, [leg1, leg2, body]);
 
-      var thisResistor = this;
-      var state = this.state || {x: 10, y: 30};
-      var handleStart = function (event, ui) {
-          console.log('*** START ***');
-          console.log('Event: ', event);
-          console.log('Position: ', ui.position);
-      };
-
-      var handleDrag = function (event, ui) {
-          console.log('*** DRAG ***');
-          console.log('Event: ', event);
-          console.log('Position: ', ui.position);
-          state = {x: event.clientX, y: event.clientY};
-          thisResistor.setState(state);
-      };
-
-      var handleStop = function (event, ui) {
-          console.log('*** STOP ***');
-          console.log('Event: ', event);
-          console.log('Position: ', ui.position);
-          state = {x: event.clientX, y: event.clientY};
-          thisResistor.setState(state);
-      };
-      var rect = React.createElement('rect', {
-        x: state.x,
-        y: state.y,
-        width: 30,
-        height: 30,
-        stroke: '#ceb27a',
-        fill: '#E6C88C',
-        rx: 4,
-        ry: 4,
-      });
-      console.log('*** resistor to be rendered ***');
       return React.createElement(Draggable, {
-          axis: 'both',
-          zIndex: 100,
-          onStart: handleStart,
-          onDrag: handleDrag,
-          onStop: handleStop,
-        }, rect);
+        axis: 'both',
+        zIndex: 100,
+        onStart: dragAdapter.handleStart,
+        onDrag: dragAdapter.handleDrag,
+        onStop: dragAdapter.handleStop
+      }, resistor);
     }
   });
 
@@ -106,6 +76,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       resistor = resistor.set('legs', legs);
 
       return resistor;
+    },
+    keyify: function (resistor, keyProvider) {
+      var key = keyProvider();
+      return resistor.set('key', key);
     },
     init: function (resistor) {
       return resistor.get('updateParts')(resistor);

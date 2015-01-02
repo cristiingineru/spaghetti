@@ -9,26 +9,28 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'app/component-catalog', 'app/state', 'app/diagram'], function (React, Catalog, State, Diagram) {
+requirejs(['React', 'app/component-catalog', 'app/state', 'app/diagram', 'app/keyProvider', 'app/layoutManager'],
+  function (React, Catalog, State, Diagram, KeyProvider, LayoutManager) {
 
-  var resistor = Catalog('resistor');
+    var resistor = Catalog('resistor');
 
-  var myResistorModel = resistor.model().cursor().objectify()
-    .setX(50)
-    .setY(50)
-    .deref();
+    var myResistorModel = resistor.model().cursor().objectify()
+      .setX(50)
+      .setY(50)
+      .keyify(KeyProvider)
+      .deref();
 
-  var myTopDiagram = Diagram.model().cursor().objectify()
-    .addComponent(myResistorModel)
-    .deref();
+    var myTopDiagram = Diagram.model().cursor().objectify()
+      .addComponent(myResistorModel)
+      .deref();
 
-  State.cursor().withMutations(function (s) {
-    s.set('diagram', myTopDiagram);
+    State.cursor().withMutations(function (s) {
+      s.set('diagram', myTopDiagram);
+    });
+
+    var element = React.createElement(Diagram.class(), {
+      model: State.cursor().get('diagram')
+    });
+
+    React.render(element, document.getElementById('svg'));
   });
-
-  var element = React.createElement(Diagram.class(), {
-    model: State.cursor().get('diagram')
-  });
-
-  React.render(element, document.getElementById('svg'));
-});
