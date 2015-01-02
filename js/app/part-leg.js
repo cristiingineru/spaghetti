@@ -1,7 +1,7 @@
 /* global define */
 
 
-define(['react', 'immutable.min', 'app/core', 'app/part-finger'], function (React, Immutable, Core, partFinger) {
+define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (React, Immutable, Core, partFinger) {
 
   var legClass = React.createClass({
     displayName: 'part-leg',

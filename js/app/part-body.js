@@ -1,6 +1,6 @@
 /* global define */
 
-define(['react', 'immutable.min', 'app/core'], function (React, Immutable, Core) {
+define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core) {
 
   var bodyClass = React.createClass({
     displayName: 'part-body',

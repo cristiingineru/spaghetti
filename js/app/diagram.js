@@ -1,7 +1,7 @@
 /* global define */
 
 
-define(['react', 'immutable.min', 'app/core', 'app/component-catalog'], function (React, Immutable, Core, Catalog) {
+define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function (React, Immutable, Core, Catalog) {
 
   var diagramClass = React.createClass({
     displayName: 'diagram',
@@ -28,7 +28,8 @@ define(['react', 'immutable.min', 'app/core', 'app/component-catalog'], function
         });
         components.push(component);
       }
-      return React.createElement('g', null, [rect].concat(components));
+      //return React.createElement('g', null, [rect].concat(components));
+      return React.createElement('g', null, components);
     }
   });
 

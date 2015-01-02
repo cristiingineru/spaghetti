@@ -3,11 +3,13 @@
 requirejs.config({
   baseUrl: 'js/lib',
   paths: {
+    React: '../node_modules/react/dist/react-with-addons',
     app: '../app'
-  }
+  },
+  waitSeconds: 15
 });
 
-requirejs(['react', 'app/component-catalog', 'app/state', 'app/diagram'], function (React, Catalog, State, Diagram) {
+requirejs(['React', 'app/component-catalog', 'app/state', 'app/diagram'], function (React, Catalog, State, Diagram) {
 
   var resistor = Catalog('resistor');
 

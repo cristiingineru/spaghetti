@@ -1,7 +1,7 @@
 /* global define */
 
 
-define(['react', 'immutable.min'], function (React, Immutable) {
+define(['React', 'immutable.min'], function (React, Immutable) {
 
   var fingerClass = React.createClass({
     displayName: 'part-finger',
