@@ -19,9 +19,16 @@ requirejs(['React', 'app/component-catalog', 'app/state', 'app/diagram', 'app/ke
       .setY(50)
       .keyify(KeyProvider)
       .deref();
+  
+    var mySecondResistorModel = resistor.model().cursor().objectify()
+        .setX(100)
+        .setY(100)
+        .keyify(KeyProvider)
+        .deref();
 
     var myTopDiagram = Diagram.model().cursor().objectify()
       .addComponent(myResistorModel)
+      .addComponent(mySecondResistorModel)
       .deref();
 
     State.cursor().withMutations(function (s) {
