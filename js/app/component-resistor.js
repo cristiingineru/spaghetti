@@ -24,15 +24,15 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       var body = React.createElement(partBody.class(), {
         model: this.props.model.get('body')
       });
-      var resistor = React.createElement('g', null, [leg1, leg2, body]);
-
-      return React.createElement(Draggable, {
+      // this wrapper is required to make the react.draggable work
+      var bodyWrapper = React.createElement('g', null, body);
+      var draggableBody = React.createElement(Draggable, {
         axis: 'both',
-        zIndex: 100,
         onStart: dragAdapter.handleStart,
         onDrag: dragAdapter.handleDrag,
         onStop: dragAdapter.handleStop
-      }, resistor);
+      }, bodyWrapper);
+      return React.createElement('g', null, [leg1, leg2, draggableBody]);
     }
   });
 
