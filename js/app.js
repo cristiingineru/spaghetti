@@ -15,16 +15,14 @@ requirejs(['React', 'app/component-catalog', 'app/state', 'app/diagram', 'app/ke
     var resistor = Catalog('resistor');
 
     var myResistorModel = resistor.model().cursor().objectify()
-      .setX(50)
-      .setY(50)
+      .setXY(50, 50)
       .keyify(KeyProvider)
       .deref();
-  
+
     var mySecondResistorModel = resistor.model().cursor().objectify()
-        .setX(100)
-        .setY(100)
-        .keyify(KeyProvider)
-        .deref();
+      .setXY(100, 100)
+      .keyify(KeyProvider)
+      .deref();
 
     var myTopDiagram = Diagram.model().cursor().objectify()
       .addComponent(myResistorModel)

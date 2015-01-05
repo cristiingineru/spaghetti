@@ -45,6 +45,12 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
       leg = leg.get('updateFinger')(leg);
       return leg;
     },
+    setXY: function (leg, x, y) {
+      leg = leg.set('x', x);
+      leg = leg.set('y', y);
+      leg = leg.get('updateFinger')(leg);
+      return leg;
+    },
     setDirection: function (leg, direction) {
       leg = leg.set('direction', direction);
       leg = leg.get('updateFinger')(leg);
@@ -61,12 +67,11 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
       var direction = leg.get('direction');
       var length = leg.get('length');
       var finger = leg.getIn(['finger']).deref().cursor().objectify()
-        .setX(x)
-        .setY((direction === 'up' ? (y - length) : (y + length)));
+        .setXY(x, (direction === 'up' ? (y - length) : (y + length)));
       leg = leg.set('finger', finger.deref());
       return leg;
     },
-    init: function(leg) {
+    init: function (leg) {
       return leg.get('updateFinger')(leg);
     }
   });

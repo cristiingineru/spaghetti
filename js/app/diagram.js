@@ -17,7 +17,7 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
         width: '100%',
         height: '100%',
         stroke: '#AAAAAA',
-        fill: '#EEEEEE'
+        fill: '#ffe0cc'
       });
       var components = [];
       var models = this.props.model.getIn(['components']);
@@ -28,8 +28,7 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
         });
         components.push(component);
       }
-      //return React.createElement('g', null, [rect].concat(components));
-      return React.createElement('g', null, components);
+      return React.createElement('g', null, [rect].concat(components));
     }
   });
 

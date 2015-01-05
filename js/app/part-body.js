@@ -34,6 +34,10 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
     setY: function (body, y) {
       return body.set('y', y);
     },
+    setXY: function (body, x, y) {
+      body = body.set('x', x);
+      return body.set('y', y);
+    },
     setWidth: function (body, width) {
       return body.set('width', width);
     },

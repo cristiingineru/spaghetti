@@ -53,24 +53,27 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       resistor = resistor.get('updateParts')(resistor);
       return resistor;
     },
+    setXY: function (resistor, x, y) {
+      resistor = resistor.set('x', x);
+      resistor = resistor.set('y', y);
+      resistor = resistor.get('updateParts')(resistor);
+      return resistor;
+    },
     updateParts: function (resistor) {
       var x = resistor.get('x');
       var y = resistor.get('y');
 
       var body = resistor.getIn(['body']).deref().cursor().objectify()
-        .setX(x)
-        .setY(y)
+        .setXY(x, y)
         .setWidth(20)
         .setHeight(40);
       resistor = resistor.set('body', body.deref());
 
       var leg0 = resistor.getIn(['legs', 0]).deref().cursor().objectify()
-        .setX(x + 10)
-        .setY(y)
+        .setXY(x + 10, y)
         .setDirection('up');
       var leg1 = resistor.getIn(['legs', 1]).deref().cursor().objectify()
-        .setX(x + 10)
-        .setY(y + 40)
+        .setXY(x + 10, y + 40)
         .setDirection('down');
       var legs = Immutable.fromJS([leg0.deref(), leg1.deref()]);
       resistor = resistor.set('legs', legs);

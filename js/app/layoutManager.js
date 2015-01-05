@@ -31,19 +31,18 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
       var key = model.get('key');
       return {
         handleStart: function (event, ui) {
-          console.log('*** START ***');
+          //console.log('*** START ***');
         },
         handleDrag: function (event, ui) {
-          console.log('*** DRAG ***');
+          //console.log('*** DRAG ***');
           var target = getTarget(key);
           var newValue = target.value.deref().cursor().objectify()
-            .setX(event.clientX)
-            .setY(event.clientY);
+            .setXY(event.clientX, event.clientY);
           target.replace(newValue);
           redraw();
         },
         handleStop: function (event, ui) {
-          console.log('*** STOP ***');
+          //console.log('*** STOP ***');
           redraw();
         }
       };

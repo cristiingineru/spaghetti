@@ -30,6 +30,10 @@ define(['React', 'immutable.min'], function (React, Immutable) {
     },
     setY: function (finger, y) {
       return finger.set('y', y);
+    },
+    setXY: function (finger, x, y) {
+      finger = finger.set('x', x);
+      return finger.set('y', y);
     }
   });
 
