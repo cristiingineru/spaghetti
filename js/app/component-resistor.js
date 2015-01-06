@@ -7,7 +7,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
     displayName: 'component-resistor',
     getDefaultProps: function () {
       return {
-        model: null
+        model: null,
+        owner: null
       };
     },
     render: function () {
@@ -16,13 +17,16 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       var dragAdapter = LayoutManager.reactDraggableAdapter(this.props.model);
 
       var leg1 = React.createElement(partLeg.class(), {
-        model: this.props.model.getIn(['legs', 0])
+        model: this.props.model.getIn(['legs', 0]),
+        owner: this.props.model
       });
       var leg2 = React.createElement(partLeg.class(), {
-        model: this.props.model.getIn(['legs', 1])
+        model: this.props.model.getIn(['legs', 1]),
+        owner: this.props.model
       });
       var body = React.createElement(partBody.class(), {
-        model: this.props.model.get('body')
+        model: this.props.model.get('body'),
+        owner: this.props.model
       });
       // this wrapper is required to make the react.draggable work
       var bodyWrapper = React.createElement('g', null, body);

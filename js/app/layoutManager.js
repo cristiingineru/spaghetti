@@ -2,9 +2,7 @@
 
 define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram'], function (React, Draggable, Immutable, State, Diagram) {
 
-  var getTarget = function (key) {
-    var diagram = State.cursor().get('diagram');
-    var components = diagram.getIn(['components']);
+  var getTargetInComponents = function (components, key) {
     for (var i = 0; i < components.count(); i++) {
       var component = components.getIn([i]);
       if (component.get('key') === key) {
@@ -12,11 +10,20 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
           value: component,
           replace: function (newValue) {
             components.set(i, newValue.deref());
+          },
+          delete: function () {
+            components.delete(i);
           }
         };
       }
     }
     throw new Error('Attempted to use an invalid key.');
+  }
+
+  var getTarget = function (key) {
+    var diagram = State.cursor().get('diagram');
+    var components = diagram.getIn(['components']);
+    return getTargetInComponents(components, key);
   };
 
   var redraw = function () {
@@ -44,6 +51,36 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
         },
         handleStop: function (event, ui) {
           //console.log('*** STOP ***');
+          redraw();
+        }
+      };
+    },
+    myHandlerAdapter: function (model) {
+      var key = model.get('key');
+      return {
+        onClickHandler: function (event, ui) {
+          if (!key) {
+            return;
+          }
+          var newSelections = State.cursor().getIn(['selections']).deref().withMutations(function (s) {
+            s.push(key);
+          });
+          State.cursor().set('selections', newSelections);
+        },
+        onKeyPressHandler: function (event, ui)
+        {
+          var selections = State.cursor().getIn(['selections']).deref();
+
+          for(i = 0; i < selections.count(); i++) {
+            var selection = selections.get(i);
+            var components = State.cursor().getIn(['diagram' , 'components']);
+            getTargetInComponents(components, selection).delete();
+          }
+
+          var newSelections = State.cursor().getIn(['selections']).deref().withMutations(function (s) {
+            s.clear()
+          });
+          State.cursor().set('selections', newSelections);
           redraw();
         }
       };

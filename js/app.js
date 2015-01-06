@@ -15,7 +15,7 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
     var buildInitialState = function (State) {
       State.cursor().withMutations(function (st) {
         st.set('diagram', null)
-          .set('selection', Immutable.fromJS([]));
+          .set('selections', Immutable.fromJS([]));
       });
       return State;
     };

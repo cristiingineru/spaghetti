@@ -7,7 +7,8 @@ define(['React', 'immutable.min'], function (React, Immutable) {
     displayName: 'part-finger',
     getDefaultProps: function () {
       return {
-        model: null
+        model: null,
+        owner: null
       };
     },
     render: function () {

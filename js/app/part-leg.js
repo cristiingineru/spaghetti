@@ -7,7 +7,8 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
     displayName: 'part-leg',
     getDefaultProps: function () {
       return {
-        model: null
+        model: null,
+        owner: null
       };
     },
     render: function () {
@@ -15,7 +16,8 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
       var length = this.props.model.get('length');
       var direction = this.props.model.get('direction');
       var finger = React.createElement(partFinger.class(), {
-        model: this.props.model.get('finger')
+        model: this.props.model.get('finger'),
+        owner: this.props.model
       });
       var rect = React.createElement('rect', {
         x: this.props.model.get('x') - width / 2,

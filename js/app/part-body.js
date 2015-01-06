@@ -6,10 +6,13 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
     displayName: 'part-body',
     getDefaultProps: function () {
       return {
-        model: null
+        model: null,
+        owner: null
       };
     },
     render: function () {
+      var LayoutManager = require('app/layoutManager');
+      var handlerAdapter = LayoutManager.myHandlerAdapter(this.props.owner);
       return React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),
@@ -18,13 +21,14 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
         stroke: '#ceb27a',
         fill: '#E6C88C',
         rx: 4,
-        ry: 4
+        ry: 4,
+        onClick: handlerAdapter.onClickHandler
       });
     }
   });
   
   var bodyProto = function (model) {
-    var thisProto = Object.create(null);
+    var thisProto = {};
     thisProto.model = function () {
       return model;
     };

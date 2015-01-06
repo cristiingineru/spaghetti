@@ -11,13 +11,18 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
       };
     },
     render: function () {
+      var LayoutManager = require('app/layoutManager');
+      var handlerAdapter = LayoutManager.myHandlerAdapter(this.props.model);
       var rect = React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
         stroke: '#AAAAAA',
-        fill: '#ffe0cc'
+        fill: '#ffe0cc',
+        onKeyPress: handlerAdapter.onKeyPressHandler,
+        onKeyDown: handlerAdapter.onKeyPressHandler,
+        onDoubleClick: handlerAdapter.onKeyPressHandler
       });
       var components = [];
       var models = this.props.model.getIn(['components']);
