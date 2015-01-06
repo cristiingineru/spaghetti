@@ -18,7 +18,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
       }
     }
     throw new Error('Attempted to use an invalid key.');
-  }
+  };
 
   var getTarget = function (key) {
     var diagram = State.cursor().get('diagram');
@@ -31,6 +31,23 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
       model: State.cursor().get('diagram')
     });
     React.render(element, document.getElementById('svg'));
+  };
+  
+  var topDiagram = function(State) {
+    return State.cursor().getIn(['diagram']);
+  };
+  
+  var components = function (diagram) {
+    return diagram.getIn(['components']);
+  };
+  
+  var allComponents = function () {
+    return components(topDiagram(State));
+  };
+  
+  var forEach = function (items, action) {
+    var currentItems = items();
+    currentItems.takeWhile();
   };
 
   return {
@@ -71,7 +88,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
         {
           var selections = State.cursor().getIn(['selections']).deref();
 
-          for(i = 0; i < selections.count(); i++) {
+          for(var i = 0; i < selections.count(); i++) {
             var selection = selections.get(i);
             var components = State.cursor().getIn(['diagram' , 'components']);
             getTargetInComponents(components, selection).delete();
@@ -82,6 +99,14 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
           });
           State.cursor().set('selections', newSelections);
           redraw();
+          
+          ///
+          {
+            forEach(allComponents, function (component) {
+            });
+          }
+          ///
+          
         }
       };
     }

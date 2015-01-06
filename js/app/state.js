@@ -4,6 +4,7 @@
 define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   var state = Immutable.fromJS({});
+  var expiredCursor = false;
 
   var onChange = function (newState, prevState) {
     if (prevState !== state) {
@@ -11,6 +12,8 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     }
     state = newState;
     cursor = Cursor.from(newState, onChange);
+    // the user has to ask for the new cursor
+    expiredCursor = true;
   };
   var cursor = Cursor.from(state, onChange);
 
@@ -20,10 +23,14 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   return {
     cursor: function () {
+      expiredCursor = false;
       return cursorFor([]);
     },
     toString: function () {
       return state.toString();
+    },
+    expiredCursor: function () {
+      return expiredCursor;
     }
   };
 });
