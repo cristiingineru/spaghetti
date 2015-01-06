@@ -25,20 +25,19 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
     var myResistorModel = resistor.model().cursor().objectify()
       .setXY(50, 50)
       .keyify(KeyProvider)
-      .deref();
+      .model().deref();
     var mySecondResistorModel = resistor.model().cursor().objectify()
       .setXY(100, 100)
       .keyify(KeyProvider)
-      .deref();
+      .model().deref();
     var myTopDiagram = Diagram.model().cursor().objectify()
       .addComponent(myResistorModel)
       .addComponent(mySecondResistorModel)
-      .deref();
+      .model().deref();
     State.cursor().set('diagram', myTopDiagram);
 
     var element = React.createElement(Diagram.class(), {
       model: State.cursor().get('diagram')
     });
-
     React.render(element, document.getElementById('svg'));
   });

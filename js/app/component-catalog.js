@@ -28,7 +28,7 @@ define(['app/core', 'app/component-resistor'], function (core, componentResistor
       return findByName(nameOrModel);
     }
     else {
-      nameOrModel = nameOrModel.get('getName')(nameOrModel);
+      nameOrModel = nameOrModel.get('name');
       return findByName(nameOrModel);
     }
     return null;

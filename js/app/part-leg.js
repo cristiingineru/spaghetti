@@ -12,7 +12,7 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
     },
     render: function () {
       var width = 2;
-      var length = this.props.model.get('length')
+      var length = this.props.model.get('length');
       var direction = this.props.model.get('direction');
       var finger = React.createElement(partFinger.class(), {
         model: this.props.model.get('finger')
@@ -29,58 +29,69 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
     }
   });
 
+  var legProto = function (model) {
+    var thisProto = Object.create(null);
+    thisProto.model = function () {
+      return model;
+    };
+    thisProto.setX = function (x) {
+      model = model.set('x', x);
+      return this.updateFinger();
+    };
+    thisProto.setY = function (y) {
+      model = model.set('y', y);
+      return this.updateFinger();
+    };
+    thisProto.setXY = function (x, y) {
+      model = model.set('x', x);
+      model = model.set('y', y);
+      return this.updateFinger();
+    };
+    thisProto.setDirection = function (direction) {
+      model = model.set('direction', direction);
+      return this.updateFinger();
+    };
+    thisProto.setLength = function (length) {
+      model = model.set('length', length);
+      return this.updateFinger();
+    };
+    thisProto.updateFinger = function () {
+      var x = model.get('x');
+      var y = model.get('y');
+      var direction = model.get('direction');
+      var length = model.get('length');
+      var finger = model.getIn(['finger']).deref().cursor().objectify()
+        .setXY(x, (direction === 'up' ? (y - length) : (y + length)))
+        .model();
+      model = model.set('finger', finger.deref());
+      return this;
+    };
+    thisProto.init = function () {
+      return this.updateFinger();
+    };
+    return thisProto;
+  };
+
   var legModel = Immutable.fromJS({
     x: 0,
     y: 0,
     direction: 'up',
     length: 30,
     finger: partFinger.model(),
-    setX: function (leg, x) {
-      leg = leg.set('x', x);
-      leg = leg.get('updateFinger')(leg);
-      return leg;
-    },
-    setY: function (leg, y) {
-      leg = leg.set('y', y);
-      leg = leg.get('updateFinger')(leg);
-      return leg;
-    },
-    setXY: function (leg, x, y) {
-      leg = leg.set('x', x);
-      leg = leg.set('y', y);
-      leg = leg.get('updateFinger')(leg);
-      return leg;
-    },
-    setDirection: function (leg, direction) {
-      leg = leg.set('direction', direction);
-      leg = leg.get('updateFinger')(leg);
-      return leg;
-    },
-    setLength: function (leg, length) {
-      leg.set('length', length);
-      leg = leg.get('updateFinger')(leg);
-      return leg;
-    },
-    updateFinger: function (leg) {
-      var x = leg.get('x');
-      var y = leg.get('y');
-      var direction = leg.get('direction');
-      var length = leg.get('length');
-      var finger = leg.getIn(['finger']).deref().cursor().objectify()
-        .setXY(x, (direction === 'up' ? (y - length) : (y + length)));
-      leg = leg.set('finger', finger.deref());
-      return leg;
-    },
-    init: function (leg) {
-      return leg.get('updateFinger')(leg);
-    }
+    proto: legProto
   });
-  legModel = legModel.cursor();
-  legModel = legModel.get('init')(legModel).deref();
+
+  var leg = legProto(legModel.cursor());
+  legModel = leg
+    .init()
+    .model().deref();
 
   return {
     class: function () {
       return legClass;
+    },
+    proto: function () {
+      return legProto;
     },
     model: function () {
       return legModel;

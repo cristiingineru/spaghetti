@@ -21,25 +21,40 @@ define(['React', 'immutable.min'], function (React, Immutable) {
       });
     }
   });
+  
+  var fingerProto = function (model) {
+    var thisProto = Object.create(null);
+    thisProto.model = function () {
+      return model;
+    };
+    thisProto.setX = function (x) {
+      model = model.set('x', x);
+      return this;
+    };
+    thisProto.setY = function (y) {
+      model = model.set('y', y);
+      return this;
+    };
+    thisProto.setXY = function (x, y) {
+      model = model.set('x', x);
+      model = model.set('y', y);
+      return this;
+    };
+    return thisProto;
+  };
 
   var fingerModel = Immutable.fromJS({
     x: 0,
     y: 0,
-    setX: function (finger, x) {
-      return finger.set('x', x);
-    },
-    setY: function (finger, y) {
-      return finger.set('y', y);
-    },
-    setXY: function (finger, x, y) {
-      finger = finger.set('x', x);
-      return finger.set('y', y);
-    }
+    proto: fingerProto
   });
 
   return {
     class: function () {
       return fingerClass;
+    },
+    proto: function () {
+      return fingerProto;
     },
     model: function () {
       return fingerModel;

@@ -36,70 +36,84 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
     }
   });
 
+  var resistorProto = function (model) {
+    var thisProto = Object.create(null);
+    thisProto.model = function () {
+      return model;
+    };
+    thisProto.setX = function (x) {
+      model = model.set('x', x);
+      return this.updateParts();
+    };
+    thisProto.setY = function (y) {
+      model = model.set('y', y);
+      return this.updateParts();
+    };
+    thisProto.setXY = function (x, y) {
+      model = model.set('x', x);
+      model = model.set('y', y);
+      return this.updateParts();
+    };
+    thisProto.updateParts = function () {
+      var x = model.get('x');
+      var y = model.get('y');
+
+      var body = model.getIn(['body']).deref().cursor().objectify()
+        .setXY(x, y)
+        .setWidth(20)
+        .setHeight(40)
+        .model();
+      model = model.set('body', body.deref());
+
+      var leg0 = model.getIn(['legs', 0]).deref().cursor().objectify()
+        .setXY(x + 10, y)
+        .setDirection('up')
+        .model();
+      var leg1 = model.getIn(['legs', 1]).deref().cursor().objectify()
+        .setXY(x + 10, y + 40)
+        .setDirection('down')
+        .model();
+      var legs = Immutable.fromJS([leg0.deref(), leg1.deref()]);
+      model = model.set('legs', legs);
+
+      return this;
+    };
+    thisProto.keyify = function (keyProvider) {
+      var key = keyProvider();
+      model = model.set('key', key);
+      return this;
+    };
+    thisProto.init = function () {
+      return this.updateParts();
+    };
+    return thisProto;
+  };
+
   var resistorModel = Immutable.fromJS({
+    name: 'resistor',
     x: 0,
     y: 0,
     width: 20,
     height: 40,
     body: partBody.model(),
     legs: [partLeg.model(), partLeg.model()],
-    setX: function (resistor, x) {
-      resistor = resistor.set('x', x);
-      resistor = resistor.get('updateParts')(resistor);
-      return resistor;
-    },
-    setY: function (resistor, y) {
-      resistor = resistor.set('y', y);
-      resistor = resistor.get('updateParts')(resistor);
-      return resistor;
-    },
-    setXY: function (resistor, x, y) {
-      resistor = resistor.set('x', x);
-      resistor = resistor.set('y', y);
-      resistor = resistor.get('updateParts')(resistor);
-      return resistor;
-    },
-    updateParts: function (resistor) {
-      var x = resistor.get('x');
-      var y = resistor.get('y');
-
-      var body = resistor.getIn(['body']).deref().cursor().objectify()
-        .setXY(x, y)
-        .setWidth(20)
-        .setHeight(40);
-      resistor = resistor.set('body', body.deref());
-
-      var leg0 = resistor.getIn(['legs', 0]).deref().cursor().objectify()
-        .setXY(x + 10, y)
-        .setDirection('up');
-      var leg1 = resistor.getIn(['legs', 1]).deref().cursor().objectify()
-        .setXY(x + 10, y + 40)
-        .setDirection('down');
-      var legs = Immutable.fromJS([leg0.deref(), leg1.deref()]);
-      resistor = resistor.set('legs', legs);
-
-      return resistor;
-    },
-    keyify: function (resistor, keyProvider) {
-      var key = keyProvider();
-      return resistor.set('key', key);
-    },
-    init: function (resistor) {
-      return resistor.get('updateParts')(resistor);
-    },
-    getName: function (resistor) {
-      return 'resistor';
-    }
+    proto: resistorProto
   });
-  resistorModel = resistorModel.cursor();
-  resistorModel = resistorModel.get('init')(resistorModel).deref();
+
+  var resistor = resistorProto(resistorModel.cursor());
+  resistorModel = resistor
+    .init()
+    .model().deref();
 
   return {
     name: function () {
-      return resistorModel.get('getName')();
+      return resistorModel.get('name');
     },
     class: function () {
       return resistorClass;
+    },
+    proto: function () {
+      return resistorProto;
     },
     model: function () {
       return resistorModel;

@@ -37,7 +37,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
           //console.log('*** DRAG ***');
           var target = getTarget(key);
           var newValue = target.value.deref().cursor().objectify()
-            .setXY(event.clientX, event.clientY);
+            .setXY(event.clientX, event.clientY)
+            .model();
           target.replace(newValue);
           redraw();
         },

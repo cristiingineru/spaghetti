@@ -31,7 +31,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       return cursor;
   };
 
-  Immutable.Seq.Keyed.prototype.objectify = function () {
+  Immutable.Seq.Keyed.prototype.objectify3 = function () {
     var map = this.toJS();
     var functions = {};
     for (var key in map) {
@@ -55,6 +55,16 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     // decorating the current object with functions
     mixin(functions, this);
     return this;
+  };
+  
+  Immutable.Seq.Keyed.prototype.objectify = function () {
+    var model = this;
+    var proto = this.get('proto');
+    if (!proto) {
+      throw new Error('Attempted objectify an invalid model.');
+    }
+    var object = proto(model);
+    return object;
   };
 
   return {
