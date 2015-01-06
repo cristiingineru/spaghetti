@@ -3,8 +3,8 @@
 
 define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, partLeg, partBody) {
 
-  var resistorClass = React.createClass({
-    displayName: 'component-resistor',
+  var capacitorClass = React.createClass({
+    displayName: 'component-capacitor',
     getDefaultProps: function () {
       return {
         model: null
@@ -24,19 +24,11 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       var body = React.createElement(partBody.class(), {
         model: this.props.model.get('body')
       });
-      // this wrapper is required to make the react.draggable work
-      var bodyWrapper = React.createElement('g', null, body);
-      var draggableBody = React.createElement(Draggable, {
-        axis: 'both',
-        onStart: dragAdapter.handleStart,
-        onDrag: dragAdapter.handleDrag,
-        onStop: dragAdapter.handleStop
-      }, bodyWrapper);
-      return React.createElement('g', null, [leg1, leg2, draggableBody]);
+      return React.createElement('g', null, [leg1, leg2, body]);
     }
   });
 
-  var resistorProto = function (model) {
+  var capacitorProto = function (model) {
     var thisProto = Object.create(null);
     thisProto.model = function () {
       return model;
@@ -60,17 +52,19 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
 
       var body = model.getIn(['body']).deref().cursor().objectify()
         .setXY(x, y)
-        .setWidth(20)
-        .setHeight(40)
+        .setWidth(14)
+        .setHeight(30)
         .model();
       model = model.set('body', body.deref());
 
       var leg0 = model.getIn(['legs', 0]).deref().cursor().objectify()
-        .setXY(x + 10, y)
+        .setXY(x + 7, y)
+        .setLength(6)
         .setDirection('up')
         .model();
       var leg1 = model.getIn(['legs', 1]).deref().cursor().objectify()
-        .setXY(x + 10, y + 40)
+        .setXY(x + 7, y + 30)
+        .setLength(6)
         .setDirection('down')
         .model();
       var legs = Immutable.fromJS([leg0.deref(), leg1.deref()]);
@@ -89,32 +83,32 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
     return thisProto;
   };
 
-  var resistorModel = Immutable.fromJS({
-    name: 'resistor',
+  var capacitorModel = Immutable.fromJS({
+    name: 'capacitor',
     x: 0,
     y: 0,
     body: partBody.model(),
     legs: [partLeg.model(), partLeg.model()],
-    proto: resistorProto
+    proto: capacitorProto
   });
 
-  var resistor = resistorProto(resistorModel.cursor());
-  resistorModel = resistor
+  var capacitor = capacitorProto(capacitorModel.cursor());
+  capacitorModel = capacitor
     .init()
     .model().deref();
 
   return {
     name: function () {
-      return resistorModel.get('name');
+      return capacitorModel.get('name');
     },
     class: function () {
-      return resistorClass;
+      return capacitorClass;
     },
     proto: function () {
-      return resistorProto;
+      return capacitorProto;
     },
     model: function () {
-      return resistorModel;
+      return capacitorModel;
     }
   };
 });
