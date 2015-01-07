@@ -1,6 +1,6 @@
-/* global define, console, on, select, filter */
+/* global define, console, dissect, select, filter */
 
-define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram'], function (React, Draggable, Immutable, State, Diagram) {
+define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect', 'app/diagram'], function (React, Draggable, Immutable, State, Dissect, Diagram) {
 
   var getTargetInComponents = function (components, key) {
     for (var i = 0; i < components.count(); i++) {
@@ -60,7 +60,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
       return {
         onBodyClickHandler: function (event, ui) {
           if (event.ctrlKey) {
-            on(State,
+            dissect(State,
               select('diagram',
                 select('components', function (component) {
                   if (component.get('key') === key) {
@@ -77,7 +77,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
         },
         onDiagramClickHandler: function (event, ui) {
           if (event.ctrlKey) {
-            on(State,
+            dissect(State,
               select('diagram',
                 filter('components', function (component) {
                   return component.get('selected') !== true;
