@@ -32,22 +32,27 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
     });
     React.render(element, document.getElementById('svg'));
   };
-  
-  var topDiagram = function(State) {
+
+  var topDiagram = function (State) {
     return State.cursor().getIn(['diagram']);
   };
-  
+
   var components = function (diagram) {
     return diagram.getIn(['components']);
   };
-  
+
   var allComponents = function () {
     return components(topDiagram(State));
   };
-  
+
   var forEach = function (items, action) {
-    var currentItems = items();
-    currentItems.takeWhile();
+    do
+    {
+      var currentItems = items();
+      currentItems.takeWhile(function (value, key) { return !State.expiredCursor(); })
+        .forEach(action);
+    }
+    while (State.expiredCursor());
   };
 
   return {
@@ -84,13 +89,12 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
           });
           State.cursor().set('selections', newSelections);
         },
-        onKeyPressHandler: function (event, ui)
-        {
+        onKeyPressHandler: function (event, ui) {
           var selections = State.cursor().getIn(['selections']).deref();
 
-          for(var i = 0; i < selections.count(); i++) {
+          for (var i = 0; i < selections.count(); i++) {
             var selection = selections.get(i);
-            var components = State.cursor().getIn(['diagram' , 'components']);
+            var components = State.cursor().getIn(['diagram', 'components']);
             getTargetInComponents(components, selection).delete();
           }
 
@@ -98,15 +102,20 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
             s.clear()
           });
           State.cursor().set('selections', newSelections);
-          redraw();
           
+
           ///
           {
             forEach(allComponents, function (component) {
+              if (component.get('x') !== 100) {
+                component.objectify().setX(100);
+              }
             });
           }
           ///
-          
+
+
+          redraw();
         }
       };
     }
