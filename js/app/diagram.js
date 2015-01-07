@@ -20,9 +20,7 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
         height: this.props.model.get('height'),
         stroke: '#AAAAAA',
         fill: '#ffe0cc',
-        onKeyPress: handlerAdapter.onKeyPressHandler,
-        onKeyDown: handlerAdapter.onKeyPressHandler,
-        onDoubleClick: handlerAdapter.onKeyPressHandler
+        onClick: handlerAdapter.onDiagramClickHandler
       });
       var components = [];
       var models = this.props.model.getIn(['components']);

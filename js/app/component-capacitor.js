@@ -80,6 +80,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       model = model.set('key', key);
       return this;
     };
+    thisProto.select = function (value) {
+      model = model.set('selected', value);
+      return this;
+    };
     thisProto.init = function () {
       return this.updateParts();
     };

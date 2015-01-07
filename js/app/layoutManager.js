@@ -1,4 +1,4 @@
-/* global define, console */
+/* global define, console, on, select, filter */
 
 define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram'], function (React, Draggable, Immutable, State, Diagram) {
 
@@ -33,33 +33,6 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
     React.render(element, document.getElementById('svg'));
   };
 
-  var onState = function (fn) {
-    var state = State.state();
-    state = fn(state);
-    State.state(state);
-  };
-  var onDiagram = function (fn) {
-    return function (parent) {
-      var diagram = parent.get('diagram');
-      diagram = fn(diagram);
-      return parent.set('diagram', diagram);
-    };
-  };
-  var onComponents = function (fn) {
-    return function (parent) {
-      var components = parent.get('components');
-      components = components.map(fn);
-      return parent.set('components', components);
-    };
-  };
-  var onLegs = function (fn) {
-    return function (parent) {
-      var legs = parent.get('legs');
-      legs = legs.map(fn);
-      return parent.set('legs', legs);
-    };
-  };
-
   return {
     reactDraggableAdapter: function (model) {
       var key = model.get('key');
@@ -85,48 +58,35 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
     myHandlerAdapter: function (model) {
       var key = model.get('key');
       return {
-        onClickHandler: function (event, ui) {
-          if (!key) {
-            return;
-          }
-          var newSelections = State.cursor().getIn(['selections']).deref().withMutations(function (s) {
-            s.push(key);
-          });
-          State.cursor().set('selections', newSelections);
-        },
-        onKeyPressHandler: function (event, ui) {
-          var selections = State.cursor().getIn(['selections']).deref();
-
-          for (var i = 0; i < selections.count(); i++) {
-            var selection = selections.get(i);
-            var components = State.cursor().getIn(['diagram', 'components']);
-            getTargetInComponents(components, selection).delete();
-          }
-
-          var newSelections = State.cursor().getIn(['selections']).deref().withMutations(function (s) {
-            s.clear();
-          });
-          State.cursor().set('selections', newSelections);
-
-          ///
-          {
-            onState(
-              onDiagram(
-                onComponents(
-                  onLegs(function (leg) {
-                    var length = (leg.get('length') !== 40) ? 40 : 20;
-                    leg = leg.cursor().objectify()
-                      .setLength(length)
+        onBodyClickHandler: function (event, ui) {
+          if (event.ctrlKey) {
+            on(State,
+              select('diagram',
+                select('components', function (component) {
+                  if (component.get('key') === key) {
+                    component = component.cursor().objectify()
+                      .select(true)
                       .model().deref();
-                    return leg;
-                  })
-                )
+                  }
+                  return component;
+                })
               )
             );
           }
-          ///
-
-          redraw();
+          event.stopPropagation();
+        },
+        onDiagramClickHandler: function (event, ui) {
+          if (event.ctrlKey) {
+            on(State,
+              select('diagram',
+                filter('components', function (component) {
+                  return component.get('selected') !== true;
+                })
+              )
+            );
+            redraw();
+          }
+          event.stopPropagation();
         }
       };
     }

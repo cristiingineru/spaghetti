@@ -22,7 +22,7 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
         fill: '#E6C88C',
         rx: 4,
         ry: 4,
-        onClick: handlerAdapter.onClickHandler
+        onClick: handlerAdapter.onBodyClickHandler
       });
     }
   });
