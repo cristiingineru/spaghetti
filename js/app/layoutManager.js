@@ -33,26 +33,31 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
     React.render(element, document.getElementById('svg'));
   };
 
-  var topDiagram = function (State) {
-    return State.cursor().getIn(['diagram']);
+  var onState = function (fn) {
+    var state = State.state();
+    state = fn(state);
+    State.state(state);
   };
-
-  var components = function (diagram) {
-    return diagram.getIn(['components']);
+  var onDiagram = function (fn) {
+    return function (parent) {
+      var diagram = parent.get('diagram');
+      diagram = fn(diagram);
+      return parent.set('diagram', diagram);
+    };
   };
-
-  var allComponents = function () {
-    return components(topDiagram(State));
+  var onComponents = function (fn) {
+    return function (parent) {
+      var components = parent.get('components');
+      components = components.map(fn);
+      return parent.set('components', components);
+    };
   };
-
-  var forEach = function (items, action) {
-    do
-    {
-      var currentItems = items();
-      currentItems.takeWhile(function (value, key) { return !State.expiredCursor(); })
-        .forEach(action);
-    }
-    while (State.expiredCursor());
+  var onLegs = function (fn) {
+    return function (parent) {
+      var legs = parent.get('legs');
+      legs = legs.map(fn);
+      return parent.set('legs', legs);
+    };
   };
 
   return {
@@ -99,21 +104,27 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/diagram']
           }
 
           var newSelections = State.cursor().getIn(['selections']).deref().withMutations(function (s) {
-            s.clear()
+            s.clear();
           });
           State.cursor().set('selections', newSelections);
-          
 
           ///
           {
-            forEach(allComponents, function (component) {
-              if (component.get('x') !== 100) {
-                component.objectify().setX(100);
-              }
-            });
+            onState(
+              onDiagram(
+                onComponents(
+                  onLegs(function (leg) {
+                    var length = (leg.get('length') !== 40) ? 40 : 20;
+                    leg = leg.cursor().objectify()
+                      .setLength(length)
+                      .model().deref();
+                    return leg;
+                  })
+                )
+              )
+            );
           }
           ///
-
 
           redraw();
         }
