@@ -1,10 +1,15 @@
 /* global define */
 /* jshint -W104 */
 
-define(['app/core', 'app/component-resistor', 'app/component-capacitor'], function (core, componentResistor, componentCapacitor) {
+define(['app/core', 'app/component-breadboard', 'app/component-resistor', 'app/component-capacitor'], function (core, componentBreadboard, componentResistor, componentCapacitor) {
 
   var privateCatalog = [];
 
+  privateCatalog.push({
+    name: componentBreadboard.name,
+    class: componentBreadboard.class,
+    model: componentBreadboard.model
+  });
   privateCatalog.push({
     name: componentResistor.name,
     class: componentResistor.class,

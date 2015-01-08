@@ -1,7 +1,7 @@
 /* global define, require */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'], function (React, Draggable, Immutable, Core, partHole) {
+define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-hole'], function (React, Draggable, Immutable, Core, KeyProvider, partHole) {
 
   var breadboardClass = React.createClass({
     displayName: 'component-resistor',
@@ -11,19 +11,23 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       };
     },
     render: function () {
-      var leg1 = React.createElement(partLeg.class(), {
-        model: this.props.model.getIn(['legs', 0]),
-        owner: this.props.model
+      var body = React.createElement('rect', {
+        x: this.props.model.get('x'),
+        y: this.props.model.get('y'),
+        width: this.props.model.get('width'),
+        height: this.props.model.get('height'),
+        stroke: '#d4d1ca',
+        fill: '#f7eedc',
+        rx: 3,
+        ry: 3
       });
-      var leg2 = React.createElement(partLeg.class(), {
-        model: this.props.model.getIn(['legs', 1]),
-        owner: this.props.model
-      });
-      var body = React.createElement(partBody.class(), {
-        model: this.props.model.get('body'),
-        owner: this.props.model
-      });
-      return React.createElement('g', null, [leg1, leg2, body]);
+      var holes = this.props.model.getIn(['holes']).deref()
+        .map(function (hole) {
+          return React.createElement(partHole.class(), {
+            model: hole
+          });
+        }).toArray();
+      return React.createElement('g', null, [body].concat(holes));
     }
   });
 
@@ -48,36 +52,31 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     thisProto.updateParts = function () {
       var x = model.get('x'),
         y = model.get('y'),
+        columnCount = model.get('columnCount'),
+        rowCount = model.get('rowCount'),
+        margine = 10,
         columnDistance = 10,
-        rowDistance = 10;
+        rowDistance = 10,
+        holes = [];
 
-      
-      var holes = model.getIn(['holes']).deref();
-      
-      .cursor().objectify()
-        .setXY(x, y)
-        .setWidth(20)
-        .setHeight(40)
-        .model();
-      model = model.set('body', body.deref());
+      for (var rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+        for (var columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+          var currentHoleIndex = rowIndex * rowCount + columnIndex,
+            newHole = partHole.model().cursor().objectify()
+            .setXY(x + margine + columnIndex * columnDistance, y + margine + rowIndex * rowDistance)
+            .keyify(KeyProvider)
+            .model().deref();
+          holes.push(newHole);
+        }
+      }
+      model = model.set('holes', Immutable.fromJS(holes));
 
+      model = model.set('width', (columnCount - 1) * columnDistance + 2 * margine);
+      model = model.set('height', (rowCount - 1) * rowDistance + 2 * margine);
 
       return this;
     };
     thisProto.init = function () {
-      var columnCount = model.get('columnCount'),
-        rowCount = model.get('rowCount'),
-        holes = [];
-      for (var rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-        for (var columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-          var hole = partHole.model().deref().cursor().objectify()
-            .setRow(rowIndex)
-            .setColumn(columnIndex)
-            .model();
-          holes.push(hole);
-        }
-      }
-      model.set('holes', holes);
       return this.updateParts();
     };
     return thisProto;
@@ -87,8 +86,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     name: 'breadboard',
     x: 100,
     y: 300,
-    columnCount: 30,
-    rowCount: 10,
+    columnCount: 50,
+    rowCount: 20,
+    width: 20,
+    height: 60,
     holes: [],
     proto: breadboardProto
   });

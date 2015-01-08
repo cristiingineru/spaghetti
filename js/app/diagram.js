@@ -1,4 +1,4 @@
-/* global define */
+/* global define, require */
 
 
 define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function (React, Immutable, Core, Catalog) {
@@ -19,7 +19,7 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
         stroke: '#AAAAAA',
-        fill: '#ffe0cc',
+        fill: '#f4f4f4',
         onClick: handlerAdapter.onDiagramClickHandler
       });
       var components = [];

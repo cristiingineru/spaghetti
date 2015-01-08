@@ -11,13 +11,13 @@ define(['React', 'immutable.min'], function (React, Immutable) {
       };
     },
     render: function () {
-      var radius = 4;
+      var radius = 2;
       return React.createElement('circle', {
         r: radius,
         cx: this.props.model.get('x'),
         cy: this.props.model.get('y'),
-        stroke: '#b4b4b4',
-        fill: '#b4b4b4'
+        stroke: '#cecece',
+        fill: '#cecece'
       });
     }
   });
@@ -38,6 +38,11 @@ define(['React', 'immutable.min'], function (React, Immutable) {
     thisProto.setXY = function (x, y) {
       model = model.set('x', x);
       model = model.set('y', y);
+      return this;
+    };
+    thisProto.keyify = function (keyProvider) {
+      var key = keyProvider();
+      model = model.set('key', key);
       return this;
     };
     return thisProto;

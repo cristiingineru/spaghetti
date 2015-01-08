@@ -21,6 +21,10 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
     };
     State = buildInitialState(State);
 
+    var breadboard = Catalog('breadboard');
+    var myBreadboardModel = breadboard.model().cursor().objectify()
+      .setXY(50, 200)
+      .model().deref();
     var resistor = Catalog('resistor');
     var myResistorModel = resistor.model().cursor().objectify()
       .setXY(50, 50)
@@ -40,6 +44,7 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
       .keyify(KeyProvider)
       .model().deref();
     var myTopDiagram = Diagram.model().cursor().objectify()
+      .addComponent(myBreadboardModel)
       .addComponent(myResistorModel)
       .addComponent(mySecondResistorModel)
       .addComponent(myCapacitorModel)

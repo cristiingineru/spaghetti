@@ -12,7 +12,7 @@ define(['React', 'immutable.min'], function (React, Immutable) {
       };
     },
     render: function () {
-      var radius = 4;
+      var radius = 3;
       return React.createElement('circle', {
         r: radius,
         cx: this.props.model.get('x'),
