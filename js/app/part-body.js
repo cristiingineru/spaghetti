@@ -20,8 +20,8 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
         height: this.props.model.get('height'),
         stroke: '#b5975a',
         fill: '#E6C88C',
-        rx: 4,
-        ry: 4,
+        rx: 5,
+        ry: 5,
         onClick: handlerAdapter.onBodyClickHandler
       });
     }

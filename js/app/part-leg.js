@@ -3,6 +3,16 @@
 
 define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (React, Immutable, Core, partFinger) {
 
+  var drawLeg = function (x, y, x2, y2, direction) {
+    var cx1 = x,
+      cy1 = (y + y2) / 2,
+      start = 'M' + x.toFixed(2) + ',' + y.toFixed(2),
+      control1 = 'C' + cx1.toFixed(2) + ',' + cy1.toFixed(2),
+      control2 = cx1.toFixed(2) + ',' + cy1.toFixed(2),
+      end = x2.toFixed(2) + ',' + y2.toFixed(2);
+    return start + ' ' + control1 + ' ' + control2 + ' ' + end;
+  };
+
   var legClass = React.createClass({
     displayName: 'part-leg',
     getDefaultProps: function () {
@@ -12,22 +22,24 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
       };
     },
     render: function () {
-      var width = 2;
-      var length = this.props.model.get('length');
-      var direction = this.props.model.get('direction');
+      var width = 2,
+        length = this.props.model.get('length'),
+        direction = this.props.model.get('direction'),
+        x = this.props.model.get('x'),
+        y = this.props.model.get('y'),
+        x2 = this.props.model.get('x2'),
+        y2 = this.props.model.get('y2');
+      var leg = React.createElement('path', {
+        d: drawLeg(x, y, x2, y2, direction),
+        stroke: '#777777',
+        strokeWidth: 3,
+        fillOpacity: 0.0
+      });
       var finger = React.createElement(partFinger.class(), {
         model: this.props.model.get('finger'),
         owner: this.props.model
       });
-      var rect = React.createElement('rect', {
-        x: this.props.model.get('x') - width / 2,
-        y: this.props.model.get('y') - (direction === 'up' ? length : 0),
-        width: width,
-        height: length,
-        stroke: '#777777',
-        fill: '#777777'
-      });
-      return React.createElement('g', null, [rect, finger]);
+      return React.createElement('g', null, [leg, finger]);
     }
   });
 
@@ -58,14 +70,18 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
       return this.updateFinger();
     };
     thisProto.updateFinger = function () {
-      var x = model.get('x');
-      var y = model.get('y');
-      var direction = model.get('direction');
-      var length = model.get('length');
+      var x = model.get('x'),
+        y = model.get('y'),
+        direction = model.get('direction'),
+        length = model.get('length');
+      var x2 = x + 5,
+        y2 = (direction === 'up' ? (y - length) : (y + length));
       var finger = model.getIn(['finger']).deref().cursor().objectify()
-        .setXY(x, (direction === 'up' ? (y - length) : (y + length)))
+        .setXY(x2, y2)
         .model();
-      model = model.set('finger', finger.deref());
+      model = model.set('x2', x2)
+        .set('y2', y2)
+        .set('finger', finger.deref());
       return this;
     };
     thisProto.init = function () {
@@ -77,6 +93,8 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
   var legModel = Immutable.fromJS({
     x: 0,
     y: 0,
+    x2: 0,
+    y2: 0,
     direction: 'up',
     length: 30,
     finger: partFinger.model(),
