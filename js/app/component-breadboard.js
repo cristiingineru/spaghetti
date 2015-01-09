@@ -4,7 +4,7 @@
 define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-hole'], function (React, Draggable, Immutable, Core, KeyProvider, partHole) {
 
   var breadboardClass = React.createClass({
-    displayName: 'component-resistor',
+    displayName: 'component-breadboard',
     getDefaultProps: function () {
       return {
         model: null
@@ -19,12 +19,14 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
         stroke: '#d4d1ca',
         fill: '#f7eedc',
         rx: 3,
-        ry: 3
+        ry: 3,
+        key: -1
       });
       var holes = this.props.model.getIn(['holes']).deref()
         .map(function (hole) {
           return React.createElement(partHole.class(), {
-            model: hole
+            model: hole,
+            key: hole.get('key')
           });
         }).toArray();
       return React.createElement('g', null, [body].concat(holes));

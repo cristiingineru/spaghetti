@@ -13,7 +13,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
     render: function () {
 
       var LayoutManager = require('app/layoutManager');
-      var dragAdapter = LayoutManager.reactDraggableAdapter(this.props.model);
+      var dragAdapter = LayoutManager.componentEventHandler(this.props.model);
 
       var leg1 = React.createElement(partLeg.class(), {
         model: this.props.model.getIn(['legs', 0]),

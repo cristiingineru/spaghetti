@@ -12,7 +12,7 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
     },
     render: function () {
       var LayoutManager = require('app/layoutManager');
-      var handlerAdapter = LayoutManager.myHandlerAdapter(this.props.owner);
+      var handlerAdapter = LayoutManager.diagramEventHandler(this.props.owner);
       return React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),

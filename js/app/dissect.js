@@ -15,12 +15,15 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
   select = function (key, fn) {
     return function (parent) {
       var value = parent.get(key);
-      if (Immutable.List.isList(value) || Immutable.Seq.isSeq(value)) {
-        value = value.map(fn);
-      } else {
-        value = fn(value);
+      if (value !== undefined) {
+        if (Immutable.List.isList(value) || Immutable.Seq.isSeq(value)) {
+          value = value.map(fn);
+        } else {
+          value = fn(value);
+        }
+        return parent.set(key, value);
       }
-      return parent.set(key, value);
+      return parent;
     };
   };
 
@@ -31,7 +34,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       return parent.set(key, value);
     };
   };
-  
+
   return {
     dissect: dissect,
     select: select,

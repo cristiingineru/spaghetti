@@ -1,7 +1,7 @@
 /* global define */
 
 
-define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (React, Immutable, Core, partFinger) {
+define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finger'], function (React, Immutable, Core, KeyProvider, partFinger) {
 
   var drawLeg = function (x, y, x2, y2, direction) {
     var cx1 = x,
@@ -78,6 +78,7 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
         y2 = (direction === 'up' ? (y - length) : (y + length));
       var finger = model.getIn(['finger']).deref().cursor().objectify()
         .setXY(x2, y2)
+        .keyify(KeyProvider)
         .model();
       model = model.set('x2', x2)
         .set('y2', y2)

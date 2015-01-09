@@ -1,7 +1,7 @@
-/* global define */
+/* global define, require */
 
 
-define(['React', 'immutable.min'], function (React, Immutable) {
+define(['React', 'react.draggable', 'immutable.min'], function (React, Draggable, Immutable) {
 
   var fingerClass = React.createClass({
     displayName: 'part-finger',
@@ -12,17 +12,27 @@ define(['React', 'immutable.min'], function (React, Immutable) {
       };
     },
     render: function () {
-      var radius = 3;
-      return React.createElement('circle', {
+      var LayoutManager = require('app/layoutManager'),
+        eventHandler = LayoutManager.fingerEventHandler(this.props.model),
+        radius = 3;
+      var circle = React.createElement('circle', {
         r: radius,
         cx: this.props.model.get('x'),
         cy: this.props.model.get('y'),
         stroke: '#333333',
         fill: '#333333'
       });
+      // this wrapper is required to make the react.draggable work
+      var circleWrapper = React.createElement('g', null, circle);
+      return React.createElement(Draggable, {
+        axis: 'both',
+        onStart: eventHandler.onDragStart,
+        onDrag: eventHandler.onDrag,
+        onStop: eventHandler.onDragStop
+      }, circleWrapper);
     }
   });
-  
+
   var fingerProto = function (model) {
     var thisProto = Object.create(null);
     thisProto.model = function () {
@@ -39,6 +49,11 @@ define(['React', 'immutable.min'], function (React, Immutable) {
     thisProto.setXY = function (x, y) {
       model = model.set('x', x);
       model = model.set('y', y);
+      return this;
+    };
+    thisProto.keyify = function (keyProvider) {
+      var key = keyProvider();
+      model = model.set('key', key);
       return this;
     };
     return thisProto;

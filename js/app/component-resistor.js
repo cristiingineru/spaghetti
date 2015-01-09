@@ -14,7 +14,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
     render: function () {
 
       var LayoutManager = require('app/layoutManager');
-      var dragAdapter = LayoutManager.reactDraggableAdapter(this.props.model);
+      var eventHandler = LayoutManager.componentEventHandler(this.props.model);
 
       var leg1 = React.createElement(partLeg.class(), {
         model: this.props.model.getIn(['legs', 0]),
@@ -32,9 +32,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       var bodyWrapper = React.createElement('g', null, body);
       var draggableBody = React.createElement(Draggable, {
         axis: 'both',
-        onStart: dragAdapter.handleStart,
-        onDrag: dragAdapter.handleDrag,
-        onStop: dragAdapter.handleStop
+        onStart: eventHandler.onDragStart,
+        onDrag: eventHandler.onDrag,
+        onStop: eventHandler.onDragStop
       }, bodyWrapper);
       return React.createElement('g', null, [leg1, leg2, draggableBody]);
     }

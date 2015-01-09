@@ -34,13 +34,13 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
   };
 
   return {
-    reactDraggableAdapter: function (model) {
+    componentEventHandler: function (model) {
       var key = model.get('key');
       return {
-        handleStart: function (event, ui) {
+        onDragStart: function (event, ui) {
           //console.log('*** START ***');
         },
-        handleDrag: function (event, ui) {
+        onDrag: function (event, ui) {
           //console.log('*** DRAG ***');
           var target = getTarget(key);
           var newValue = target.value.deref().cursor().objectify()
@@ -49,13 +49,13 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
           target.replace(newValue);
           redraw();
         },
-        handleStop: function (event, ui) {
+        onDragStop: function (event, ui) {
           //console.log('*** STOP ***');
           redraw();
         }
       };
     },
-    myHandlerAdapter: function (model) {
+    diagramEventHandler: function (model) {
       var key = model.get('key');
       return {
         onBodyClickHandler: function (event, ui) {
@@ -87,6 +87,36 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
             redraw();
           }
           event.stopPropagation();
+        }
+      };
+    },
+    fingerEventHandler: function (model) {
+      var key = model.get('key');
+      return {
+        onDragStart: function (event, domID) {
+
+        },
+        onDrag: function (event, domID) {
+          dissect(State,
+            select('diagram',
+              select('components',
+                select('legs',
+                  select('finger', function (finger) {
+                    if (finger.get('key') === key) {
+                      finger = finger.cursor().objectify()
+                        .setXY(event.clientX, event.clientY)
+                        .model().deref();
+                    }
+                    return finger;
+                  })
+                )
+              )
+            )
+          );
+          redraw();
+        },
+        onDragEnd: function (event, domID) {
+
         }
       };
     }
