@@ -1,7 +1,7 @@
 /* global define, require */
 
 
-define(['React', 'react.draggable', 'immutable.min'], function (React, Draggable, Immutable) {
+define(['React', 'react.draggable', 'immutable.min', 'app/keyProvider'], function (React, Draggable, Immutable, KeyProvider) {
 
   var fingerClass = React.createClass({
     displayName: 'part-finger',
@@ -73,7 +73,7 @@ define(['React', 'react.draggable', 'immutable.min'], function (React, Draggable
       return fingerProto;
     },
     model: function () {
-      return fingerModel;
+      return fingerModel.set('key', KeyProvider());
     }
   };
 });

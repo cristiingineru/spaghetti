@@ -78,7 +78,6 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
         y2 = (direction === 'up' ? (y - length) : (y + length));
       var finger = model.getIn(['finger']).deref().cursor().objectify()
         .setXY(x2, y2)
-        .keyify(KeyProvider)
         .model();
       model = model.set('x2', x2)
         .set('y2', y2)
@@ -115,7 +114,7 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
       return legProto;
     },
     model: function () {
-      return legModel;
+      return legModel.set('key', KeyProvider());
     }
   };
 });

@@ -1,7 +1,7 @@
 /* global define, require */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, partLeg, partBody) {
+define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, KeyProvider, partLeg, partBody) {
 
   var capacitorClass = React.createClass({
     displayName: 'component-capacitor',
@@ -115,7 +115,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-leg',
       return capacitorProto;
     },
     model: function () {
-      return capacitorModel;
+      return capacitorModel.set('key', KeyProvider());
     }
   };
 });

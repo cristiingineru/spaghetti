@@ -66,7 +66,6 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
           var currentHoleIndex = rowIndex * rowCount + columnIndex,
             newHole = partHole.model().cursor().objectify()
             .setXY(x + margine + columnIndex * columnDistance, y + margine + rowIndex * rowDistance)
-            .keyify(KeyProvider)
             .model().deref();
           holes.push(newHole);
         }
@@ -88,8 +87,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     name: 'breadboard',
     x: 100,
     y: 300,
-    columnCount: 50,
-    rowCount: 20,
+    columnCount: 30,
+    rowCount: 15,
     width: 20,
     height: 60,
     holes: [],
@@ -112,7 +111,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       return breadboardProto;
     },
     model: function () {
-      return breadboardModel;
+      return breadboardModel.set('key', KeyProvider());
     }
   };
 });
