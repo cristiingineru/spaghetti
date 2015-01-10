@@ -34,7 +34,7 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
       return React.createElement('g', null, [rect].concat(components));
     }
   });
-  
+
   var diagramProto = function (model) {
     var thisProto = Object.create(null);
     thisProto.model = function () {
@@ -62,7 +62,7 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
       return this;
     };
     thisProto.addComponent = function (component) {
-      var newComponents = model.getIn(['components']).deref().withMutations(function (cs) {
+      var newComponents = model.getIn(['components']).withMutations(function (cs) {
         cs.push(component);
       });
       model = model.set('components', newComponents);

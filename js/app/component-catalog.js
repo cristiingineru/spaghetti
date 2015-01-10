@@ -35,8 +35,7 @@ define(['app/core', 'app/component-breadboard', 'app/component-resistor', 'app/c
     var found = null;
     if (typeof nameOrModel === 'string' || nameOrModel instanceof String) {
       return findByName(nameOrModel);
-    }
-    else {
+    } else {
       nameOrModel = nameOrModel.get('name');
       return findByName(nameOrModel);
     }

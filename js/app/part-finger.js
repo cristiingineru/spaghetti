@@ -73,7 +73,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/keyProvider'], functio
       return fingerProto;
     },
     model: function () {
-      return fingerModel.set('key', KeyProvider());
+      return fingerModel;
     }
   };
 });

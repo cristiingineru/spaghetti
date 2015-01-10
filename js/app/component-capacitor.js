@@ -53,24 +53,25 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       var x = model.get('x');
       var y = model.get('y');
 
-      var body = model.getIn(['body']).deref().cursor().objectify()
+      var body = model.getIn(['body']).objectify()
         .setXY(x, y)
         .setWidth(14)
         .setHeight(30)
         .model();
-      model = model.set('body', body.deref());
+      model = model.set('body', body);
 
-      var leg0 = model.getIn(['legs', 0]).deref().cursor().objectify()
+      var legs = model.get('legs');
+      var leg0 = legs.get(0).objectify()
         .setXY(x + 7, y)
         .setLength(6)
         .setDirection('up')
         .model();
-      var leg1 = model.getIn(['legs', 1]).deref().cursor().objectify()
+      var leg1 = legs.get(1).objectify()
         .setXY(x + 7, y + 30)
         .setLength(6)
         .setDirection('down')
         .model();
-      var legs = Immutable.fromJS([leg0.deref(), leg1.deref()]);
+      var legs = Immutable.fromJS([leg0, leg1]);
       model = model.set('legs', legs);
 
       return this;
@@ -78,6 +79,13 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     thisProto.keyify = function (keyProvider) {
       var key = keyProvider();
       model = model.set('key', key);
+      model = dissect(model,
+        select('legs', function (leg) {
+          return leg.objectify()
+            .keyify(KeyProvider)
+            .model();
+        })
+      );
       return this;
     };
     thisProto.select = function (value) {
@@ -99,10 +107,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     proto: capacitorProto
   });
 
-  var capacitor = capacitorProto(capacitorModel.cursor());
+  var capacitor = capacitorProto(capacitorModel);
   capacitorModel = capacitor
     .init()
-    .model().deref();
+    .model();
 
   return {
     name: function () {
@@ -115,7 +123,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       return capacitorProto;
     },
     model: function () {
-      return capacitorModel.set('key', KeyProvider());
+      return capacitorModel.objectify()
+        .keyify(KeyProvider)
+        .model();
     }
   };
 });

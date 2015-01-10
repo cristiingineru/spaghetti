@@ -76,12 +76,23 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
         length = model.get('length');
       var x2 = x + 5,
         y2 = (direction === 'up' ? (y - length) : (y + length));
-      var finger = model.getIn(['finger']).deref().cursor().objectify()
+      var finger = model.getIn(['finger']).objectify()
         .setXY(x2, y2)
         .model();
       model = model.set('x2', x2)
         .set('y2', y2)
-        .set('finger', finger.deref());
+        .set('finger', finger);
+      return this;
+    };
+    thisProto.keyify = function (KeyProvider) {
+      model = model.set('key', KeyProvider());
+      model = dissect(model,
+        select('finger', function (finger) {
+          return finger.objectify()
+            .keyify(KeyProvider)
+            .model();
+        })
+      );
       return this;
     };
     thisProto.init = function () {
@@ -101,10 +112,10 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
     proto: legProto
   });
 
-  var leg = legProto(legModel.cursor());
+  var leg = legProto(legModel);
   legModel = leg
     .init()
-    .model().deref();
+    .model();
 
   return {
     class: function () {
@@ -114,7 +125,7 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
       return legProto;
     },
     model: function () {
-      return legModel.set('key', KeyProvider());
+      return legModel;
     }
   };
 });

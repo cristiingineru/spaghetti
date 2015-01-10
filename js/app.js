@@ -22,38 +22,38 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
     State = buildInitialState(State);
 
     var breadboard = Catalog('breadboard');
-    var myBreadboardModel = breadboard.model().cursor().objectify()
+    var myBreadboardModel = breadboard.model().objectify()
       .setXY(50, 200)
-      .model().deref();
+      .model();
     var resistor = Catalog('resistor');
-    var myResistorModel = resistor.model().cursor().objectify()
+    var myResistorModel = resistor.model().objectify()
       .setXY(50, 50)
       .keyify(KeyProvider)
-      .model().deref();
-    var mySecondResistorModel = resistor.model().cursor().objectify()
+      .model();
+    var mySecondResistorModel = resistor.model().objectify()
       .setXY(100, 100)
       .keyify(KeyProvider)
-      .model().deref();
+      .model();
     var capacitor = Catalog('capacitor');
-    var myCapacitorModel = capacitor.model().cursor().objectify()
+    var myCapacitorModel = capacitor.model().objectify()
       .setXY(150, 75)
       .keyify(KeyProvider)
-      .model().deref();
-    var mySecondCapacitorModel = capacitor.model().cursor().objectify()
+      .model();
+    var mySecondCapacitorModel = capacitor.model().objectify()
       .setXY(200, 125)
       .keyify(KeyProvider)
-      .model().deref();
-    var myTopDiagram = Diagram.model().cursor().objectify()
+      .model();
+    var myTopDiagram = Diagram.model().objectify()
       .addComponent(myBreadboardModel)
       .addComponent(myResistorModel)
       .addComponent(mySecondResistorModel)
       .addComponent(myCapacitorModel)
       .addComponent(mySecondCapacitorModel)
-      .model().deref();
+      .model();
     State.cursor().set('diagram', myTopDiagram);
 
     var element = React.createElement(Diagram.class(), {
-      model: State.cursor().get('diagram')
+      model: State.state().get('diagram')
     });
     React.render(element, document.getElementById('svg'));
   });

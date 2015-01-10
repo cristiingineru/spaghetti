@@ -1,7 +1,7 @@
 /* global define */
 
 define(function () {
-  
+
   var lastProvidedKey = 0;
 
   return function () {

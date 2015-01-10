@@ -7,7 +7,10 @@ var filter;
 define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   dissect = function (root, fn) {
-    root.state(
+    if (Immutable.List.isList(root) || Immutable.Seq.isSeq(root) || Immutable.Map.isMap(root)) {
+      return fn(root);
+    }
+    return root.state(
       fn(root.state())
     );
   };

@@ -62,22 +62,22 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       var x = model.get('x');
       var y = model.get('y');
 
-      var body = model.getIn(['body']).deref().cursor().objectify()
+      var body = model.getIn(['body']).objectify()
         .setXY(x, y)
         .setWidth(20)
         .setHeight(40)
         .model();
-      model = model.set('body', body.deref());
+      model = model.set('body', body);
 
-      var leg0 = model.getIn(['legs', 0]).deref().cursor().objectify()
+      var leg0 = model.getIn(['legs', 0]).objectify()
         .setXY(x + 10, y)
         .setDirection('up')
         .model();
-      var leg1 = model.getIn(['legs', 1]).deref().cursor().objectify()
+      var leg1 = model.getIn(['legs', 1]).objectify()
         .setXY(x + 10, y + 40)
         .setDirection('down')
         .model();
-      var legs = Immutable.fromJS([leg0.deref(), leg1.deref()]);
+      var legs = Immutable.fromJS([leg0, leg1]);
       model = model.set('legs', legs);
 
       return this;
@@ -85,6 +85,13 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     thisProto.keyify = function (keyProvider) {
       var key = keyProvider();
       model = model.set('key', key);
+      model = dissect(model,
+        select('legs', function (leg) {
+          return leg.objectify()
+            .keyify(KeyProvider)
+            .model();
+        })
+      );
       return this;
     };
     thisProto.select = function (value) {
@@ -106,10 +113,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     proto: resistorProto
   });
 
-  var resistor = resistorProto(resistorModel.cursor());
+  var resistor = resistorProto(resistorModel);
   resistorModel = resistor
     .init()
-    .model().deref();
+    .model();
 
   return {
     name: function () {
@@ -122,7 +129,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       return resistorProto;
     },
     model: function () {
-      return resistorModel.set('key', KeyProvider());
+      return resistorModel.objectify()
+        .keyify(KeyProvider)
+        .model();
     }
   };
 });

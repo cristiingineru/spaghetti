@@ -26,7 +26,7 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider'], function (Reac
       });
     }
   });
-  
+
   var bodyProto = function (model) {
     var thisProto = {};
     thisProto.model = function () {
@@ -53,6 +53,10 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider'], function (Reac
       model = model.set('height', height);
       return this;
     };
+    thisProto.keyify = function () {
+      model = model.set('key', KeyProvider());
+      return this;
+    };
     return thisProto;
   };
 
@@ -72,7 +76,7 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider'], function (Reac
       return bodyProto;
     },
     model: function () {
-      return bodyModel.set('key', KeyProvider());
+      return bodyModel;
     }
   };
 });

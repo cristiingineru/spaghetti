@@ -22,7 +22,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
         ry: 3,
         key: -1
       });
-      var holes = this.props.model.getIn(['holes']).deref()
+      var holes = this.props.model.getIn(['holes'])
         .map(function (hole) {
           return React.createElement(partHole.class(), {
             model: hole,
@@ -64,9 +64,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       for (var rowIndex = 0; rowIndex < rowCount; rowIndex++) {
         for (var columnIndex = 0; columnIndex < columnCount; columnIndex++) {
           var currentHoleIndex = rowIndex * rowCount + columnIndex,
-            newHole = partHole.model().cursor().objectify()
+            newHole = partHole.model().objectify()
             .setXY(x + margine + columnIndex * columnDistance, y + margine + rowIndex * rowDistance)
-            .model().deref();
+            .model();
           holes.push(newHole);
         }
       }
@@ -75,6 +75,17 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       model = model.set('width', (columnCount - 1) * columnDistance + 2 * margine);
       model = model.set('height', (rowCount - 1) * rowDistance + 2 * margine);
 
+      return this;
+    };
+    thisProto.keyify = function () {
+      model = model.set('key', KeyProvider());
+      model = dissect(model,
+        select('holes', function (hole) {
+          return hole.objectify()
+            .keyify(KeyProvider)
+            .model();
+        })
+      );
       return this;
     };
     thisProto.init = function () {
@@ -95,10 +106,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     proto: breadboardProto
   });
 
-  var breadboard = breadboardProto(breadboardModel.cursor());
+  var breadboard = breadboardProto(breadboardModel);
   breadboardModel = breadboard
     .init()
-    .model().deref();
+    .model();
 
   return {
     name: function () {
@@ -111,7 +122,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       return breadboardProto;
     },
     model: function () {
-      return breadboardModel.set('key', KeyProvider());
+      return breadboardModel.objectify()
+        .keyify(KeyProvider)
+        .model();
     }
   };
 });

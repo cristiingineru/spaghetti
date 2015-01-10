@@ -21,7 +21,7 @@ define(['React', 'immutable.min', 'app/keyProvider'], function (React, Immutable
       });
     }
   });
-  
+
   var holeProto = function (model) {
     var thisProto = Object.create(null);
     thisProto.model = function () {
@@ -62,7 +62,7 @@ define(['React', 'immutable.min', 'app/keyProvider'], function (React, Immutable
       return holeProto;
     },
     model: function () {
-      return holeModel.set('key', KeyProvider());
+      return holeModel;
     }
   };
 });
