@@ -10,8 +10,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
   };
 
   return {
-    componentEventHandler: function (model) {
-      var key = model.get('key');
+    componentEventHandler: function (component) {
+      var key = component.get('key');
       return {
         onDragStart: function (event, ui) {
           //console.log('*** START ***');
@@ -37,8 +37,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         }
       };
     },
-    diagramEventHandler: function (model) {
-      var key = model.get('key');
+    diagramEventHandler: function (component) {
+      var key = component.get('key');
       return {
         onBodyClickHandler: function (event, ui) {
           if (event.ctrlKey) {
@@ -72,8 +72,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         }
       };
     },
-    fingerEventHandler: function (model) {
-      var key = model.get('key');
+    fingerEventHandler: function (finger, leg) {
+      var legKey = leg.get('key');
       return {
         onDragStart: function (event, domID) {
 
@@ -82,16 +82,14 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
           dissect(State,
             select('diagram',
               select('components',
-                select('legs',
-                  select('finger', function (finger) {
-                    if (finger.get('key') === key) {
-                      finger = finger.objectify()
-                        .setXY(event.clientX, event.clientY)
-                        .model();
-                    }
-                    return finger;
-                  })
-                )
+                select('legs', function (leg) {
+                  if (leg.get('key') === legKey) {
+                    leg = leg.objectify()
+                      .tryToSetX2Y2(event.clientX, event.clientY)
+                      .model();
+                  }
+                  return leg;
+                })
               )
             )
           );

@@ -61,6 +61,13 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
       model = model.set('y', y);
       return this.updateFinger();
     };
+    thisProto.tryToSetX2Y2 = function (x2, y2) {
+      model = model
+        .set('x2', x2)
+        .set('y2', y2)
+        .set('fixedEnd', true);
+      return this.updateFinger();
+    };
     thisProto.setDirection = function (direction) {
       model = model.set('direction', direction);
       return this.updateFinger();
@@ -73,15 +80,21 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
       var x = model.get('x'),
         y = model.get('y'),
         direction = model.get('direction'),
-        length = model.get('length');
-      var x2 = x + 5,
+        length = model.get('length'),
+        fixedEnd = model.get('fixedEnd'),
+        x2 = model.get('x2'),
+        y2 = model.get('y2');
+      if (!fixedEnd) {
+        x2 = x + 5;
         y2 = (direction === 'up' ? (y - length) : (y + length));
+        model = model
+          .set('x2', x2)
+          .set('y2', y2);
+      }
       var finger = model.getIn(['finger']).objectify()
         .setXY(x2, y2)
         .model();
-      model = model.set('x2', x2)
-        .set('y2', y2)
-        .set('finger', finger);
+      model = model.set('finger', finger);
       return this;
     };
     thisProto.keyify = function (KeyProvider) {
