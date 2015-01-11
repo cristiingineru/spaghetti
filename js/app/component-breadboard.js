@@ -10,6 +10,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
         model: null
       };
     },
+    shouldComponentUpdate: function (nextProps, nextState, nextContext) {
+      return nextProps.model.hashCode() !== this.props.model.hashCode();
+    },
     render: function () {
       var body = React.createElement('rect', {
         x: this.props.model.get('x'),
