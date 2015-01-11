@@ -85,7 +85,7 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
         x2 = model.get('x2'),
         y2 = model.get('y2');
       if (!fixedEnd) {
-        x2 = x + 5;
+        x2 = x;
         y2 = (direction === 'up' ? (y - length) : (y + length));
         model = model
           .set('x2', x2)
