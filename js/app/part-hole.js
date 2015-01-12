@@ -12,13 +12,24 @@ define(['React', 'immutable.min', 'app/keyProvider'], function (React, Immutable
     },
     render: function () {
       var radius = 2;
-      return React.createElement('circle', {
+      var circle = React.createElement('circle', {
         r: radius,
         cx: this.props.model.get('x'),
         cy: this.props.model.get('y'),
         stroke: '#cecece',
         fill: '#cecece'
       });
+      var decorators = [];
+      if (this.props.model.get('hovered') === false) {
+        decorators.push(React.createElement('circle', {
+          r: 5,
+          cx: this.props.model.get('x'),
+          cy: this.props.model.get('y'),
+          stroke: '#c1c1c1',
+          fillOpacity: 0.0
+        }));
+      }
+      return React.createElement('g', null, [circle].concat(decorators));
     }
   });
 
@@ -40,6 +51,10 @@ define(['React', 'immutable.min', 'app/keyProvider'], function (React, Immutable
       model = model.set('y', y);
       return this;
     };
+    thisProto.setHovered = function (hovered) {
+      model = model.set('hovered', hovered);
+      return this;
+    };
     thisProto.keyify = function (keyProvider) {
       var key = keyProvider();
       model = model.set('key', key);
@@ -51,6 +66,7 @@ define(['React', 'immutable.min', 'app/keyProvider'], function (React, Immutable
   var holeModel = Immutable.fromJS({
     x: 0,
     y: 0,
+    hovered: false,
     proto: holeProto
   });
 

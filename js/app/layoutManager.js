@@ -1,4 +1,4 @@
-/* global define, console, dissect, select, filter */
+/* global define, console, dissect, select, filter, where */
 
 define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect', 'app/diagram'], function (React, Draggable, Immutable, State, Dissect, Diagram) {
 
@@ -90,6 +90,22 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
                   }
                   return leg;
                 })
+              )
+            )
+          );
+          var isBreadboard = function (component) {
+            return component.get('name') === 'breadboard';
+          };
+          dissect(State,
+            select('diagram',
+              select('components',
+                where(isBreadboard,
+                  select('holes', function (hole) {
+                    if (true) {
+                      //
+                    }
+                  })
+                )
               )
             )
           );
