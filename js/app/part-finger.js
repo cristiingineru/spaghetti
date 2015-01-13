@@ -19,8 +19,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/keyProvider'], functio
         r: radius,
         cx: this.props.model.get('x'),
         cy: this.props.model.get('y'),
-        stroke: '#333333',
-        fill: '#333333'
+        stroke: '#535353',
+        fill: '#535353'
       });
       // this wrapper is required to make the react.draggable work
       var circleWrapper = React.createElement('g', null, circle);

@@ -9,10 +9,18 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
     React.render(element, document.getElementById('svg'));
   };
 
+
+
   return {
+
+
     componentEventHandler: function (component) {
       var key = component.get('key');
+
       return {
+
+
+
         onDragStart: function (event, ui) {
           //console.log('*** START ***');
         },
@@ -37,6 +45,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         }
       };
     },
+
+
+
     diagramEventHandler: function (component) {
       var key = component.get('key');
       return {
@@ -72,45 +83,71 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         }
       };
     },
+
+
+
     fingerEventHandler: function (finger, leg) {
       var legKey = leg.get('key');
+
+      var isBreadboard = function (component) {
+        return component.get('name') === 'breadboard';
+      };
+
       return {
+
         onDragStart: function (event, domID) {
 
         },
+
         onDrag: function (event, domID) {
+          var tryToSetX2Y2 = function (leg) {
+              if (leg.get('key') === legKey) {
+                leg = leg.objectify()
+                  .tryToSetX2Y2(event.clientX, event.clientY)
+                  .model();
+              }
+              return leg;
+            },
+            isClose = function (hole) {
+              var x1 = hole.get('x'),
+                y1 = hole.get('y'),
+                x2 = event.clientX,
+                y2 = event.clientY,
+                distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)),
+                radius = 3;
+              return distance <= radius;
+            },
+            hover = function (hole) {
+              return hole.set('hovered', true);
+            },
+            isHovered = function (hole) {
+              return hole.get('hovered');
+            },
+            unhover = function (hole) {
+              return hole.set('hovered', false);
+            };
+
           dissect(State,
             select('diagram',
               select('components',
-                select('legs', function (leg) {
-                  if (leg.get('key') === legKey) {
-                    leg = leg.objectify()
-                      .tryToSetX2Y2(event.clientX, event.clientY)
-                      .model();
-                  }
-                  return leg;
-                })
+                select('legs', tryToSetX2Y2)
               )
             )
           );
-          var isBreadboard = function (component) {
-            return component.get('name') === 'breadboard';
-          };
           dissect(State,
             select('diagram',
               select('components',
                 where(isBreadboard,
-                  select('holes', function (hole) {
-                    if (true) {
-                      //
-                    }
-                  })
+                  select('holes', [
+                    where(isHovered, unhover),
+                    where(isClose, hover)])
                 )
               )
             )
           );
           redraw();
         },
+
         onDragEnd: function (event, domID) {
 
         }

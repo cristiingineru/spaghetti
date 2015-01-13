@@ -20,12 +20,12 @@ define(['React', 'immutable.min', 'app/keyProvider'], function (React, Immutable
         fill: '#cecece'
       });
       var decorators = [];
-      if (this.props.model.get('hovered') === false) {
+      if (this.props.model.get('hovered')) {
         decorators.push(React.createElement('circle', {
           r: 5,
           cx: this.props.model.get('x'),
           cy: this.props.model.get('y'),
-          stroke: '#c1c1c1',
+          stroke: '#404040',
           fillOpacity: 0.0
         }));
       }
