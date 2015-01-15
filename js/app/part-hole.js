@@ -55,6 +55,11 @@ define(['React', 'immutable.min', 'app/keyProvider'], function (React, Immutable
       model = model.set('hovered', hovered);
       return this;
     };
+    thisProto.connectTo = function (legKey) {
+      model = model.set('legKey', legKey)
+        .set('connected', true);
+      return this;
+    };
     thisProto.keyify = function (keyProvider) {
       var key = keyProvider();
       model = model.set('key', key);

@@ -87,11 +87,20 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
 
 
     fingerEventHandler: function (finger, leg) {
-      var legKey = leg.get('key');
-
-      var isBreadboard = function (component) {
-        return component.get('name') === 'breadboard';
-      };
+      var legKey = leg.get('key'),
+        isBreadboard = function (component) {
+          return component.get('name') === 'breadboard';
+        },
+        isHovered = function (hole) {
+          return hole.get('hovered');
+        },
+        hover = function (hole) {
+          return hole.set('hovered', true);
+        },
+        unhover = function (hole) {
+          return hole.set('hovered', false);
+        },
+        dragging = false;
 
       return {
 
@@ -108,7 +117,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
               }
               return leg;
             },
-            isClose = function (hole) {
+            isNear = function (hole) {
               var x1 = hole.get('x'),
                 y1 = hole.get('y'),
                 x2 = event.clientX,
@@ -116,15 +125,6 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
                 distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)),
                 radius = 3;
               return distance <= radius;
-            },
-            hover = function (hole) {
-              return hole.set('hovered', true);
-            },
-            isHovered = function (hole) {
-              return hole.get('hovered');
-            },
-            unhover = function (hole) {
-              return hole.set('hovered', false);
             };
 
           dissect(State,
@@ -140,17 +140,73 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
                 where(isBreadboard,
                   select('holes', [
                     where(isHovered, unhover),
-                    where(isClose, hover)])
+                    where(isNear, hover)])
                 )
               )
             )
           );
+          dragging = true;
           redraw();
         },
 
         onDragEnd: function (event, domID) {
 
+        },
+
+        onMouseUp: function (event, domID) {
+          var isNear = function (hole) {
+              var x1 = hole.get('x'),
+                y1 = hole.get('y'),
+                x2 = event.clientX,
+                y2 = event.clientY,
+                distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)),
+                radius = 3;
+              return distance <= radius;
+            },
+            connectToLeg = function (hole) {
+              return hole.objectify()
+                .connectTo(legKey)
+                .model();
+            },
+            storeLegKey = function (hole) {
+              holeKey = hole.get('key');
+              return hole;
+            },
+            isDragging = function (leg) {
+              return leg.get('key') === legKey;
+            },
+            connectToHole = function (leg) {
+              return leg.objectify()
+                .connectTo(holeKey)
+                .model();
+            },
+            holeKey = -1;
+
+          dissect(State,
+            select('diagram',
+              select('components',
+                where(isBreadboard,
+                  select('holes', [
+                    where(isNear, connectToLeg),
+                    where(isNear, storeLegKey),
+                    where(isHovered, unhover)])
+                )
+              )
+            )
+          );
+          dissect(State,
+            select('diagram',
+              select('components',
+                select('legs',
+                  where(isDragging, connectToHole)
+                )
+              )
+            )
+          );
+          dragging = false;
+          redraw();
         }
+
       };
     }
   };

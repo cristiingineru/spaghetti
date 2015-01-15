@@ -14,13 +14,16 @@ define(['React', 'react.draggable', 'immutable.min', 'app/keyProvider'], functio
     render: function () {
       var LayoutManager = require('app/layoutManager'),
         eventHandler = LayoutManager.fingerEventHandler(this.props.model, this.props.owner),
-        radius = 3;
+        connected = this.props.model.get('connected'),
+        radius = connected ? 2 : 3,
+        color = connected ? '#575555' : '#a73434';
       var circle = React.createElement('circle', {
         r: radius,
         cx: this.props.model.get('x'),
         cy: this.props.model.get('y'),
-        stroke: '#535353',
-        fill: '#535353'
+        stroke: color,
+        fill: color,
+        onMouseUp: eventHandler.onMouseUp
       });
       // this wrapper is required to make the react.draggable work
       var circleWrapper = React.createElement('g', null, circle);
@@ -49,6 +52,11 @@ define(['React', 'react.draggable', 'immutable.min', 'app/keyProvider'], functio
     thisProto.setXY = function (x, y) {
       model = model.set('x', x);
       model = model.set('y', y);
+      return this;
+    };
+    thisProto.connectTo = function (holeKey) {
+      model = model.set('holeKey', holeKey)
+        .set('connected', true);
       return this;
     };
     thisProto.keyify = function (keyProvider) {

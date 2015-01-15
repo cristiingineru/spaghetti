@@ -28,10 +28,12 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
         x = this.props.model.get('x'),
         y = this.props.model.get('y'),
         x2 = this.props.model.get('x2'),
-        y2 = this.props.model.get('y2');
+        y2 = this.props.model.get('y2'),
+        connected = this.props.model.get('connected'),
+        color = connected ? '#777777' : '#e03434';
       var leg = React.createElement('path', {
         d: drawLeg(x, y, x2, y2, direction),
-        stroke: '#777777',
+        stroke: color,
         strokeWidth: 3,
         fillOpacity: 0.0
       });
@@ -75,6 +77,15 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
     thisProto.setLength = function (length) {
       model = model.set('length', length);
       return this.updateFinger();
+    };
+    thisProto.connectTo = function (holeKey) {
+      model = model.set('holeKey', holeKey)
+        .set('connected', true);
+      var finger = model.getIn(['finger']).objectify()
+        .connectTo(holeKey)
+        .model();
+      model = model.set('finger', finger);
+      return this;
     };
     thisProto.updateFinger = function () {
       var x = model.get('x'),
