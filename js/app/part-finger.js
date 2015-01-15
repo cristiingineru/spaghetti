@@ -15,7 +15,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/keyProvider'], functio
       var LayoutManager = require('app/layoutManager'),
         eventHandler = LayoutManager.fingerEventHandler(this.props.model, this.props.owner),
         connected = this.props.model.get('connected'),
-        radius = connected ? 2 : 3,
+        radius = 3,
         color = connected ? '#575555' : '#a73434';
       var circle = React.createElement('circle', {
         r: radius,
@@ -57,6 +57,11 @@ define(['React', 'react.draggable', 'immutable.min', 'app/keyProvider'], functio
     thisProto.connectTo = function (holeKey) {
       model = model.set('holeKey', holeKey)
         .set('connected', true);
+      return this;
+    };
+    thisProto.disconnect = function () {
+      model = model.delete('holeKey')
+        .set('connected', false);
       return this;
     };
     thisProto.keyify = function (keyProvider) {

@@ -87,6 +87,15 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
       model = model.set('finger', finger);
       return this;
     };
+    thisProto.disconnect = function () {
+      model = model.delete('holeKey')
+        .set('connected', false);
+      var finger = model.getIn(['finger']).objectify()
+        .disconnect()
+        .model();
+      model = model.set('finger', finger);
+      return this;
+    };
     thisProto.updateFinger = function () {
       var x = model.get('x'),
         y = model.get('y'),

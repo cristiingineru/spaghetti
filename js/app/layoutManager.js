@@ -91,6 +91,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         isBreadboard = function (component) {
           return component.get('name') === 'breadboard';
         },
+        isDragging = function (leg) {
+          return leg.get('key') === legKey;
+        },
         isHovered = function (hole) {
           return hole.get('hovered');
         },
@@ -109,13 +112,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         },
 
         onDrag: function (event, domID) {
-          var tryToSetX2Y2 = function (leg) {
-              if (leg.get('key') === legKey) {
-                leg = leg.objectify()
-                  .tryToSetX2Y2(event.clientX, event.clientY)
-                  .model();
-              }
-              return leg;
+          var setX2Y2 = function (leg) {
+              return leg.objectify()
+                .tryToSetX2Y2(event.clientX, event.clientY)
+                .model();
             },
             isNear = function (hole) {
               var x1 = hole.get('x'),
@@ -130,7 +130,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
           dissect(State,
             select('diagram',
               select('components',
-                select('legs', tryToSetX2Y2)
+                select('legs',
+                  where(isDragging, setX2Y2)
+                )
               )
             )
           );
@@ -168,19 +170,38 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
                 .connectTo(legKey)
                 .model();
             },
-            storeLegKey = function (hole) {
+            storeHoleData = function (hole) {
+              holeFound = true;
               holeKey = hole.get('key');
+              holeX = hole.get('x');
+              holeY = hole.get('y');
               return hole;
             },
             isDragging = function (leg) {
               return leg.get('key') === legKey;
+            },
+            snapToHole = function (leg) {
+              return leg.objectify()
+                .tryToSetX2Y2(holeX, holeY)
+                .model();
             },
             connectToHole = function (leg) {
               return leg.objectify()
                 .connectTo(holeKey)
                 .model();
             },
-            holeKey = -1;
+            makeSureIsDisconnected = function (leg) {
+              if (leg.get('connected')) {
+                leg = leg.objectify()
+                  .disconnect()
+                  .model();
+              }
+              return leg;
+            },
+            holeFound = false,
+            holeKey = -1,
+            holeX = -1,
+            holeY = -1;
 
           dissect(State,
             select('diagram',
@@ -188,21 +209,32 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
                 where(isBreadboard,
                   select('holes', [
                     where(isNear, connectToLeg),
-                    where(isNear, storeLegKey),
+                    where(isNear, storeHoleData),
                     where(isHovered, unhover)])
                 )
               )
             )
           );
-          dissect(State,
-            select('diagram',
-              select('components',
-                select('legs',
-                  where(isDragging, connectToHole)
+          if (holeFound) {
+            dissect(State,
+              select('diagram',
+                select('components',
+                  select('legs', [
+                  where(isDragging, snapToHole),
+                  where(isDragging, connectToHole)])
                 )
               )
-            )
-          );
+            );
+          } else {
+            dissect(State,
+              select('diagram',
+                select('components',
+                  select('legs',
+                    where(isDragging, makeSureIsDisconnected))
+                )
+              )
+            );
+          }
           dragging = false;
           redraw();
         }
