@@ -35,20 +35,20 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
       .keyify(KeyProvider)
       .model();
     var capacitor = Catalog('capacitor');
-    var myCapacitorModel = capacitor.model().objectify()
-      .setXY(150, 75)
-      .keyify(KeyProvider)
-      .model();
-    var mySecondCapacitorModel = capacitor.model().objectify()
-      .setXY(200, 125)
-      .keyify(KeyProvider)
-      .model();
+    //var myCapacitorModel = capacitor.model().objectify()
+    //  .setXY(150, 75)
+    //  .keyify(KeyProvider)
+    //  .model();
+    //var mySecondCapacitorModel = capacitor.model().objectify()
+    //  .setXY(200, 125)
+    //  .keyify(KeyProvider)
+    //  .model();
     var myTopDiagram = Diagram.model().objectify()
       .addComponent(myBreadboardModel)
       .addComponent(myResistorModel)
       .addComponent(mySecondResistorModel)
-      .addComponent(myCapacitorModel)
-      .addComponent(mySecondCapacitorModel)
+    //  .addComponent(myCapacitorModel)
+    //  .addComponent(mySecondCapacitorModel)
       .model();
     State.cursor().set('diagram', myTopDiagram);
 
