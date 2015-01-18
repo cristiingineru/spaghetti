@@ -19,15 +19,14 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
   };
 
   return {
-    state: function (newValue) {
-      if (newValue !== undefined) {
-        state = newValue;
-        cursor = Cursor.from(state, onChange);
-      }
-      return state;
-    },
     cursor: function () {
       return cursorFor([]);
+    },
+    update: function (updater) {
+      var newState = updater(state);
+      state = newState;
+      cursor = Cursor.from(state, onChange);
+      return state;
     },
     toString: function () {
       return state.toString();

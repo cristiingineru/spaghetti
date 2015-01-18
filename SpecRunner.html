@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Jasmine Spec Runner v2.1.3</title>
+
+  <link rel="shortcut icon" type="image/png" href="js/lib/jasmine-2.1.3/jasmine_favicon.png">
+  <link rel="stylesheet" href="js/lib/jasmine-2.1.3/jasmine.css">
+
+  <script src="js/lib/jasmine-2.1.3/jasmine.js"></script>
+  <script src="js/lib/jasmine-2.1.3/jasmine-html.js"></script>
+  <script src="js/lib/jasmine-2.1.3/boot.js"></script>
+  
+  <script type="text/javascript" src="js/lib/require.js"></script>
+  
+  <script type="text/javascript">
+    require(
+        [
+            "js/lib/domReady!",
+            "js/specs/stateSpec"
+        ],
+        function( document ){
+            // Set up the HTML reporter - this is reponsible for
+            // aggregating the results reported by Jasmine as the
+            // tests and suites are executed.
+            jasmine.getEnv().addReporter(
+                new jasmine.HtmlReporter()
+            );
+            // Run all the loaded test specs.
+            jasmine.getEnv().execute();
+
+        }
+    );
+  </script>
+
+</head>
+
+<body>
+</body>
+</html>
