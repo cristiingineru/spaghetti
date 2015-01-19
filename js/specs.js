@@ -13,7 +13,7 @@ requirejs.config({
 require(
   [
     'domReady',
-    'specs/stateSpec'
+    'specs/spaghettiSpec'
   ],
   function (document) {
     jasmine.getEnv().execute();
