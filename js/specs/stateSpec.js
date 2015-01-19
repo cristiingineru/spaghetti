@@ -1,16 +1,15 @@
-/* global require, describe, it, expect */
+/* global define, describe, it, expect */
 
 
-require(['app/state'], function (State) {
+define(['app/state'], function (State) {
   describe('State', function () {
     
-    it('should load sut', function () {
-      //expect(sut.name).toBe('Subject To Test');
-      //expect(sut.method(2)).toBe(3);
+    it('should fail', function () {
+      expect(true).toBe(false);
     });
-
-    it('should run setup', function () {
-      //expect(typeof setupHasRun).toBe('boolean');
+    
+    it('should pass', function () {
+      expect(true).toBe(true);
     });
   });
 });
