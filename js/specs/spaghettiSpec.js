@@ -33,10 +33,5 @@ define(['app/spaghetti'], function (/* Spaghetti */) {
       Spaghetti.init();
       expect(Spaghetti.state().get('x')).toBe(undefined);
     });
-
-    xit('should provide direct read/write access to the entire state', function () {});
-
-    xit('should provide direct read/write access to all the breadboards', function () {});
-
   });
 });
