@@ -1,4 +1,4 @@
-/* global define, require */
+/* global define, require, dissect, update */
 
 
 define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, KeyProvider, partLeg, partBody) {
@@ -80,7 +80,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       var key = keyProvider();
       model = model.set('key', key);
       model = dissect(model,
-        select('legs', function (leg) {
+        update('legs', function (leg) {
           return leg.objectify()
             .keyify(KeyProvider)
             .model();

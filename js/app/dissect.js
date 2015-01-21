@@ -1,7 +1,7 @@
 /* global define */
 
 var dissect;
-var select;
+var update;
 var filter;
 var where;
 
@@ -54,7 +54,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     );
   };
 
-  select = function (key, fnOrFns) {
+  update = function (key, fnOrFns) {
     return function (parent) {
       var value = parent.get(key);
       if (value !== undefined) {
@@ -88,7 +88,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   return {
     dissect: dissect,
-    select: select,
+    update: update,
     filter: filter,
     where: where
   };

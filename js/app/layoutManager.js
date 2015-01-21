@@ -1,4 +1,4 @@
-/* global define, console, dissect, select, filter, where */
+/* global define, console, dissect, update, filter, where */
 
 define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect', 'app/diagram'], function (React, Draggable, Immutable, State, Dissect, Diagram) {
 
@@ -10,6 +10,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
   };
 
 
+  
 
   return {
 
@@ -26,8 +27,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         },
         onDrag: function (event, ui) {
           dissect(State,
-            select('diagram',
-              select('components', function (component) {
+            update('diagram',
+              update('components', function (component) {
                 if (component.get('key') === key) {
                   component = component.objectify()
                     .setXY(event.clientX, event.clientY)
@@ -54,11 +55,11 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         onBodyClickHandler: function (event, ui) {
           if (event.ctrlKey) {
             dissect(State,
-              select('diagram',
-                select('components', function (component) {
+              update('diagram',
+                update('components', function (component) {
                   if (component.get('key') === key) {
                     component = component.objectify()
-                      .select(true)
+                      .update(true)
                       .model();
                   }
                   return component;
@@ -71,7 +72,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         onDiagramClickHandler: function (event, ui) {
           if (event.ctrlKey) {
             dissect(State,
-              select('diagram',
+              update('diagram',
                 filter('components', function (component) {
                   return component.get('selected') !== true;
                 })
@@ -128,19 +129,19 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
             };
 
           dissect(State,
-            select('diagram',
-              select('components',
-                select('legs',
+            update('diagram',
+              update('components',
+                update('legs',
                   where(isDragging, setX2Y2)
                 )
               )
             )
           );
           dissect(State,
-            select('diagram',
-              select('components',
+            update('diagram',
+              update('components',
                 where(isBreadboard,
-                  select('holes', [
+                  update('holes', [
                     where(isHovered, unhover),
                     where(isNear, hover)])
                 )
@@ -204,10 +205,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
             holeY = -1;
 
           dissect(State,
-            select('diagram',
-              select('components',
+            update('diagram',
+              update('components',
                 where(isBreadboard,
-                  select('holes', [
+                  update('holes', [
                     where(isNear, connectToLeg),
                     where(isNear, storeHoleData),
                     where(isHovered, unhover)])
@@ -217,9 +218,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
           );
           if (holeFound) {
             dissect(State,
-              select('diagram',
-                select('components',
-                  select('legs', [
+              update('diagram',
+                update('components',
+                  update('legs', [
                   where(isDragging, snapToHole),
                   where(isDragging, connectToHole)])
                 )
@@ -227,9 +228,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
             );
           } else {
             dissect(State,
-              select('diagram',
-                select('components',
-                  select('legs',
+              update('diagram',
+                update('components',
+                  update('legs',
                     where(isDragging, makeSureIsDisconnected))
                 )
               )

@@ -1,4 +1,4 @@
-/* global define */
+/* global define, dissect, update */
 
 
 define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finger'], function (React, Immutable, Core, KeyProvider, partFinger) {
@@ -120,7 +120,7 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
     thisProto.keyify = function (KeyProvider) {
       model = model.set('key', KeyProvider());
       model = dissect(model,
-        select('finger', function (finger) {
+        update('finger', function (finger) {
           return finger.objectify()
             .keyify(KeyProvider)
             .model();
