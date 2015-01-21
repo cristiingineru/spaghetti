@@ -85,10 +85,10 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     };
   };
 
-  where = function (conditionFn, fn) {
+  where = function (testFn, fnOrFns) {
     return function (element) {
-      if (conditionFn(element)) {
-        element = fn(element);
+      if (testFn(element)) {
+        element = callOnValue(fnOrFns, element);
       }
       return element;
     };

@@ -101,7 +101,7 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
         expect(transformedParent.getIn(['key', 1])).toBe('B');
       });
 
-      it('should apply a list of transform on each of the parent[key] items', function () {
+      it('should apply a list of transforms on each of the parent[key] items', function () {
         var wrapper = updateAll('key', [toUpperCaseTransform, doubleValueTransform]),
           parent = Immutable.fromJS({
             key: ['a', 'b']
@@ -119,6 +119,55 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
           transformedParent = wrapper(parent);
         expect(transformedParent.get('key')).toBe('Value');
         expect(transformedParent).toBe(parent);
+      });
+    });
+  });
+
+  var noTest = function (value) {
+      return true;
+    },
+    oddTest = function (value) {
+      return value % 2 === 1;
+    },
+    incrementTransform = function (value) {
+      return value + 1;
+    };
+
+  describe('where', function () {
+    it('should return a wrapper function', function () {
+      var wrapper = where(noTest, noOpTransform);
+      expect(typeof (wrapper)).toBe('function');
+    });
+
+    describe('where`s returned wrapper', function () {
+      it('should apply a transform on a value if the test passes', function () {
+        var wrapper = where(oddTest, incrementTransform),
+          value = 1,
+          transformedValue = wrapper(value);
+        expect(transformedValue).toBe(value + 1);
+      });
+
+      it('should apply a list transforms on a value if the test passes', function () {
+        var wrapper = where(oddTest, [incrementTransform, doubleValueTransform]),
+          value = 1,
+          transformedValue = wrapper(value);
+        expect(transformedValue).toBe((value + 1) * 2);
+      });
+
+      it('should not apply a transform if the test don`t pass', function () {
+        var wrapper = where(oddTest, incrementTransform),
+          value = 2,
+          transformedValue = wrapper(value);
+        expect(transformedValue).toBe(value);
+      });
+
+      it('should not work with a list of tests', function () {
+        // dealing with a list of tests is ambiguouse because it's not clear how the test results are merged (or?, and?)
+        var wrapper = where([oddTest, noTest], incrementTransform);
+        var caller = function () {
+          wrapper(0);
+        };
+        expect(caller).toThrow();
       });
     });
   });
