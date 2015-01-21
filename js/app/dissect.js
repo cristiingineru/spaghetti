@@ -77,10 +77,10 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     };
   };
 
-  filter = function (key, fn) {
+  filter = function (key, testFn) {
     return function (parent) {
       var value = parent.get(key);
-      value = value.filter(fn);
+      value = value.filter(testFn);
       return parent.set(key, value);
     };
   };

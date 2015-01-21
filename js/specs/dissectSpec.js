@@ -163,10 +163,42 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
 
       it('should not work with a list of tests', function () {
         // dealing with a list of tests is ambiguouse because it's not clear how the test results are merged (or?, and?)
-        var wrapper = where([oddTest, noTest], incrementTransform);
-        var caller = function () {
-          wrapper(0);
-        };
+        var wrapper = where([oddTest, noTest], incrementTransform),
+          caller = function () {
+            wrapper(0);
+          };
+        expect(caller).toThrow();
+      });
+    });
+  });
+
+  describe('filter', function () {
+    it('should return a wrapper function', function () {
+      var wrapper = filter('key', noOpTransform);
+      expect(typeof (wrapper)).toBe('function');
+    });
+
+    describe('filter`s returned wrapper', function () {
+      it('should not work when the key is not refering to an array', function () {
+        var wrapper = filter('key', oddTest),
+          collection = Immutable.fromJS({
+            key: 'value'
+          }),
+          caller = function () {
+            wrapper(collection);
+          };
+        expect(caller).toThrow();
+      });
+
+      it('should not work with a list of tests', function () {
+        // dealing with a list of tests is ambiguouse because it's not clear how the test results are merged (or?, and?)
+        var wrapper = filter('key', [oddTest, noTest]),
+          collection = Immutable.fromJS({
+            key: [0, 1, 2, 3]
+          }),
+          caller = function () {
+            wrapper(collection);
+          };
         expect(caller).toThrow();
       });
     });
