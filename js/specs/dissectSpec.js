@@ -11,52 +11,68 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
     });
   });
 
-  describe('dissect', function () {
-    it('should apply a function on an immutable root', function () {});
+  var noOpTransform = function (value) {
+      return value.toUpperCase();
+    },
+    toUpperCaseTransform = function (value) {
+      return value.toUpperCase();
+    },
+    doubleValueTransform = function (value) {
+      return value + value;
+    };
 
-    it('should apply a function on a cursor', function () {});
+  describe('dissect', function () {
+    it('should apply a wrapped transform on an immutable object', function () {
+      var object = Immutable.fromJS({
+          key: 'Value'
+        }),
+        wrapper = function (parent) {
+          return parent.update('key', toUpperCaseTransform);
+        },
+        newObject = dissect(object, wrapper);
+      expect(newObject.get('key')).toBe('VALUE');
+    });
+
+    it('should apply a wrapped transform on a cursor', function () {
+      var object = Immutable.fromJS({
+          key: 'Value'
+        }),
+        cursor = Cursor.from(object),
+        wrapper = function (parent) {
+          return parent.update('key', toUpperCaseTransform);
+        },
+        newObject = dissect(object, wrapper);
+      expect(newObject.get('key')).toBe('VALUE');
+    });
   });
 
   describe('select', function () {
     it('should return a wrapper function', function () {
-      var transform = function (value) {},
-        wrapper = select('key', transform);
+      var wrapper = select('key', noOpTransform);
       expect(typeof (wrapper)).toBe('function');
     });
 
     describe('select`s returned wrapper', function () {
       it('should apply a transform on the parent[key] value', function () {
-        var transform = function (value) {
-            return 'newValue';
-          },
-          wrapper = select('key', transform),
+        var wrapper = select('key', toUpperCaseTransform),
           parent = Immutable.fromJS({
-            key: 'value'
+            key: 'Value'
           }),
           transformedParent = wrapper(parent);
-        expect(transformedParent.get('key')).toBe('newValue');
+        expect(transformedParent.get('key')).toBe('VALUE');
       });
 
       it('should apply a list of transforms on the parent[key] value', function () {
-        var transform1 = function (value) {
-            return 'newValue1';
-          },
-          transform2 = function (value) {
-            return 'newValue2';
-          },
-          wrapper = select('key', [transform1, transform2]),
+        var wrapper = select('key', [toUpperCaseTransform, doubleValueTransform]),
           parent = Immutable.fromJS({
-            key: 'value'
+            key: 'Value'
           }),
           transformedParent = wrapper(parent);
-        expect(transformedParent.get('key')).toBe('newValue2');
+        expect(transformedParent.get('key')).toBe('VALUEVALUE');
       });
 
       it('should apply a transform on each of the parent[key] items when parent[key] is a list', function () {
-        var transform = function (value) {
-            return value.toUpperCase();
-          },
-          wrapper = select('key', transform),
+        var wrapper = select('key', toUpperCaseTransform),
           parent = Immutable.fromJS({
             key: ['a', 'b']
           }),
@@ -66,13 +82,7 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
       });
 
       it('should apply a list of transform on each of the parent[key] items when parent[key] is a collection', function () {
-        var transform1 = function (value) {
-            return value.toUpperCase();
-          },
-          transform2 = function (value) {
-            return value + value;
-          },
-          wrapper = select('key', [transform1, transform2]),
+        var wrapper = select('key', [toUpperCaseTransform, doubleValueTransform]),
           parent = Immutable.fromJS({
             key: ['a', 'b']
           }),
@@ -82,15 +92,12 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
       });
 
       it('should do nothing when parent[key] doesn`t exist', function () {
-        var transform = function (value) {
-            return 'newValue';
-          },
-          wrapper = select('invalidKey', transform),
+        var wrapper = select('invalidKey', toUpperCaseTransform),
           parent = Immutable.fromJS({
-            key: 'value'
+            key: 'Value'
           }),
           transformedParent = wrapper(parent);
-        expect(transformedParent.get('key')).toBe('value');
+        expect(transformedParent.get('key')).toBe('Value');
         expect(transformedParent).toBe(parent);
       });
     });
