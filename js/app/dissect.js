@@ -2,6 +2,7 @@
 
 var dissect;
 var update;
+var updateAll;
 var filter;
 var where;
 
@@ -58,11 +59,18 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     return function (parent) {
       var value = parent.get(key);
       if (value !== undefined) {
-        if (Immutable.List.isList(value) || Immutable.Seq.isSeq(value)) {
-          value = callOnCollection(fnOrFns, value);
-        } else {
-          value = callOnValue(fnOrFns, value);
-        }
+        value = callOnValue(fnOrFns, value);
+        return parent.set(key, value);
+      }
+      return parent;
+    };
+  };
+  
+  updateAll = function (key, fnOrFns) {
+    return function (parent) {
+      var value = parent.get(key);
+      if (value !== undefined) {
+        value = callOnCollection(fnOrFns, value);
         return parent.set(key, value);
       }
       return parent;
@@ -89,6 +97,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
   return {
     dissect: dissect,
     update: update,
+    updateAll: updateAll,
     filter: filter,
     where: where
   };

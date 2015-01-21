@@ -1,4 +1,4 @@
-/* global define, console, dissect, update, filter, where */
+/* global define, console, dissect, update, updateAll, filter, where */
 
 define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect', 'app/diagram'], function (React, Draggable, Immutable, State, Dissect, Diagram) {
 
@@ -28,7 +28,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
         onDrag: function (event, ui) {
           dissect(State,
             update('diagram',
-              update('components', function (component) {
+              updateAll('components', function (component) {
                 if (component.get('key') === key) {
                   component = component.objectify()
                     .setXY(event.clientX, event.clientY)
@@ -56,7 +56,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
           if (event.ctrlKey) {
             dissect(State,
               update('diagram',
-                update('components', function (component) {
+                updateAll('components', function (component) {
                   if (component.get('key') === key) {
                     component = component.objectify()
                       .update(true)
@@ -130,8 +130,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
 
           dissect(State,
             update('diagram',
-              update('components',
-                update('legs',
+              updateAll('components',
+                updateAll('legs',
                   where(isDragging, setX2Y2)
                 )
               )
@@ -139,9 +139,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
           );
           dissect(State,
             update('diagram',
-              update('components',
+              updateAll('components',
                 where(isBreadboard,
-                  update('holes', [
+                  updateAll('holes', [
                     where(isHovered, unhover),
                     where(isNear, hover)])
                 )
@@ -206,9 +206,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
 
           dissect(State,
             update('diagram',
-              update('components',
+              updateAll('components',
                 where(isBreadboard,
-                  update('holes', [
+                  updateAll('holes', [
                     where(isNear, connectToLeg),
                     where(isNear, storeHoleData),
                     where(isHovered, unhover)])
@@ -219,8 +219,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
           if (holeFound) {
             dissect(State,
               update('diagram',
-                update('components',
-                  update('legs', [
+                updateAll('components',
+                  updateAll('legs', [
                   where(isDragging, snapToHole),
                   where(isDragging, connectToHole)])
                 )
@@ -229,8 +229,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
           } else {
             dissect(State,
               update('diagram',
-                update('components',
-                  update('legs',
+                updateAll('components',
+                  updateAll('legs',
                     where(isDragging, makeSureIsDisconnected))
                 )
               )

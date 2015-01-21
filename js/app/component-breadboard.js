@@ -83,7 +83,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     thisProto.keyify = function () {
       model = model.set('key', KeyProvider());
       model = dissect(model,
-        update('holes', function (hole) {
+        updateAll('holes', function (hole) {
           return hole.objectify()
             .keyify(KeyProvider)
             .model();

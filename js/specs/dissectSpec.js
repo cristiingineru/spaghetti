@@ -1,4 +1,4 @@
-/* global define, require, describe, it, xit, expect, dissect, update, filter, where */
+/* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where */
 
 
 define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, Immutable, Cursor) {
@@ -6,6 +6,7 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
     it('should make all its functions available as globals too', function () {
       expect(Dissect.dissect).toBe(dissect);
       expect(Dissect.update).toBe(update);
+      expect(Dissect.updateAll).toBe(updateAll);
       expect(Dissect.filter).toBe(filter);
       expect(Dissect.where).toBe(where);
     });
@@ -71,26 +72,6 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
         expect(transformedParent.get('key')).toBe('VALUEVALUE');
       });
 
-      it('should apply a transform on each of the parent[key] items when parent[key] is a list', function () {
-        var wrapper = update('key', toUpperCaseTransform),
-          parent = Immutable.fromJS({
-            key: ['a', 'b']
-          }),
-          transformedParent = wrapper(parent);
-        expect(transformedParent.getIn(['key', 0])).toBe('A');
-        expect(transformedParent.getIn(['key', 1])).toBe('B');
-      });
-
-      it('should apply a list of transform on each of the parent[key] items when parent[key] is a collection', function () {
-        var wrapper = update('key', [toUpperCaseTransform, doubleValueTransform]),
-          parent = Immutable.fromJS({
-            key: ['a', 'b']
-          }),
-          transformedParent = wrapper(parent);
-        expect(transformedParent.getIn(['key', 0])).toBe('AA');
-        expect(transformedParent.getIn(['key', 1])).toBe('BB');
-      });
-
       it('should do nothing when parent[key] doesn`t exist', function () {
         var wrapper = update('invalidKey', toUpperCaseTransform),
           parent = Immutable.fromJS({
@@ -102,4 +83,44 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
       });
     });
   });
+
+  describe('updateAll', function () {
+    it('should return a wrapper function', function () {
+      var wrapper = updateAll('key', noOpTransform);
+      expect(typeof (wrapper)).toBe('function');
+    });
+
+    describe('updateAll`s returned wrapper', function () {
+      it('should apply a transform on each of the parent[key] items', function () {
+        var wrapper = updateAll('key', toUpperCaseTransform),
+          parent = Immutable.fromJS({
+            key: ['a', 'b']
+          }),
+          transformedParent = wrapper(parent);
+        expect(transformedParent.getIn(['key', 0])).toBe('A');
+        expect(transformedParent.getIn(['key', 1])).toBe('B');
+      });
+
+      it('should apply a list of transform on each of the parent[key] items', function () {
+        var wrapper = updateAll('key', [toUpperCaseTransform, doubleValueTransform]),
+          parent = Immutable.fromJS({
+            key: ['a', 'b']
+          }),
+          transformedParent = wrapper(parent);
+        expect(transformedParent.getIn(['key', 0])).toBe('AA');
+        expect(transformedParent.getIn(['key', 1])).toBe('BB');
+      });
+
+      it('should do nothing when parent[key] doesn`t exist', function () {
+        var wrapper = updateAll('invalidKey', toUpperCaseTransform),
+          parent = Immutable.fromJS({
+            key: 'Value'
+          }),
+          transformedParent = wrapper(parent);
+        expect(transformedParent.get('key')).toBe('Value');
+        expect(transformedParent).toBe(parent);
+      });
+    });
+  });
+
 });

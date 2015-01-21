@@ -86,7 +86,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       var key = keyProvider();
       model = model.set('key', key);
       model = dissect(model,
-        update('legs', function (leg) {
+        updateAll('legs', function (leg) {
           return leg.objectify()
             .keyify(KeyProvider)
             .model();
