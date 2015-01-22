@@ -174,11 +174,34 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
 
   describe('filter', function () {
     it('should return a wrapper function', function () {
-      var wrapper = filter('key', noOpTransform);
+      var wrapper = filter('key', oddTest);
       expect(typeof (wrapper)).toBe('function');
     });
 
     describe('filter`s returned wrapper', function () {
+      it('should return a new collection containing only the values that passed the test', function () {
+        var wrapper = filter('key', oddTest),
+          collection = Immutable.fromJS({
+            key: [0, 1, 2, 3]
+          }),
+          filteredCollection = wrapper(collection),
+          list = filteredCollection.get('key');
+        expect(list.contains(0)).toBe(false);
+        expect(list.contains(1)).toBe(true);
+        expect(list.contains(2)).toBe(false);
+        expect(list.contains(3)).toBe(true);
+      });
+
+      it('should return an empty collection if no value passed the test', function () {
+        var wrapper = filter('key', oddTest),
+          collection = Immutable.fromJS({
+            key: [0, 2, 4, 6]
+          }),
+          filteredCollection = wrapper(collection),
+          list = filteredCollection.get('key');
+        expect(list.count()).toBe(0);
+      });
+
       it('should not work when the key is not refering to an array', function () {
         var wrapper = filter('key', oddTest),
           collection = Immutable.fromJS({
