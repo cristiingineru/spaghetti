@@ -1,4 +1,4 @@
-/* global define */
+/* global define, require */
 
 define(['React', 'immutable.min', 'app/core', 'app/keyProvider'], function (React, Immutable, Core, KeyProvider) {
 

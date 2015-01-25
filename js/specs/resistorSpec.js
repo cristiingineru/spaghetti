@@ -1,7 +1,7 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where */
 
 
-define(['app/component-resistor', 'immutable.min', 'immutable.cursor'], function (Resistor, Immutable, Cursor) {
+define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React'], function (Resistor, Immutable, LayoutManager, React) {
   describe('Resistor', function () {
     it('should provide a known API', function () {
       expect(typeof (Resistor.name)).toBe('function');
@@ -19,7 +19,20 @@ define(['app/component-resistor', 'immutable.min', 'immutable.cursor'], function
     });
   });
 
+  var TestUtils = React.addons.TestUtils;
+
   describe('Resistor class', function () {
-    xit('should render a body and two legs', function () {});
+    it('should render a body and two legs', function () {
+      var resistor = React.createElement(Resistor.class(), {
+          model: Resistor.model()
+        }),
+        renderedResistor = TestUtils.renderIntoDocument(resistor);
+
+      var legs = TestUtils.scryRenderedDOMComponentsWithTag(renderedResistor, 'leg'),
+        bodys = TestUtils.scryRenderedDOMComponentsWithTag(renderedResistor, 'body');
+
+      expect(legs.count()).toBe(2);
+      expect(bodys.count()).toBe(1);
+    });
   });
 });
