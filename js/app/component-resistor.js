@@ -1,4 +1,4 @@
-/* global define, require */
+/* global define, require, dissect, updateAll */
 
 
 define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, KeyProvider, partLeg, partBody) {

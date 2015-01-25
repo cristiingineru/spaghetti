@@ -14,7 +14,8 @@ require(
   [
     'domReady',
     'specs/spaghettiSpec',
-    'specs/dissectSpec'
+    'specs/dissectSpec',
+    'specs/resistorSpec'
   ],
   function (document) {
     jasmine.getEnv().execute();
