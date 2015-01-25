@@ -28,11 +28,11 @@ define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React']
         }),
         renderedResistor = TestUtils.renderIntoDocument(resistor);
 
-      var legs = TestUtils.scryRenderedDOMComponentsWithTag(renderedResistor, 'leg'),
-        bodys = TestUtils.scryRenderedDOMComponentsWithTag(renderedResistor, 'body');
+      var legs = TestUtils.scryRenderedDOMComponentsWithClass(renderedResistor, 'leg'),
+        bodys = TestUtils.scryRenderedDOMComponentsWithClass(renderedResistor, 'body');
 
-      expect(legs.count()).toBe(2);
-      expect(bodys.count()).toBe(1);
+      expect(legs.length).toBe(2);
+      expect(bodys.length).toBe(1);
     });
   });
 });
