@@ -4,7 +4,6 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider'], function (Reac
 
   var bodyClass = React.createClass({
     displayName: 'part-body',
-    className: 'part-body',
     getDefaultProps: function () {
       return {
         model: null,

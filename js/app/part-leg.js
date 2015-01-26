@@ -15,7 +15,6 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
 
   var legClass = React.createClass({
     displayName: 'part-leg',
-    className: 'part-leg',
     getDefaultProps: function () {
       return {
         model: null,

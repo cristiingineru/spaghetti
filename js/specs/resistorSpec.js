@@ -1,7 +1,7 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where */
 
 
-define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React'], function (Resistor, Immutable, LayoutManager, React) {
+define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React', 'app/part-leg', 'app/part-body'], function (Resistor, Immutable, LayoutManager, React, Leg, Body) {
   describe('Resistor', function () {
     it('should provide a known API', function () {
       expect(typeof (Resistor.name)).toBe('function');
@@ -28,8 +28,8 @@ define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React']
         }),
         renderedResistor = TestUtils.renderIntoDocument(resistor);
 
-      var legs = TestUtils.scryRenderedDOMComponentsWithClass(renderedResistor, 'leg'),
-        bodys = TestUtils.scryRenderedDOMComponentsWithClass(renderedResistor, 'body');
+      var legs = TestUtils.scryRenderedComponentsWithType(renderedResistor, Leg.class()),
+        bodys = TestUtils.scryRenderedComponentsWithType(renderedResistor, Body.class());
 
       expect(legs.length).toBe(2);
       expect(bodys.length).toBe(1);
