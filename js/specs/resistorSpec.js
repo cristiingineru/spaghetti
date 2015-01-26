@@ -28,31 +28,31 @@ define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React',
       });
       return TestUtils.renderIntoDocument(resistor);
     };
+    var isDraggable = function (/*DOMComponent*/ part, /*ReactComponent*/ root) {
+      var allDraggables = TestUtils.scryRenderedDOMComponentsWithClass(root, 'react-draggable');
+
+      var draggableParent = allDraggables.filter(function (draggable) {
+        var deepChildren = TestUtils.findAllInRenderedTree(draggable, function () {
+          return true;
+        });
+        return deepChildren.indexOf(part) >= 0;
+      }).shift();
+      
+      return draggableParent !== undefined;
+    };
 
     it('should render a body and two legs', function () {
       var renderedResistor = renderDefaultResistor();
-
       var legs = TestUtils.scryRenderedComponentsWithType(renderedResistor, Leg.class());
       var bodys = TestUtils.scryRenderedComponentsWithType(renderedResistor, Body.class());
-
       expect(legs.length).toBe(2);
       expect(bodys.length).toBe(1);
     });
 
     it('should have a draggable body', function () {
       var renderedResistor = renderDefaultResistor();
-
       var body = TestUtils.findRenderedDOMComponentWithClass(renderedResistor, 'part-body');
-      var draggables = TestUtils.scryRenderedDOMComponentsWithClass(renderedResistor, 'react-draggable');
-
-      var bodyDraggable = draggables.filter(function (draggable) {
-        var deepChildren = TestUtils.findAllInRenderedTree(draggable, function () {
-          return true;
-        });
-        return deepChildren.indexOf(body) >= 0;
-      });
-
-      expect(bodyDraggable.length).toBe(1);
+      expect(isDraggable(body, renderedResistor)).toBe(true);
     });
   });
 });
