@@ -29,7 +29,9 @@ define(['React', 'immutable.min', 'app/keyProvider'], function (React, Immutable
           fillOpacity: 0.0
         }));
       }
-      return React.createElement('g', null, [circle].concat(decorators));
+      return React.createElement('g', {
+        className: 'part-hole'
+      }, [circle].concat(decorators));
     }
   });
 

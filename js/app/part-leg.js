@@ -41,7 +41,9 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
         model: this.props.model.get('finger'),
         owner: this.props.model
       });
-      return React.createElement('g', null, [leg, finger]);
+      return React.createElement('g', {
+        className: 'part-leg'
+      }, [leg, finger]);
     }
   });
 

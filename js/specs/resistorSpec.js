@@ -19,20 +19,40 @@ define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React',
     });
   });
 
-  var TestUtils = React.addons.TestUtils;
-
   describe('Resistor class', function () {
-    it('should render a body and two legs', function () {
-      var resistor = React.createElement(Resistor.class(), {
-          model: Resistor.model()
-        }),
-        renderedResistor = TestUtils.renderIntoDocument(resistor);
 
-      var legs = TestUtils.scryRenderedComponentsWithType(renderedResistor, Leg.class()),
-        bodys = TestUtils.scryRenderedComponentsWithType(renderedResistor, Body.class());
+    var TestUtils = React.addons.TestUtils;
+    var renderDefaultResistor = function () {
+      var resistor = React.createElement(Resistor.class(), {
+        model: Resistor.model()
+      });
+      return TestUtils.renderIntoDocument(resistor);
+    };
+
+    it('should render a body and two legs', function () {
+      var renderedResistor = renderDefaultResistor();
+
+      var legs = TestUtils.scryRenderedComponentsWithType(renderedResistor, Leg.class());
+      var bodys = TestUtils.scryRenderedComponentsWithType(renderedResistor, Body.class());
 
       expect(legs.length).toBe(2);
       expect(bodys.length).toBe(1);
+    });
+
+    it('should have a draggable body', function () {
+      var renderedResistor = renderDefaultResistor();
+
+      var body = TestUtils.findRenderedDOMComponentWithClass(renderedResistor, 'part-body');
+      var draggables = TestUtils.scryRenderedDOMComponentsWithClass(renderedResistor, 'react-draggable');
+
+      var bodyDraggable = draggables.filter(function (draggable) {
+        var deepChildren = TestUtils.findAllInRenderedTree(draggable, function () {
+          return true;
+        });
+        return deepChildren.indexOf(body) >= 0;
+      });
+
+      expect(bodyDraggable.length).toBe(1);
     });
   });
 });

@@ -22,7 +22,8 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider'], function (Reac
         fill: '#E6C88C',
         rx: 5,
         ry: 5,
-        onClick: handlerAdapter.onBodyClickHandler
+        onClick: handlerAdapter.onBodyClickHandler,
+        className: 'part-body'
       });
     }
   });
