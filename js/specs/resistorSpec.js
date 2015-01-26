@@ -28,7 +28,7 @@ define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React',
       });
       return TestUtils.renderIntoDocument(resistor);
     };
-    var isDraggable = function (/*DOMComponent*/ part, /*ReactComponent*/ root) {
+    var isDraggable = function ( /*DOMComponent*/ part, /*ReactComponent*/ root) {
       var allDraggables = TestUtils.scryRenderedDOMComponentsWithClass(root, 'react-draggable');
 
       var draggableParent = allDraggables.filter(function (draggable) {
@@ -37,7 +37,7 @@ define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React',
         });
         return deepChildren.indexOf(part) >= 0;
       }).shift();
-      
+
       return draggableParent !== undefined;
     };
 
@@ -53,6 +53,29 @@ define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React',
       var renderedResistor = renderDefaultResistor();
       var body = TestUtils.findRenderedDOMComponentWithClass(renderedResistor, 'part-body');
       expect(isDraggable(body, renderedResistor)).toBe(true);
+    });
+
+    xit('should forword the onDragStart, onDrag and onDragStop to the componentLayoutManager');
+  });
+
+  describe('Resistor proto', function () {
+    xit('should have a keyify function that set a unique key to itself and child parts');
+
+    xit('should have an init function that initialize the child parts');
+
+    xit('should update the coordinates of the parts when its owned position is changed');
+  });
+
+  describe('Resistor model', function () {
+    it('should be an immutable map', function () {
+      var model = Resistor.model();
+      expect(Immutable.Map.isMap(model)).toBe(true);
+    });
+
+    it('should have a name and a proto properties', function () {
+      var model = Resistor.model();
+      expect(model.get('name')).not.toBeFalsy();
+      expect(model.get('proto')).not.toBeFalsy();
     });
   });
 });
