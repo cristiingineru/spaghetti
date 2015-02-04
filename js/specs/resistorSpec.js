@@ -1,7 +1,7 @@
-/* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where */
+/* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn */
 
 
-define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React', 'app/part-leg', 'app/part-body'], function (Resistor, Immutable, LayoutManager, React, Leg, Body) {
+define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager', 'React', 'app/part-leg', 'app/part-body'], function (Resistor, Squire, Immutable, LayoutManager, React, Leg, Body) {
   describe('Resistor', function () {
     it('should provide a known API', function () {
       expect(typeof (Resistor.name)).toBe('function');
@@ -25,6 +25,12 @@ define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React',
     var renderDefaultResistor = function () {
       var resistor = React.createElement(Resistor.class(), {
         model: Resistor.model()
+      });
+      return TestUtils.renderIntoDocument(resistor);
+    };
+    var renderDefaultResistor2 = function (component) {
+      var resistor = React.createElement(component.class(), {
+        model: component.model()
       });
       return TestUtils.renderIntoDocument(resistor);
     };
@@ -55,7 +61,30 @@ define(['app/component-resistor', 'immutable.min', 'app/layoutManager', 'React',
       expect(isDraggable(body, renderedResistor)).toBe(true);
     });
 
-    xit('should forword the onDragStart, onDrag and onDragStop to the componentLayoutManager');
+    xit('should forword the onDragStart, onDrag and onDragStop to the componentLayoutManager', function (done) {
+      var componentEventHandlerMock = {
+        onDragStart: function () {},
+        onDrag: function () {},
+        onDragStop: function () {}
+      };
+      var layoutManagerMock = {
+        componentEventHandler: componentEventHandlerMock
+      };
+      spyOn(componentEventHandlerMock, 'onDragStart');
+      spyOn(componentEventHandlerMock, 'onDrag');
+      spyOn(componentEventHandlerMock, 'onDragStop');
+      var squire = new Squire()
+        .mock('app/layoutManager', layoutManagerMock)
+        .require(['app/component-resistor', 'app/part-body'], function (Resistor2, Body2) {
+          var renderedResistor = renderDefaultResistor2(Resistor2);
+          var body = TestUtils.scryRenderedComponentsWithType(renderedResistor, Body2.class())[0];
+          React.addons.TestUtils.Simulate.drag(body);
+          expect(componentEventHandlerMock.onDragStart).toHaveBeenCalled();
+          expect(componentEventHandlerMock.onDrag).toHaveBeenCalled();
+          expect(componentEventHandlerMock.onDragStop).toHaveBeenCalled();
+          done();
+        });
+    });
   });
 
   describe('Resistor proto', function () {
