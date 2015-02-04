@@ -68,7 +68,9 @@ define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager'
         onDragStop: function () {}
       };
       var layoutManagerMock = {
-        componentEventHandler: componentEventHandlerMock
+        componentEventHandler: function (model) {
+          return componentEventHandlerMock;
+        }
       };
       spyOn(componentEventHandlerMock, 'onDragStart');
       spyOn(componentEventHandlerMock, 'onDrag');

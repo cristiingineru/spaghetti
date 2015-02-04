@@ -47,13 +47,18 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
       .addComponent(myBreadboardModel)
       .addComponent(myResistorModel)
       .addComponent(mySecondResistorModel)
-    //  .addComponent(myCapacitorModel)
-    //  .addComponent(mySecondCapacitorModel)
+      //  .addComponent(myCapacitorModel)
+      //  .addComponent(mySecondCapacitorModel)
       .model();
     State.cursor().set('diagram', myTopDiagram);
 
-    var element = React.createElement(Diagram.class(), {
-      model: State.state().get('diagram')
-    });
-    React.render(element, document.getElementById('svg'));
+    var redraw = function () {
+      var element = React.createElement(Diagram.class(), {
+        model: State.state().get('diagram')
+      });
+      React.render(element, document.getElementById('svg'));
+    };
+    State.redraw = redraw;
+    State.redraw();
+  
   });

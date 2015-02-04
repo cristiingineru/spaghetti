@@ -1,7 +1,7 @@
 /* global define, require, dissect, updateAll */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, KeyProvider, partLeg, partBody) {
+define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/layoutManager', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, KeyProvider, LayoutManager, partLeg, partBody) {
 
   var resistorClass = React.createClass({
     displayName: 'component-resistor',
@@ -13,7 +13,6 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     },
     render: function () {
 
-      var LayoutManager = require('app/layoutManager');
       var eventHandler = LayoutManager.componentEventHandler(this.props.model);
 
       var leg1 = React.createElement(partLeg.class(), {
