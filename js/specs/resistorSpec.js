@@ -80,7 +80,10 @@ define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager'
         .require(['app/component-resistor', 'app/part-body'], function (Resistor2, Body2) {
           var renderedResistor = renderDefaultResistor2(Resistor2);
           var body = TestUtils.scryRenderedComponentsWithType(renderedResistor, Body2.class())[0];
-          React.addons.TestUtils.Simulate.drag(body);
+          var d = TestUtils.findRenderedDOMComponentWithClass(renderedResistor, 'react-draggable');
+          React.addons.TestUtils.Simulate.mouseDown(d);
+          React.addons.TestUtils.Simulate.mouseMove(d);
+          React.addons.TestUtils.Simulate.mouseUp(d);
           expect(componentEventHandlerMock.onDragStart).toHaveBeenCalled();
           expect(componentEventHandlerMock.onDrag).toHaveBeenCalled();
           expect(componentEventHandlerMock.onDragStop).toHaveBeenCalled();
