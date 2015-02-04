@@ -29,6 +29,12 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     cursor: function () {
       return cursorFor([]);
     },
+    update: function (updater) {
+      var newState = updater(state);
+      state = newState;
+      cursor = Cursor.from(state, onChange);
+      return state;
+    },
     toString: function () {
       return state.toString();
     }

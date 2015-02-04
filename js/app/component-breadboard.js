@@ -1,4 +1,4 @@
-/* global define, require */
+/* global define, require, dissect, update */
 
 
 define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-hole'], function (React, Draggable, Immutable, Core, KeyProvider, partHole) {
@@ -83,7 +83,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     thisProto.keyify = function () {
       model = model.set('key', KeyProvider());
       model = dissect(model,
-        select('holes', function (hole) {
+        updateAll('holes', function (hole) {
           return hole.objectify()
             .keyify(KeyProvider)
             .model();

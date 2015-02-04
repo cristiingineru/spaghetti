@@ -57,7 +57,8 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     return this;
   };
 
-  Object.prototype.objectify = function () {
+  Immutable.Map.prototype.objectify =
+  Immutable.Seq.prototype.objectify = function () {
     var model = this;
     var proto = this.get('proto');
     if (!proto) {
@@ -67,7 +68,8 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     return object;
   };
 
-  Object.prototype.asObject = function (fn) {
+  Immutable.Map.prototype.asObject =
+  Immutable.Seq.prototype.asObject = function (fn) {
     var object = this.objectify();
     return fn(object).model();
   };

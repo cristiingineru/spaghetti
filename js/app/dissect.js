@@ -1,7 +1,8 @@
 /* global define */
 
 var dissect;
-var select;
+var update;
+var updateAll;
 var filter;
 var where;
 
@@ -54,33 +55,40 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     );
   };
 
-  select = function (key, fnOrFns) {
+  update = function (key, fnOrFns) {
     return function (parent) {
       var value = parent.get(key);
       if (value !== undefined) {
-        if (Immutable.List.isList(value) || Immutable.Seq.isSeq(value)) {
-          value = callOnCollection(fnOrFns, value);
-        } else {
-          value = callOnValue(fnOrFns, value);
-        }
+        value = callOnValue(fnOrFns, value);
+        return parent.set(key, value);
+      }
+      return parent;
+    };
+  };
+  
+  updateAll = function (key, fnOrFns) {
+    return function (parent) {
+      var value = parent.get(key);
+      if (value !== undefined) {
+        value = callOnCollection(fnOrFns, value);
         return parent.set(key, value);
       }
       return parent;
     };
   };
 
-  filter = function (key, fn) {
+  filter = function (key, testFn) {
     return function (parent) {
       var value = parent.get(key);
-      value = value.filter(fn);
+      value = value.filter(testFn);
       return parent.set(key, value);
     };
   };
 
-  where = function (conditionFn, fn) {
+  where = function (testFn, fnOrFns) {
     return function (element) {
-      if (conditionFn(element)) {
-        element = fn(element);
+      if (testFn(element)) {
+        element = callOnValue(fnOrFns, element);
       }
       return element;
     };
@@ -88,7 +96,8 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   return {
     dissect: dissect,
-    select: select,
+    update: update,
+    updateAll: updateAll,
     filter: filter,
     where: where
   };
