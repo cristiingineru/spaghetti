@@ -79,11 +79,16 @@ define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager'
         .mock('app/layoutManager', layoutManagerMock)
         .require(['app/component-resistor', 'app/part-body'], function (Resistor2, Body2) {
           var renderedResistor = renderDefaultResistor2(Resistor2);
-          var body = TestUtils.scryRenderedComponentsWithType(renderedResistor, Body2.class())[0];
-          var d = TestUtils.findRenderedDOMComponentWithClass(renderedResistor, 'react-draggable');
-          React.addons.TestUtils.Simulate.mouseDown(d);
-          React.addons.TestUtils.Simulate.mouseMove(d);
-          React.addons.TestUtils.Simulate.mouseUp(d);
+          var body = TestUtils.findRenderedComponentWithType(renderedResistor, Body2.class());
+          var draggable = TestUtils.scryRenderedDOMComponentsWithClass(renderedResistor, 'react-draggable')[0];
+          React.addons.TestUtils.Simulate.click(body);
+          React.addons.TestUtils.Simulate.mouseDown(body);
+          React.addons.TestUtils.Simulate.mouseMove(body);
+          React.addons.TestUtils.Simulate.mouseUp(body);
+          React.addons.TestUtils.Simulate.click(draggable.props);
+          React.addons.TestUtils.Simulate.mouseDown(draggable.props);
+          React.addons.TestUtils.Simulate.mouseMove(draggable.props);
+          React.addons.TestUtils.Simulate.mouseUp(draggable.props);
           expect(componentEventHandlerMock.onDragStart).toHaveBeenCalled();
           expect(componentEventHandlerMock.onDrag).toHaveBeenCalled();
           expect(componentEventHandlerMock.onDragStop).toHaveBeenCalled();
