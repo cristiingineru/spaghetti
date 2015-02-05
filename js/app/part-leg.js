@@ -1,7 +1,7 @@
 /* global define, dissect, update */
 
 
-define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finger'], function (React, Immutable, Core, KeyProvider, partFinger) {
+define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (React, Immutable, Core, partFinger) {
 
   var drawLeg = function (x, y, x2, y2, direction) {
     var cx1 = x,
@@ -119,12 +119,12 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-finge
       model = model.set('finger', finger);
       return this;
     };
-    thisProto.keyify = function (KeyProvider) {
-      model = model.set('key', KeyProvider());
+    thisProto.keyify = function (keyProvider) {
+      model = model.set('key', keyProvider());
       model = dissect(model,
         update('finger', function (finger) {
           return finger.objectify()
-            .keyify(KeyProvider)
+            .keyify(keyProvider)
             .model();
         })
       );

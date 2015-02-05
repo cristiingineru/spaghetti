@@ -1,6 +1,6 @@
 /* global define, require */
 
-define(['React', 'immutable.min', 'app/core', 'app/keyProvider'], function (React, Immutable, Core, KeyProvider) {
+define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core) {
 
   var bodyClass = React.createClass({
     displayName: 'part-body',
@@ -54,8 +54,8 @@ define(['React', 'immutable.min', 'app/core', 'app/keyProvider'], function (Reac
       model = model.set('height', height);
       return this;
     };
-    thisProto.keyify = function () {
-      model = model.set('key', KeyProvider());
+    thisProto.keyify = function (keyProvider) {
+      model = model.set('key', keyProvider());
       return this;
     };
     return thisProto;

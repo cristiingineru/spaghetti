@@ -1,7 +1,7 @@
 /* global define */
 
 
-define(['React', 'immutable.min', 'app/keyProvider'], function (React, Immutable, KeyProvider) {
+define(['React', 'immutable.min'], function (React, Immutable) {
 
   var holeClass = React.createClass({
     displayName: 'part-hole',

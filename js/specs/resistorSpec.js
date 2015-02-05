@@ -1,4 +1,4 @@
-/* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn */
+/* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn, jasmine */
 
 
 define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager', 'React', 'app/part-leg', 'app/part-body'], function (Resistor, Squire, Immutable, LayoutManager, React, Leg, Body) {
@@ -81,14 +81,9 @@ define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager'
           var renderedResistor = renderDefaultResistor2(Resistor2);
           var body = TestUtils.findRenderedComponentWithType(renderedResistor, Body2.class());
           var draggable = TestUtils.scryRenderedDOMComponentsWithClass(renderedResistor, 'react-draggable')[0];
-          React.addons.TestUtils.Simulate.click(body);
           React.addons.TestUtils.Simulate.mouseDown(body);
           React.addons.TestUtils.Simulate.mouseMove(body);
           React.addons.TestUtils.Simulate.mouseUp(body);
-          React.addons.TestUtils.Simulate.click(draggable.props);
-          React.addons.TestUtils.Simulate.mouseDown(draggable.props);
-          React.addons.TestUtils.Simulate.mouseMove(draggable.props);
-          React.addons.TestUtils.Simulate.mouseUp(draggable.props);
           expect(componentEventHandlerMock.onDragStart).toHaveBeenCalled();
           expect(componentEventHandlerMock.onDrag).toHaveBeenCalled();
           expect(componentEventHandlerMock.onDragStop).toHaveBeenCalled();
@@ -98,7 +93,13 @@ define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager'
   });
 
   describe('Resistor proto', function () {
-    xit('should have a keyify function that set a unique key to itself and child parts');
+    it('should have a keyify function that set a unique key to itself and child parts', function () {
+      var keyProvider = jasmine.createSpy('keyProvider');
+      var resistor = Resistor.model().objectify()
+        .keyify(keyProvider)
+        .model();
+      expect(keyProvider.calls.count()).toBe(6);
+    });
 
     xit('should have an init function that initialize the child parts');
 
