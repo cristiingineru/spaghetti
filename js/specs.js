@@ -4,8 +4,10 @@ requirejs.config({
   baseUrl: 'js/lib',
   paths: {
     React: '../node_modules/react/dist/react-with-addons',
+    Squire: '../node_modules/squirejs/src/Squire',
     app: '../app',
-    specs: '../specs'
+    specs: '../specs',
+    mocks: '../specs/mocks'
   },
   waitSeconds: 15
 });
@@ -15,7 +17,8 @@ require(
     'domReady',
     'specs/spaghettiSpec',
     'specs/dissectSpec',
-    'specs/resistorSpec'
+    'specs/resistorSpec',
+    'specs/capacitorSpec'
   ],
   function (document) {
     jasmine.getEnv().execute();

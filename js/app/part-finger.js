@@ -1,10 +1,10 @@
 /* global define, require */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/keyProvider'], function (React, Draggable, Immutable, KeyProvider) {
+define(['React', 'react.draggable', 'immutable.min'], function (React, Draggable, Immutable) {
 
   var fingerClass = React.createClass({
-    displayName: 'part-finger',
+    displayName: 'finger',
     getDefaultProps: function () {
       return {
         model: null,

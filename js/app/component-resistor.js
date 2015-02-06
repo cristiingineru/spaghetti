@@ -1,19 +1,17 @@
-/* global define, require, dissect, updateAll */
+/* global define, require, dissect, update, updateAll */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, KeyProvider, partLeg, partBody) {
+define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/layoutManager', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, LayoutManager, partLeg, partBody) {
 
   var resistorClass = React.createClass({
-    displayName: 'component-resistor',
+    displayName: 'resistor',
     getDefaultProps: function () {
       return {
-        model: null,
-        owner: null
+        model: null
       };
     },
     render: function () {
 
-      var LayoutManager = require('app/layoutManager');
       var eventHandler = LayoutManager.componentEventHandler(this.props.model);
 
       var leg1 = React.createElement(partLeg.class(), {
@@ -88,7 +86,14 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       model = dissect(model,
         updateAll('legs', function (leg) {
           return leg.objectify()
-            .keyify(KeyProvider)
+            .keyify(keyProvider)
+            .model();
+        })
+      );
+      model = dissect(model,
+        update('body', function (body) {
+          return body.objectify()
+            .keyify(keyProvider)
             .model();
         })
       );
@@ -129,9 +134,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       return resistorProto;
     },
     model: function () {
-      return resistorModel.objectify()
-        .keyify(KeyProvider)
-        .model();
+      return resistorModel;
     }
   };
 });

@@ -1,16 +1,6 @@
 /* global define, console, dissect, update, updateAll, filter, where */
 
-define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect', 'app/diagram'], function (React, Draggable, Immutable, State, Dissect, Diagram) {
-
-  var redraw = function () {
-    var element = React.createElement(Diagram.class(), {
-      model: State.state().get('diagram')
-    });
-    React.render(element, document.getElementById('svg'));
-  };
-
-
-
+define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
 
   return {
 
@@ -38,11 +28,11 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
               })
             )
           );
-          redraw();
+          State.redraw();
         },
         onDragStop: function (event, ui) {
           //console.log('*** STOP ***');
-          redraw();
+          State.redraw();
         }
       };
     },
@@ -78,7 +68,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
                 })
               )
             );
-            redraw();
+            State.redraw();
           }
           event.stopPropagation();
         }
@@ -149,7 +139,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
             )
           );
           dragging = true;
-          redraw();
+          State.redraw();
         },
 
         onDragEnd: function (event, domID) {
@@ -237,7 +227,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/state', 'app/dissect',
             );
           }
           dragging = false;
-          redraw();
+          State.redraw();
         }
 
       };

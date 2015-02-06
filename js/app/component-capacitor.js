@@ -1,10 +1,10 @@
-/* global define, require, dissect, update */
+/* global define, require, dissect, update, updateAll */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, KeyProvider, partLeg, partBody) {
+define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/layoutManager', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, LayoutManager, partLeg, partBody) {
 
   var capacitorClass = React.createClass({
-    displayName: 'component-capacitor',
+    displayName: 'capacitor',
     getDefaultProps: function () {
       return {
         model: null
@@ -12,8 +12,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
     },
     render: function () {
 
-      var LayoutManager = require('app/layoutManager');
-      var dragAdapter = LayoutManager.componentEventHandler(this.props.model);
+      var eventHandler = LayoutManager.componentEventHandler(this.props.model);
 
       var leg1 = React.createElement(partLeg.class(), {
         model: this.props.model.getIn(['legs', 0]),
@@ -27,7 +26,15 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
         model: this.props.model.get('body'),
         owner: this.props.model
       });
-      return React.createElement('g', null, [leg1, leg2, body]);
+      // this wrapper is required to make the react.draggable work
+      var bodyWrapper = React.createElement('g', null, body);
+      var draggableBody = React.createElement(Draggable, {
+        axis: 'both',
+        onStart: eventHandler.onDragStart,
+        onDrag: eventHandler.onDrag,
+        onStop: eventHandler.onDragStop
+      }, bodyWrapper);
+      return React.createElement('g', null, [leg1, leg2, draggableBody]);
     }
   });
 
@@ -60,13 +67,12 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
         .model();
       model = model.set('body', body);
 
-      var legs = model.get('legs');
-      var leg0 = legs.get(0).objectify()
+      var leg0 = model.getIn(['legs', 0]).objectify()
         .setXY(x + 7, y)
         .setLength(6)
         .setDirection('up')
         .model();
-      var leg1 = legs.get(1).objectify()
+      var leg1 = model.getIn(['legs', 1]).objectify()
         .setXY(x + 7, y + 30)
         .setLength(6)
         .setDirection('down')
@@ -82,7 +88,14 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       model = dissect(model,
         updateAll('legs', function (leg) {
           return leg.objectify()
-            .keyify(KeyProvider)
+            .keyify(keyProvider)
+            .model();
+        })
+      );
+      model = dissect(model,
+        update('body', function (body) {
+          return body.objectify()
+            .keyify(keyProvider)
             .model();
         })
       );
@@ -123,9 +136,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       return capacitorProto;
     },
     model: function () {
-      return capacitorModel.objectify()
-        .keyify(KeyProvider)
-        .model();
+      return capacitorModel;
     }
   };
 });

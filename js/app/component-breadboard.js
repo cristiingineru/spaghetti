@@ -1,10 +1,10 @@
-/* global define, require, dissect, update */
+/* global define, require, dissect, update, updateAll */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvider', 'app/part-hole'], function (React, Draggable, Immutable, Core, KeyProvider, partHole) {
+define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'], function (React, Draggable, Immutable, Core, partHole) {
 
   var breadboardClass = React.createClass({
-    displayName: 'component-breadboard',
+    displayName: 'breadboard',
     getDefaultProps: function () {
       return {
         model: null
@@ -80,12 +80,12 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
 
       return this;
     };
-    thisProto.keyify = function () {
-      model = model.set('key', KeyProvider());
+    thisProto.keyify = function (keyProvider) {
+      model = model.set('key', keyProvider());
       model = dissect(model,
         updateAll('holes', function (hole) {
           return hole.objectify()
-            .keyify(KeyProvider)
+            .keyify(keyProvider)
             .model();
         })
       );
@@ -125,9 +125,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/keyProvide
       return breadboardProto;
     },
     model: function () {
-      return breadboardModel.objectify()
-        .keyify(KeyProvider)
-        .model();
+      return breadboardModel;
     }
   };
 });
