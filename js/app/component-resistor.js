@@ -4,11 +4,10 @@
 define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/layoutManager', 'app/part-leg', 'app/part-body'], function (React, Draggable, Immutable, Core, LayoutManager, partLeg, partBody) {
 
   var resistorClass = React.createClass({
-    displayName: 'component-resistor',
+    displayName: 'resistor',
     getDefaultProps: function () {
       return {
-        model: null,
-        owner: null
+        model: null
       };
     },
     render: function () {

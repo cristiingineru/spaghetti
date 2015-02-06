@@ -3,7 +3,7 @@
 define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core) {
 
   var bodyClass = React.createClass({
-    displayName: 'part-body',
+    displayName: 'body',
     getDefaultProps: function () {
       return {
         model: null,

@@ -4,7 +4,7 @@
 define(['React', 'immutable.min'], function (React, Immutable) {
 
   var holeClass = React.createClass({
-    displayName: 'part-hole',
+    displayName: 'hole',
     getDefaultProps: function () {
       return {
         model: null

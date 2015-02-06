@@ -4,7 +4,7 @@
 define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'], function (React, Draggable, Immutable, Core, partHole) {
 
   var breadboardClass = React.createClass({
-    displayName: 'component-breadboard',
+    displayName: 'breadboard',
     getDefaultProps: function () {
       return {
         model: null

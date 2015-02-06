@@ -1,4 +1,4 @@
-/* global requirejs,document  */
+/* global requirejs, document  */
 
 requirejs.config({
   baseUrl: 'js/lib',
@@ -23,32 +23,32 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
 
     var breadboard = Catalog('breadboard');
     var myBreadboardModel = breadboard.model().objectify()
-      .setXY(50, 200)
+      .setXY(35, 200)
       .model();
     var resistor = Catalog('resistor');
     var myResistorModel = resistor.model().objectify()
-      .setXY(50, 50)
+      .setXY(100, 50)
       .keyify(KeyProvider)
       .model();
     var mySecondResistorModel = resistor.model().objectify()
-      .setXY(100, 100)
+      .setXY(150, 100)
       .keyify(KeyProvider)
       .model();
     var capacitor = Catalog('capacitor');
-    //var myCapacitorModel = capacitor.model().objectify()
-    //  .setXY(150, 75)
-    //  .keyify(KeyProvider)
-    //  .model();
-    //var mySecondCapacitorModel = capacitor.model().objectify()
-    //  .setXY(200, 125)
-    //  .keyify(KeyProvider)
-    //  .model();
+    var myCapacitorModel = capacitor.model().objectify()
+      .setXY(200, 75)
+      .keyify(KeyProvider)
+      .model();
+    var mySecondCapacitorModel = capacitor.model().objectify()
+      .setXY(250, 125)
+      .keyify(KeyProvider)
+      .model();
     var myTopDiagram = Diagram.model().objectify()
       .addComponent(myBreadboardModel)
       .addComponent(myResistorModel)
       .addComponent(mySecondResistorModel)
-      //  .addComponent(myCapacitorModel)
-      //  .addComponent(mySecondCapacitorModel)
+      .addComponent(myCapacitorModel)
+      .addComponent(mySecondCapacitorModel)
       .model();
     State.cursor().set('diagram', myTopDiagram);
 
@@ -60,5 +60,5 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
     };
     State.redraw = redraw;
     State.redraw();
-  
+
   });
