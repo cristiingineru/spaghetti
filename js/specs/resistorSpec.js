@@ -1,7 +1,7 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn, jasmine */
 
 
-define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager', 'React', 'app/part-leg', 'app/part-body'], function (Resistor, Squire, Immutable, LayoutManager, React, Leg, Body) {
+define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager', 'React', 'app/part-leg', 'app/part-body', 'mocks/bodyMock'], function (Resistor, Squire, Immutable, LayoutManager, React, Leg, Body, BodyMock) {
   describe('Resistor', function () {
     it('should provide a known API', function () {
       expect(typeof (Resistor.name)).toBe('function');
@@ -94,16 +94,64 @@ define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager'
 
   describe('Resistor proto', function () {
     it('should have a keyify function that set a unique key to itself and child parts', function () {
-      var keyProvider = jasmine.createSpy('keyProvider');
+      var hardCodedUniqueKey = 9999;
+      var keyProvider = jasmine.createSpy('keyProvider').and.returnValue(hardCodedUniqueKey);
       var resistor = Resistor.model().objectify()
         .keyify(keyProvider)
         .model();
-      expect(keyProvider.calls.count()).toBe(6);
+      expect(keyProvider.calls.count()).toBeGreaterThan(3);
+      [
+        resistor.get('key'),
+        resistor.getIn(['body', 'key']),
+        resistor.getIn(['legs', '0', 'key']),
+        resistor.getIn(['legs', '1', 'key'])
+      ].forEach(function (key) {
+        expect(key).toBe(hardCodedUniqueKey);
+      });
     });
 
-    xit('should have an init function that initialize the child parts');
+    it('should have an init function that personalize the child parts', function (done) {
+      var squire = new Squire()
+        .mock('app/part-body', BodyMock)
+        .require(['app/component-resistor'], function (Resistor2) {
+          var resistor = Resistor2.model().objectify()
+            .init()
+            .model();
+          var bodyProto = resistor.get('body').objectify();
+          expect(bodyProto.setXY).toHaveBeenCalled();
+          expect(bodyProto.setWidth).toHaveBeenCalled();
+          expect(bodyProto.setHeight).toHaveBeenCalled();
+          done();
+        });
+    });
 
-    xit('should update the coordinates of the parts when its owned position is changed');
+    it('should update the coordinates of the parts when its own position is changed', function () {
+      // setting some random coordinates
+      var resistor = Resistor.model().objectify().init().setXY(0, 0).model();
+      // setting other coordinates again and asserting that this component and its parts moved
+      var movedResistor = resistor.objectify().setXY(9999, 9999).model();
+      [
+        {
+          original: resistor,
+          moved: movedResistor
+        },
+        {
+          original: resistor.get('body'),
+          moved: movedResistor.get('body')
+        },
+        {
+          original: resistor.getIn(['legs', 0]),
+          moved: movedResistor.getIn(['legs', 0])
+        },
+        {
+          original: resistor.getIn(['legs', 1]),
+          moved: movedResistor.getIn(['legs', 1])
+        }
+      ].forEach(function (pair) {
+        expect(pair.moved.get('x')).not.toBe(pair.original.get('x'));
+        expect(pair.moved.get('y')).not.toBe(pair.original.get('y'));
+      });
+    });
   });
 
   describe('Resistor model', function () {
@@ -112,10 +160,12 @@ define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager'
       expect(Immutable.Map.isMap(model)).toBe(true);
     });
 
-    it('should have a name and a proto properties', function () {
+    it('should have name, proto, x and y properties', function () {
       var model = Resistor.model();
       expect(model.get('name')).not.toBeFalsy();
       expect(model.get('proto')).not.toBeFalsy();
+      expect(model.get('x')).toEqual(jasmine.any(Number));
+      expect(model.get('y')).toEqual(jasmine.any(Number));
     });
   });
 });

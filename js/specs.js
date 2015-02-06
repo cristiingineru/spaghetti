@@ -6,7 +6,8 @@ requirejs.config({
     React: '../node_modules/react/dist/react-with-addons',
     Squire: '../node_modules/squirejs/src/Squire',
     app: '../app',
-    specs: '../specs'
+    specs: '../specs',
+    mocks: '../specs/mocks'
   },
   waitSeconds: 15
 });
