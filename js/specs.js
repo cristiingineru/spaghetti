@@ -20,7 +20,8 @@ require(
     'specs/resistorSpec',
     'specs/capacitorSpec',
     'specs/keyProviderSpec',
-    'specs/coreSpec'
+    'specs/coreSpec',
+    'specs/layoutManagerSpec'
   ],
   function (document) {
     jasmine.getEnv().execute();
