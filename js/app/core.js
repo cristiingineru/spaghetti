@@ -57,21 +57,21 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     return this;
   };
 
-  Immutable.Map.prototype.objectify =
-  Immutable.Seq.prototype.objectify = function () {
-    var model = this;
-    var proto = this.get('proto');
-    if (!proto) {
-      throw new Error('Attempted objectify an invalid model.');
-    }
-    var object = proto(model);
-    return object;
+  Immutable.Seq.prototype.objectify =
+    Immutable.Map.prototype.objectify = function () {
+      var model = this;
+      var proto = this.get('proto');
+      if (!proto) {
+        throw new Error('Attempted objectify an invalid model.');
+      }
+      var object = proto(model);
+      return object;
   };
 
   Immutable.Map.prototype.asObject =
-  Immutable.Seq.prototype.asObject = function (fn) {
-    var object = this.objectify();
-    return fn(object).model();
+    Immutable.Seq.prototype.asObject = function (fn) {
+      var object = this.objectify();
+      return fn(object).model();
   };
 
   return {

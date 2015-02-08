@@ -18,7 +18,9 @@ require(
     'specs/spaghettiSpec',
     'specs/dissectSpec',
     'specs/resistorSpec',
-    'specs/capacitorSpec'
+    'specs/capacitorSpec',
+    'specs/keyProviderSpec',
+    'specs/coreSpec'
   ],
   function (document) {
     jasmine.getEnv().execute();
