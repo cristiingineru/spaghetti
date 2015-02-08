@@ -74,18 +74,5 @@ define(['app/core', 'immutable.min', 'immutable.cursor', 'Squire'], function (Co
         });
       });
     });
-
-    it('should decorate the Immutable.Seq and Immutable.Map prototypes with an asObject() function', function (done) {
-      expect(Immutable.Seq.prototype.asObject).not.toBeFalsy();
-      expect(Immutable.Map.prototype.asObject).not.toBeFalsy();
-      var noOpCoreMock = null;
-      var squire = new Squire()
-        .mock('app/core', noOpCoreMock)
-        .require(['immutable.min'], function (Immutable2) {
-          expect(Immutable2.Seq.prototype.asObject).toBeFalsy();
-          expect(Immutable2.Map.prototype.asObject).toBeFalsy();
-          done();
-        });
-    });
   });
 });
