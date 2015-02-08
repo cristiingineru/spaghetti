@@ -14,8 +14,7 @@ define(['app/component-capacitor', 'Squire', 'immutable.min', 'app/layoutManager
       expect(Capacitor.proto).not.toThrow();
 
       expect(typeof (Capacitor.model)).toBe('function');
-      var model = Capacitor.model();
-      expect(Immutable.Seq.isSeq(model) || Immutable.Map.isMap(model)).toBe(true);
+      expect(Capacitor.model).not.toThrow();
     });
   });
 
