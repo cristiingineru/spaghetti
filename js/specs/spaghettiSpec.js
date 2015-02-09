@@ -16,12 +16,6 @@ define(['app/spaghetti'], function (/* Spaghetti */) {
     });
 
 
-    it('should initialize the state with an empty diagram', function () {
-      var state = Spaghetti.state();
-      expect(state.get('diagram')).not.toBe(null);
-      expect(state.getIn(['diagram', 'components'])).not.toBe(null);
-    });
-
     it('should be a singleton object', function () {
       var localSpaghetti = require('app/spaghetti');
       expect(localSpaghetti).toBe(Spaghetti);

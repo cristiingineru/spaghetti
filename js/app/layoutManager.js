@@ -1,6 +1,6 @@
 /* global define, console, dissect, update, updateAll, filter, where */
 
-define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
+define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Dissect) {
 
   return {
 
@@ -16,7 +16,7 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
           //console.log('*** START ***');
         },
         onDrag: function (event, ui) {
-          dissect(State,
+          dissect(Spaghetti.state(),
             update('diagram',
               updateAll('components', function (component) {
                 if (component.get('key') === key) {
@@ -28,11 +28,11 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
               })
             )
           );
-          State.redraw();
+          Spaghetti.redraw();
         },
         onDragStop: function (event, ui) {
           //console.log('*** STOP ***');
-          State.redraw();
+          Spaghetti.redraw();
         }
       };
     },
@@ -44,7 +44,7 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
       return {
         onBodyClickHandler: function (event, ui) {
           if (event.ctrlKey) {
-            dissect(State,
+            dissect(Spaghetti.state(),
               update('diagram',
                 updateAll('components', function (component) {
                   if (component.get('key') === key) {
@@ -61,14 +61,14 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
         },
         onDiagramClickHandler: function (event, ui) {
           if (event.ctrlKey) {
-            dissect(State,
+            dissect(Spaghetti.state(),
               update('diagram',
                 filter('components', function (component) {
                   return component.get('selected') !== true;
                 })
               )
             );
-            State.redraw();
+            Spaghetti.redraw();
           }
           event.stopPropagation();
         }
@@ -118,7 +118,7 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
               return distance <= radius;
             };
 
-          dissect(State,
+          dissect(Spaghetti.state(),
             update('diagram',
               updateAll('components',
                 updateAll('legs',
@@ -127,7 +127,7 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
               )
             )
           );
-          dissect(State,
+          dissect(Spaghetti.state(),
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -139,7 +139,7 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
             )
           );
           dragging = true;
-          State.redraw();
+          Spaghetti.redraw();
         },
 
         onDragEnd: function (event, domID) {
@@ -194,7 +194,7 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
             holeX = -1,
             holeY = -1;
 
-          dissect(State,
+          dissect(Spaghetti.state(),
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -206,7 +206,7 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
             )
           );
           if (holeFound) {
-            dissect(State,
+            dissect(Spaghetti.state(),
               update('diagram',
                 updateAll('components',
                   updateAll('legs',
@@ -216,7 +216,7 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
               )
             );
           } else {
-            dissect(State,
+            dissect(Spaghetti.state(),
               update('diagram',
                 updateAll('components',
                   updateAll('legs',
@@ -227,7 +227,7 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
             );
           }
           dragging = false;
-          State.redraw();
+          Spaghetti.redraw();
         }
 
       };

@@ -1,22 +1,32 @@
 /* global define */
 
-define(['app/state'], function (State) {
+define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   var Spaghetti = Object.create(null);
 
-  Spaghetti.init = function () {
-    this.theOnlyState = State;
-    this.theOnlyState.cursor().withMutations(function (st) {
-      st.clear()
-        .set('diagram', {
-          components: []
-        });
-    });
-    return this;
+  Spaghetti.theWholeState = Immutable.fromJS({});
+
+  Spaghetti.state = function (newValue) {
+    if (newValue !== undefined) {
+      this.theWholeState = newValue;
+    }
+    return this.theWholeState;
   };
 
-  Spaghetti.state = function () {
-    return this.theOnlyState.cursor();
+  Spaghetti.cursor = function () {
+    var onChange = function (newState, prevState) {
+      if (prevState !== Spaghetti.theWholeState) {
+        throw new Error('Attempted to alter an expired cursor.');
+      }
+      Spaghetti.theWholeState = newState;
+    };
+    return Cursor.from(this.theWholeState, onChange);
+  };
+
+  Spaghetti.redraw = function () {};
+
+  Spaghetti.setRedraw = function (fn) {
+    this.redraw = fn;
   };
 
   return Spaghetti;

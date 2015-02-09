@@ -9,17 +9,8 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/diagram', 'app/keyProvider', 'app/layoutManager'],
-  function (React, Immutable, Catalog, State, Diagram, KeyProvider, LayoutManager) {
-
-    var buildInitialState = function (State) {
-      State.cursor().withMutations(function (st) {
-        st.set('diagram', null)
-          .set('selections', Immutable.fromJS([]));
-      });
-      return State;
-    };
-    State = buildInitialState(State);
+requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', 'app/diagram', 'app/keyProvider', 'app/layoutManager'],
+  function (React, Immutable, Catalog, Spaghetti, Diagram, KeyProvider, LayoutManager) {
 
     var breadboard = Catalog('breadboard');
     var myBreadboardModel = breadboard.model().objectify()
@@ -50,15 +41,15 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/state', 'app/
       .addComponent(myCapacitorModel)
       .addComponent(mySecondCapacitorModel)
       .model();
-    State.cursor().set('diagram', myTopDiagram);
+    Spaghetti.cursor().set('diagram', myTopDiagram);
 
     var redraw = function () {
       var element = React.createElement(Diagram.class(), {
-        model: State.state().get('diagram')
+        model: Spaghetti.state().get('diagram')
       });
       React.render(element, document.getElementById('svg'));
     };
-    State.redraw = redraw;
-    State.redraw();
+    Spaghetti.setRedraw(redraw);
+    Spaghetti.redraw();
 
   });
