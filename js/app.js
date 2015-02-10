@@ -1,4 +1,4 @@
-/* global requirejs, document  */
+/* global requirejs, document, dissect, set  */
 
 requirejs.config({
   baseUrl: 'js/lib',
@@ -9,8 +9,8 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', 'app/diagram', 'app/keyProvider', 'app/layoutManager'],
-  function (React, Immutable, Catalog, Spaghetti, Diagram, KeyProvider, LayoutManager) {
+requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/keyProvider', 'app/layoutManager'],
+  function (React, Immutable, Catalog, Spaghetti, Dissect, Diagram, KeyProvider, LayoutManager) {
 
     var breadboard = Catalog('breadboard');
     var myBreadboardModel = breadboard.model().objectify()
@@ -41,7 +41,9 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
       .addComponent(myCapacitorModel)
       .addComponent(mySecondCapacitorModel)
       .model();
-    Spaghetti.cursor().set('diagram', myTopDiagram);
+    //Spaghetti.cursor().set('diagram', myTopDiagram);
+    dissect(Spaghetti.state,
+      set('diagram', myTopDiagram));
 
     var redraw = function () {
       var element = React.createElement(Diagram.class(), {

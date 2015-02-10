@@ -1,6 +1,7 @@
 /* global define */
 
 var dissect;
+var set;
 var update;
 var updateAll;
 var filter;
@@ -51,6 +52,12 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     var newRoot = fn(root());
     return root(newRoot);
   };
+  
+  set = function (key, value) {
+    return function (parent) {
+      return parent.set(key, value);
+    };
+  };
 
   update = function (key, fnOrFns) {
     return function (parent) {
@@ -93,6 +100,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   return {
     dissect: dissect,
+    set: set,
     update: update,
     updateAll: updateAll,
     filter: filter,

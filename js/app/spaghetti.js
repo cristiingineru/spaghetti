@@ -2,32 +2,29 @@
 
 define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
-  var Spaghetti = Object.create(null);
+  // keep it here so the state() or init() functions can work even whithout 'this'
+  var theWholeState;
 
-  Spaghetti.theWholeState = Immutable.fromJS({});
+  function Spaghetti() {
+    this.init();
+  }
 
-  Spaghetti.state = function (newValue) {
+  Spaghetti.prototype.init = function () {
+    theWholeState = Immutable.fromJS({});
+    return this;
+  };
+
+  Spaghetti.prototype.state = function (newValue) {
     if (newValue !== undefined) {
-      this.theWholeState = newValue;
+      theWholeState = newValue;
     }
-    return this.theWholeState;
+    return theWholeState;
   };
 
-  Spaghetti.cursor = function () {
-    var onChange = function (newState, prevState) {
-      if (prevState !== Spaghetti.theWholeState) {
-        throw new Error('Attempted to alter an expired cursor.');
-      }
-      Spaghetti.theWholeState = newState;
-    };
-    return Cursor.from(this.theWholeState, onChange);
-  };
-
-  Spaghetti.redraw = function () {};
-
-  Spaghetti.setRedraw = function (fn) {
+  Spaghetti.prototype.setRedraw = function (fn) {
     this.redraw = fn;
+    return this;
   };
 
-  return Spaghetti;
+  return new Spaghetti();
 });

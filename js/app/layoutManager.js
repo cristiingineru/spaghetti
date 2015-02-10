@@ -16,7 +16,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
           //console.log('*** START ***');
         },
         onDrag: function (event, ui) {
-          dissect(Spaghetti.state(),
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components', function (component) {
                 if (component.get('key') === key) {
@@ -44,7 +44,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
       return {
         onBodyClickHandler: function (event, ui) {
           if (event.ctrlKey) {
-            dissect(Spaghetti.state(),
+            dissect(Spaghetti.state,
               update('diagram',
                 updateAll('components', function (component) {
                   if (component.get('key') === key) {
@@ -61,7 +61,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
         },
         onDiagramClickHandler: function (event, ui) {
           if (event.ctrlKey) {
-            dissect(Spaghetti.state(),
+            dissect(Spaghetti.state,
               update('diagram',
                 filter('components', function (component) {
                   return component.get('selected') !== true;
@@ -118,7 +118,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
               return distance <= radius;
             };
 
-          dissect(Spaghetti.state(),
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 updateAll('legs',
@@ -127,7 +127,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
               )
             )
           );
-          dissect(Spaghetti.state(),
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -194,7 +194,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
             holeX = -1,
             holeY = -1;
 
-          dissect(Spaghetti.state(),
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -206,7 +206,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
             )
           );
           if (holeFound) {
-            dissect(Spaghetti.state(),
+            dissect(Spaghetti.state,
               update('diagram',
                 updateAll('components',
                   updateAll('legs',
@@ -216,7 +216,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
               )
             );
           } else {
-            dissect(Spaghetti.state(),
+            dissect(Spaghetti.state,
               update('diagram',
                 updateAll('components',
                   updateAll('legs',

@@ -1,10 +1,11 @@
-/* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where */
+/* global define, require, describe, it, xit, expect, dissect, set, update, updateAll, filter, where */
 
 
 define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, Immutable, Cursor) {
   describe('Dissect module', function () {
     it('should make all its functions available as globals too', function () {
       expect(Dissect.dissect).toBe(dissect);
+      expect(Dissect.set).toBe(set);
       expect(Dissect.update).toBe(update);
       expect(Dissect.updateAll).toBe(updateAll);
       expect(Dissect.filter).toBe(filter);
@@ -34,16 +35,36 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
       expect(newObject.get('key')).toBe('VALUE');
     });
 
-    it('should apply a wrapped transform on a cursor', function () {
-      var object = Immutable.fromJS({
-          key: 'Value'
-        }),
-        cursor = Cursor.from(object),
-        wrapper = function (parent) {
-          return parent.update('key', toUpperCaseTransform);
-        },
-        newObject = dissect(object, wrapper);
-      expect(newObject.get('key')).toBe('VALUE');
+    xit('should work with a get/set accessor function', function () {});
+  });
+
+  describe('set', function () {
+    it('should return a wrapper function', function () {
+      var value = 'random value';
+      var wrapper = set('key', value);
+      expect(typeof (wrapper)).toBe('function');
+    });
+
+    describe('set`s returned wrapper', function () {
+      it('should set a value to parent[key]', function () {
+        var key = 'key',
+          value = 'value',
+          wrapper = set(key, value),
+          parent = Immutable.fromJS({}),
+          transformedParent = wrapper(parent);
+        expect(transformedParent.get(key)).toBe(value);
+      });
+
+      it('should replace an existing value with a new one to parent[key]', function () {
+        var key = 'key',
+          newValue = 'new value',
+          wrapper = set(key, newValue),
+          parent = Immutable.fromJS({
+            key: 'some value'
+          }),
+          transformedParent = wrapper(parent);
+        expect(transformedParent.get(key)).toBe(newValue);
+      });
     });
   });
 
