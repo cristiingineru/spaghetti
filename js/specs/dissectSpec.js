@@ -35,7 +35,23 @@ define(['app/dissect', 'immutable.min', 'immutable.cursor'], function (Dissect, 
       expect(newObject.get('key')).toBe('VALUE');
     });
 
-    xit('should work with a get/set accessor function', function () {});
+    it('should work with a get/set accessor function', function () {
+      var accessorInnerValue = Immutable.fromJS({
+          key: 'Value'
+        }),
+        accessor = function (newValue) {
+          if (newValue !== undefined) {
+            accessorInnerValue = newValue;
+          }
+          return accessorInnerValue;
+        },
+        wrapper = function (parent) {
+          return parent.update('key', toUpperCaseTransform);
+        };
+      var newAccessor = dissect(accessor, wrapper);
+      expect(newAccessor).toBe(accessor);
+      expect(newAccessor().get('key')).toBe('VALUE');
+    });
   });
 
   describe('set', function () {

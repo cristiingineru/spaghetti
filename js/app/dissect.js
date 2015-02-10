@@ -50,7 +50,8 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       return fn(root);
     }
     var newRoot = fn(root());
-    return root(newRoot);
+    root(newRoot);
+    return root;
   };
   
   set = function (key, value) {
