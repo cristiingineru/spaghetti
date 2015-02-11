@@ -20,7 +20,7 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
 
       var addComponentToTopLevelDiagram = function (Stcomponent) {};
 
-      it('should move the component when onDrag is called', function (done) {
+      xit('should move the component when onDrag is called', function (done) {
         var squire = new Squire()
           .require(['app/state'], function (State2) {
             var keyProvider = function () {

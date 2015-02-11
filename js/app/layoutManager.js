@@ -1,38 +1,40 @@
 /* global define, console, dissect, update, updateAll, filter, where */
 
-define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
+define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Dissect) {
 
   return {
 
 
     componentEventHandler: function (component) {
-      var key = component.get('key');
+      var componentKey = component.get('key');
 
       return {
 
 
 
         onDragStart: function (event, ui) {
-          //console.log('*** START ***');
+
         },
         onDrag: function (event, ui) {
-          dissect(State,
+          var isDragging = function (component) {
+              return component.get('key') === componentKey;
+            },
+            setXY = function (component) {
+              return component.objectify()
+                .setXY(event.clientX, event.clientY)
+                .model();
+            };
+
+          dissect(Spaghetti.state,
             update('diagram',
-              updateAll('components', function (component) {
-                if (component.get('key') === key) {
-                  component = component.objectify()
-                    .setXY(event.clientX, event.clientY)
-                    .model();
-                }
-                return component;
-              })
-            )
-          );
-          State.redraw();
+              updateAll('components',
+                where(isDragging, setXY))));
+
+          Spaghetti.redraw();
         },
         onDragStop: function (event, ui) {
-          //console.log('*** STOP ***');
-          State.redraw();
+
+          Spaghetti.redraw();
         }
       };
     },
@@ -40,35 +42,37 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
 
 
     diagramEventHandler: function (component) {
-      var key = component.get('key');
+      var componentKey = component.get('key'),
+        isClicked = function (component) {
+          return component.get('key') === componentKey;
+        },
+        select = function (component) {
+          return component.objectify()
+            .select(true)
+            .model();
+        },
+        isNotSelected = function (component) {
+          return component.get('selected') !== true;
+        };
+
       return {
         onBodyClickHandler: function (event, ui) {
           if (event.ctrlKey) {
-            dissect(State,
+            dissect(Spaghetti.state,
               update('diagram',
-                updateAll('components', function (component) {
-                  if (component.get('key') === key) {
-                    component = component.objectify()
-                      .update(true)
-                      .model();
-                  }
-                  return component;
-                })
-              )
-            );
+                updateAll('components',
+                  where(isClicked, select))));
           }
+          
           event.stopPropagation();
         },
         onDiagramClickHandler: function (event, ui) {
           if (event.ctrlKey) {
-            dissect(State,
+            dissect(Spaghetti.state,
               update('diagram',
-                filter('components', function (component) {
-                  return component.get('selected') !== true;
-                })
-              )
-            );
-            State.redraw();
+                filter('components', isNotSelected)));
+
+            Spaghetti.redraw();
           }
           event.stopPropagation();
         }
@@ -118,28 +122,22 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
               return distance <= radius;
             };
 
-          dissect(State,
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 updateAll('legs',
-                  where(isDragging, setX2Y2)
-                )
-              )
-            )
-          );
-          dissect(State,
+                  where(isDragging, setX2Y2)))));
+
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
                   updateAll('holes', [
                     where(isHovered, unhover),
-                    where(isNear, hover)])
-                )
-              )
-            )
-          );
+                    where(isNear, hover)])))));
+
           dragging = true;
-          State.redraw();
+          Spaghetti.redraw();
         },
 
         onDragEnd: function (event, domID) {
@@ -194,40 +192,30 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
             holeX = -1,
             holeY = -1;
 
-          dissect(State,
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
                   updateAll('holes', [
                     where(isNear, [connectToLeg, storeHoleData]),
-                    where(isHovered, unhover)])
-                )
-              )
-            )
-          );
+                    where(isHovered, unhover)])))));
+
           if (holeFound) {
-            dissect(State,
+            dissect(Spaghetti.state,
               update('diagram',
                 updateAll('components',
                   updateAll('legs',
-                    where(isDragging, [snapToHole, connectToHole])
-                  )
-                )
-              )
-            );
+                    where(isDragging, [snapToHole, connectToHole])))));
+
           } else {
-            dissect(State,
+            dissect(Spaghetti.state,
               update('diagram',
                 updateAll('components',
                   updateAll('legs',
-                    where(isDragging, makeSureIsDisconnected)
-                  )
-                )
-              )
-            );
+                    where(isDragging, makeSureIsDisconnected)))));
           }
           dragging = false;
-          State.redraw();
+          Spaghetti.redraw();
         }
 
       };

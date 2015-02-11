@@ -1,23 +1,30 @@
 /* global define */
 
-define(['app/state'], function (State) {
+define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
-  var Spaghetti = Object.create(null);
+  // keep it here so the state() or init() functions can work even whithout 'this'
+  var theWholeState;
 
-  Spaghetti.init = function () {
-    this.theOnlyState = State;
-    this.theOnlyState.cursor().withMutations(function (st) {
-      st.clear()
-        .set('diagram', {
-          components: []
-        });
-    });
+  function Spaghetti() {
+    this.init();
+  }
+
+  Spaghetti.prototype.init = function () {
+    theWholeState = Immutable.fromJS({});
     return this;
   };
 
-  Spaghetti.state = function () {
-    return this.theOnlyState.cursor();
+  Spaghetti.prototype.state = function (newValue) {
+    if (newValue !== undefined) {
+      theWholeState = newValue;
+    }
+    return theWholeState;
   };
 
-  return Spaghetti;
+  Spaghetti.prototype.setRedraw = function (fn) {
+    this.redraw = fn;
+    return this;
+  };
+
+  return new Spaghetti();
 });
