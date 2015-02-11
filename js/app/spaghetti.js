@@ -21,6 +21,8 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     return theWholeState;
   };
 
+  Spaghetti.prototype.redraw = function () {};
+
   Spaghetti.prototype.setRedraw = function (fn) {
     this.redraw = fn;
     return this;

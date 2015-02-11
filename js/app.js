@@ -41,7 +41,6 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
       .addComponent(myCapacitorModel)
       .addComponent(mySecondCapacitorModel)
       .model();
-    //Spaghetti.cursor().set('diagram', myTopDiagram);
     dissect(Spaghetti.state,
       set('diagram', myTopDiagram));
 
