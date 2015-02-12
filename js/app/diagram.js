@@ -20,7 +20,7 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
         height: this.props.model.get('height'),
         stroke: '#AAAAAA',
         fill: '#f4f4f4',
-        onClick: handlerAdapter.onDiagramClickHandler
+        onClick: handlerAdapter.onClick
       });
       var components = [];
       var models = this.props.model.getIn(['components']);

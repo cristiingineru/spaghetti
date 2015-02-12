@@ -12,7 +12,7 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
     },
     render: function () {
       var LayoutManager = require('app/layoutManager');
-      var handlerAdapter = LayoutManager.diagramEventHandler(this.props.owner);
+      var handlerAdapter = LayoutManager.bodyEventHandler(this.props.owner);
       return React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),
@@ -22,7 +22,7 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
         fill: '#E6C88C',
         rx: 5,
         ry: 5,
-        onClick: handlerAdapter.onBodyClickHandler,
+        onClick: handlerAdapter.onClick,
         className: 'part-body'
       });
     }

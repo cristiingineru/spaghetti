@@ -45,13 +45,17 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     return callFnOnCollection(fnOrFns, collection);
   };
 
-  dissect = function (root, fn) {
-    if (Immutable.List.isList(root) || Immutable.Seq.isSeq(root) || Immutable.Map.isMap(root)) {
-      return fn(root);
+  dissect = function (rootOrAccessor, fn) {
+    var root, newRoot;
+    if (Immutable.List.isList(rootOrAccessor) || Immutable.Seq.isSeq(rootOrAccessor) || Immutable.Map.isMap(rootOrAccessor)) {
+      root = rootOrAccessor;
+      newRoot = fn(rootOrAccessor);
+      return newRoot;
     }
-    var newRoot = fn(root());
-    root(newRoot);
-    return root;
+    root = rootOrAccessor();
+    newRoot = fn(root);
+    rootOrAccessor(newRoot);
+    return rootOrAccessor;
   };
   
   set = function (key, value) {

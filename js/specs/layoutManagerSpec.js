@@ -3,14 +3,51 @@
 
 define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor', 'app/diagram', 'app/dissect', 'app/spaghetti'], function (LayoutManager, Immutable, Squire, Resistor, Diagram, Dissect, Spaghetti) {
   describe('LayoutManager', function () {
-    it('should return component, diagram and finger event handlers', function () {
+    it('should return component, body, diagram and finger event handlers', function () {
       expect(LayoutManager.componentEventHandler).not.toBeFalsy();
+      expect(LayoutManager.bodyEventHandler).not.toBeFalsy();
       expect(LayoutManager.diagramEventHandler).not.toBeFalsy();
       expect(LayoutManager.fingerEventHandler).not.toBeFalsy();
     });
 
+    var isComponent = function (key) {
+      return function (component) {
+        return component.get('key') === key;
+      };
+    };
+
+    var isSelected = function (component) {
+      return component.get('selected') || false;
+    };
+
+    var uniqueKeyProvider = function (key) {
+      return function () {
+        return key;
+      };
+    };
+
+    var resistorWithKey = function (key) {
+      var resistor = Resistor.model().objectify()
+        .keyify(uniqueKeyProvider(key))
+        .model();
+      return resistor;
+    };
+
+    var diagramWithComponent = function (component) {
+      var diagram = Diagram.model().objectify()
+        .addComponent(component)
+        .model();
+      return diagram;
+    };
+
+    var spaghettiWithDiagram = function (diagram) {
+      dissect(Spaghetti.state,
+        set('diagram', diagram));
+      return Spaghetti;
+    };
+
     describe('component event handler', function () {
-      it('should return a specialized instance with a known API', function () {
+      it('should return a specialized instance with onDragStart, onDrag and onDragEnd functions', function () {
         var component = Immutable.fromJS({});
         var handler = LayoutManager.componentEventHandler(component);
         expect(handler.onDragStart).not.toBeFalsy();
@@ -18,64 +55,83 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
         expect(handler.onDragStop).not.toBeFalsy();
       });
 
-      beforeEach(function () {
-        Spaghetti.init();
+      it('should move the component when onDrag is called', function () {
+        var key = 9999,
+          resistor = resistorWithKey(key),
+          diagram = diagramWithComponent(resistor),
+          Spaghetti = spaghettiWithDiagram(diagram);
+
+        var handler = LayoutManager.componentEventHandler(resistor),
+          event = {
+            clientX: 888,
+            clientY: 999
+          };
+        handler.onDrag(event);
+
+        dissect(Spaghetti.state,
+          update('diagram',
+            updateAll('components',
+              where(isComponent(key), function (myResistor) {
+                expect(myResistor.get('x')).toBe(888);
+                expect(myResistor.get('y')).toBe(999);
+              }))));
+      });
+    });
+
+    describe('body event handler', function () {
+      it('should return a specialized instance with onClick function', function () {
+        var component = Immutable.fromJS({});
+        var handler = LayoutManager.bodyEventHandler(component);
+        expect(handler.onClick).not.toBeFalsy();
       });
 
-      afterEach(function () {
-        Spaghetti.init();
+      it('should select the component when onClick is called and Ctrl is pressed', function () {
+        var key = 9999,
+          resistor = resistorWithKey(key),
+          diagram = diagramWithComponent(resistor),
+          Spaghetti = spaghettiWithDiagram(diagram);
+
+        var handler = LayoutManager.bodyEventHandler(resistor),
+          event = {
+            ctrlKey: true,
+            stopPropagation: function () {}
+          };
+        handler.onClick(event);
+
+        dissect(Spaghetti.state,
+          update('diagram',
+            updateAll('components',
+              where(isComponent(key), function (myResistor) {
+                expect(isSelected(myResistor)).toBe(true);
+              }))));
+      });
+    });
+
+    describe('diagram event handler', function () {
+      it('should return a specialized instance with onClick function', function () {
+        var component = Immutable.fromJS({});
+        var handler = LayoutManager.diagramEventHandler(component);
+        expect(handler.onClick).not.toBeFalsy();
       });
 
-      var isComponent = function (key) {
-        return function (component) {
-          return component.get('key') === key;
-        };
-      };
+      it('should delete the selected components when onClick is called and Ctrl is pressed', function () {
+        var key = 9999,
+          resistor = resistorWithKey(key).objectify().select(true).model(),
+          diagram = diagramWithComponent(resistor),
+          Spaghetti = spaghettiWithDiagram(diagram);
 
-      // make this a module
-      var uniqueKeyProvider = function (key) {
-        return function () {
-          return key;
-        };
-      };
+        var handler = LayoutManager.diagramEventHandler(resistor),
+          event = {
+            ctrlKey: true,
+            stopPropagation: function () {}
+          };
+        handler.onClick(event);
 
-      var diagramWithComponent = function (component) {
-        var diagram = Diagram.model().objectify()
-          .addComponent(component)
-          .model();
-        return diagram;
-      };
-
-      it('should move the component when onDrag is called', function (done) {
-        var squire = new Squire()
-          .require([], function () {
-            var keyToMyComponent = 9999;
-            var component = Resistor.model().objectify()
-              .keyify(uniqueKeyProvider(keyToMyComponent))
-              .model();
-            var myTopDiagram = diagramWithComponent(component);
-            dissect(Spaghetti.state,
-              set('diagram', myTopDiagram));
-
-            var handler = LayoutManager.componentEventHandler(component);
-            var event = {
-              clientX: 888,
-              clientY: 999
-            };
-            handler.onDrag(event);
-
-
-
-            dissect(Spaghetti.state,
-              update('diagram',
-                updateAll('components',
-                  where(isComponent(9999), function (myComponent) {
-                    expect(myComponent.get('x')).toBe(888);
-                    expect(myComponent.get('y')).toBe(999);
-                  }))));
-
-            done();
-          });
+        var updater = jasmine.createSpy();
+        dissect(Spaghetti.state,
+          update('diagram',
+            updateAll('components', updater)));
+        expect(updater).not.toHaveBeenCalled();
       });
     });
   });

@@ -41,6 +41,33 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
 
 
 
+    bodyEventHandler: function (component) {
+      var componentKey = component.get('key'),
+        isClicked = function (component) {
+          return component.get('key') === componentKey;
+        },
+        select = function (component) {
+          return component.objectify()
+            .select(true)
+            .model();
+        };
+
+      return {
+        onClick: function (event, ui) {
+          if (event.ctrlKey) {
+            dissect(Spaghetti.state,
+              update('diagram',
+                updateAll('components',
+                  where(isClicked, select))));
+          }
+
+          event.stopPropagation();
+        }
+      };
+    },
+
+
+
     diagramEventHandler: function (component) {
       var componentKey = component.get('key'),
         isClicked = function (component) {
@@ -56,17 +83,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
         };
 
       return {
-        onBodyClickHandler: function (event, ui) {
-          if (event.ctrlKey) {
-            dissect(Spaghetti.state,
-              update('diagram',
-                updateAll('components',
-                  where(isClicked, select))));
-          }
-          
-          event.stopPropagation();
-        },
-        onDiagramClickHandler: function (event, ui) {
+        onClick: function (event, ui) {
           if (event.ctrlKey) {
             dissect(Spaghetti.state,
               update('diagram',
