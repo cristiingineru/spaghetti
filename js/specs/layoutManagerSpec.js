@@ -87,6 +87,7 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
               where(isComponent(key), function (myResistor) {
                 expect(myResistor.get('x')).toBe(888);
                 expect(myResistor.get('y')).toBe(999);
+                return myResistor;
               }))));
       });
     });
@@ -116,6 +117,7 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
             updateAll('components',
               where(isComponent(key), function (myResistor) {
                 expect(isSelected(myResistor)).toBe(true);
+                return myResistor;
               }))));
       });
     });
@@ -184,11 +186,13 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
                   where(isPart(finger0Key), function (finger) {
                     expect(finger.get('x')).toBe(888);
                     expect(finger.get('y')).toBe(999);
-                  })/*,
+                    return finger;
+                  }),
                   where(isPart(finger1Key), function (finger) {
                     expect(finger.get('x')).not.toBe(888);
                     expect(finger.get('y')).not.toBe(999);
-                  })*/])))));
+                    return finger;
+                  })])))));
       });
     });
   });
