@@ -68,19 +68,10 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
 
 
 
-    diagramEventHandler: function (component) {
-      var componentKey = component.get('key'),
-        isClicked = function (component) {
-          return component.get('key') === componentKey;
-        },
-        select = function (component) {
-          return component.objectify()
-            .select(true)
-            .model();
-        },
-        isNotSelected = function (component) {
-          return component.get('selected') !== true;
-        };
+    diagramEventHandler: function () {
+      var isNotSelected = function (component) {
+        return component.get('selected') !== true;
+      };
 
       return {
         onClick: function (event, ui) {
@@ -157,8 +148,8 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
           Spaghetti.redraw();
         },
 
-        onDragEnd: function (event, domID) {
-
+        onDragStop: function (event, domID) {
+          // this function doesn't get called so its content was moved to onMouseUp
         },
 
         onMouseUp: function (event, domID) {
