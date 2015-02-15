@@ -5,16 +5,20 @@ requirejs.config({
   paths: {
     React: '../node_modules/react/dist/react-with-addons',
     Squire: '../node_modules/squirejs/src/Squire',
+    //Blanket: '../node_modules/blanket/src/blanket',
+    //JasmineBlanket: '../node_modules/blanket/dist/jasmine/blanket_jasmine',
     app: '../app',
     specs: '../specs',
     mocks: '../specs/mocks'
   },
-  waitSeconds: 15
+  waitSeconds: 20
 });
 
 require(
   [
     'domReady',
+    //'Blanket',
+    //'JasmineBlanket',
     'specs/spaghettiSpec',
     'specs/dissectSpec',
     'specs/resistorSpec',
@@ -23,7 +27,14 @@ require(
     'specs/coreSpec',
     'specs/layoutManagerSpec'
   ],
-  function (document) {
+  function (document/*, Blanket, JasmineBlanket*/) {
+    // include filter
+    //Blanket.options('filter', 'js/');
+    
+    
+    //var jasmineEnv = jasmine.getEnv();
+    //jasmineEnv.addReporter(new jasmine.BlanketReporter());
+    
     jasmine.getEnv().execute();
   }
 );
