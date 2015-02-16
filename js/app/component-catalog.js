@@ -21,15 +21,15 @@ define(['app/core', 'app/component-breadboard', 'app/component-resistor', 'app/c
     model: componentCapacitor.model
   });
 
-  function findByName(name) {
-    var found = null;
-    for (var component of privateCatalog) {
+  var findByName = function (name) {
+    var componentInCatalog = privateCatalog.filter(function (component) {
       if (component.name() === name) {
-        return component;
+        return true;
       }
-    }
-    return null;
-  }
+      return false;
+    });
+    return componentInCatalog[0];
+  };
 
   return function (nameOrModel) {
     var found = null;
