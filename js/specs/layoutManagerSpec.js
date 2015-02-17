@@ -1,7 +1,7 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn, jasmine, set, beforeEach, afterEach */
 
 
-define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor', 'app/diagram', 'app/dissect', 'app/spaghetti', 'app/keyProvider'], function (LayoutManager, Immutable, Squire, Resistor, Diagram, Dissect, Spaghetti, KeyProvider) {
+define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor', 'app/component-breadboard', 'app/diagram', 'app/dissect', 'app/spaghetti', 'app/keyProvider'], function (LayoutManager, Immutable, Squire, Resistor, Breadboard, Diagram, Dissect, Spaghetti, KeyProvider) {
   describe('LayoutManager', function () {
     it('should return component, body, diagram and finger event handlers', function () {
       expect(LayoutManager.componentEventHandler).not.toBeFalsy();
@@ -11,53 +11,62 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
     });
 
     var isComponent = function (key) {
-      return function (component) {
-        return component.get('key') === key;
+        return function (component) {
+          return component.get('key') === key;
+        };
+      },
+      isPart = function (key) {
+        return function (part) {
+          return part.get('key') === key;
+        };
+      },
+      isSelected = function (component) {
+        return component.get('selected') || false;
+      },
+      isBreadboard = function (component) {
+        return component.get('name') === 'breadboard';
+      },
+      uniqueKeyProvider = function (key) {
+        return function () {
+          return key;
+        };
+      },
+      keyifiedResistor = function () {
+        var resistor = Resistor.model().objectify()
+          .keyify(KeyProvider)
+          .model();
+        return resistor;
+      },
+      keyifiedBreadboard = function () {
+        var breadboard = Breadboard.model().objectify()
+          .keyify(KeyProvider)
+          .model();
+        return breadboard;
+      },
+      resistorWithKey = function (key) {
+        var resistor = Resistor.model().objectify()
+          .keyify(uniqueKeyProvider(key))
+          .model();
+        return resistor;
+      },
+      diagramWithComponent = function (component) {
+        var diagram = Diagram.model().objectify()
+          .addComponent(component)
+          .model();
+        return diagram;
+      },
+      diagramWithComponents = function (components) {
+        var diagramObject = Diagram.model().objectify();
+        components.forEach(function (component) {
+          diagramObject.addComponent(component);
+        });
+        return diagramObject.model();
+      },
+      spaghettiWithDiagram = function (diagram) {
+        dissect(Spaghetti.state,
+          set('diagram', diagram));
+        return Spaghetti;
       };
-    };
-
-    var isPart = function (key) {
-      return function (part) {
-        return part.get('key') === key;
-      };
-    };
-
-    var isSelected = function (component) {
-      return component.get('selected') || false;
-    };
-
-    var uniqueKeyProvider = function (key) {
-      return function () {
-        return key;
-      };
-    };
-
-    var keyifiedResistor = function () {
-      var resistor = Resistor.model().objectify()
-        .keyify(KeyProvider)
-        .model();
-      return resistor;
-    };
-
-    var resistorWithKey = function (key) {
-      var resistor = Resistor.model().objectify()
-        .keyify(uniqueKeyProvider(key))
-        .model();
-      return resistor;
-    };
-
-    var diagramWithComponent = function (component) {
-      var diagram = Diagram.model().objectify()
-        .addComponent(component)
-        .model();
-      return diagram;
-    };
-
-    var spaghettiWithDiagram = function (diagram) {
-      dissect(Spaghetti.state,
-        set('diagram', diagram));
-      return Spaghetti;
-    };
 
     describe('component event handler', function () {
       it('should return a specialized instance with onDragStart, onDrag and onDragEnd functions', function () {
@@ -193,6 +202,34 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
                     expect(finger.get('y')).not.toBe(999);
                     return finger;
                   })])))));
+      });
+
+      it('should highlight a hovered hole when onDrag is call on top of it', function () {
+        var resistor = keyifiedResistor(),
+          breadboard = keyifiedBreadboard(),
+          diagram = diagramWithComponents([resistor, breadboard]),
+          Spaghetti = spaghettiWithDiagram(diagram);
+
+        var hole = breadboard.getIn(['holes', 0]),
+          leg = resistor.getIn(['legs', 0]),
+          finger = leg.get('finger'),
+          handler = LayoutManager.fingerEventHandler(finger, leg),
+          event = {
+            clientX: hole.get('x'),
+            clientY: hole.get('y')
+          };
+        handler.onDrag(event);
+
+        var holeKey = hole.get('key');
+        dissect(Spaghetti.state,
+          update('diagram',
+            updateAll('components',
+              where(isBreadboard,
+                updateAll('holes',
+                  where(isPart(holeKey), function (hole) {
+                    expect(hole.get('hovered')).toBe(true);
+                    return hole;
+                  }))))));
       });
     });
   });
