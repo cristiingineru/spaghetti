@@ -26,6 +26,12 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
       isBreadboard = function (component) {
         return component.get('name') === 'breadboard';
       },
+      isHovered = function (hole) {
+        return hole.get('hovered') || false;
+      },
+      hover = function (hole) {
+        return hole.set('hovered', true);
+      },
       uniqueKeyProvider = function (key) {
         return function () {
           return key;
@@ -204,7 +210,7 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
                   })])))));
       });
 
-      it('should highlight a hovered hole when onDrag is call on top of it', function () {
+      it('should mark as hovered a hole when onDrag is called on top of it', function () {
         var resistor = keyifiedResistor(),
           breadboard = keyifiedBreadboard(),
           diagram = diagramWithComponents([resistor, breadboard]),
@@ -230,6 +236,39 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
                     expect(hole.get('hovered')).toBe(true);
                     return hole;
                   }))))));
+      });
+
+      it('should mark as unhovered any hole when onDrag is not called on top of it', function () {
+        var resistor = keyifiedResistor(),
+          breadboard = keyifiedBreadboard(),
+          diagram = diagramWithComponents([resistor, breadboard]),
+          Spaghetti = spaghettiWithDiagram(diagram);
+
+        // select all holes
+        dissect(Spaghetti.state,
+          update('diagram',
+            updateAll('components',
+              where(isBreadboard,
+                updateAll('holes', hover)))));
+
+        var leg = resistor.getIn(['legs', 0]),
+          finger = leg.get('finger'),
+          handler = LayoutManager.fingerEventHandler(finger, leg),
+          event = {
+            // away from all the holes
+            clientX: 999999,
+            clientY: 999999
+          };
+        handler.onDrag(event);
+
+        var updater = jasmine.createSpy();
+        dissect(Spaghetti.state,
+          update('diagram',
+            updateAll('components',
+              where(isBreadboard,
+                updateAll('holes',
+                  where(isHovered, updater))))));
+        expect(updater).not.toHaveBeenCalled();
       });
     });
   });
