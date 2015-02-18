@@ -175,100 +175,110 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
         expect(handler.onMouseUp).not.toBeFalsy();
       });
 
-      it('should move the finger when the onDrag is called', function () {
-        var resistor = keyifiedResistor(),
-          diagram = diagramWithComponent(resistor),
-          Spaghetti = spaghettiWithDiagram(diagram);
+      describe('onDrag', function () {
+        it('should move the finger', function () {
+          var resistor = keyifiedResistor(),
+            diagram = diagramWithComponent(resistor),
+            Spaghetti = spaghettiWithDiagram(diagram);
 
-        var leg0 = resistor.getIn(['legs', 0]),
-          leg1 = resistor.getIn(['legs', 1]),
-          finger0 = leg0.get('finger'),
-          finger1 = leg1.get('finger'),
-          handler = LayoutManager.fingerEventHandler(finger0, leg0),
-          event = {
-            clientX: 888,
-            clientY: 999
-          };
-        handler.onDrag(event);
+          var leg0 = resistor.getIn(['legs', 0]),
+            leg1 = resistor.getIn(['legs', 1]),
+            finger0 = leg0.get('finger'),
+            finger1 = leg1.get('finger'),
+            handler = LayoutManager.fingerEventHandler(finger0, leg0),
+            event = {
+              clientX: 888,
+              clientY: 999
+            };
+          handler.onDrag(event);
 
-        var finger0Key = finger0.get('key'),
-          finger1Key = finger1.get('key');
-        dissect(Spaghetti.state,
-          update('diagram',
-            updateAll('components',
-              updateAll('legs',
-                update('finger', [
+          var finger0Key = finger0.get('key'),
+            finger1Key = finger1.get('key');
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components',
+                updateAll('legs',
+                  update('finger', [
                   where(isPart(finger0Key), function (finger) {
-                    expect(finger.get('x')).toBe(888);
-                    expect(finger.get('y')).toBe(999);
-                    return finger;
-                  }),
+                      expect(finger.get('x')).toBe(888);
+                      expect(finger.get('y')).toBe(999);
+                      return finger;
+                    }),
                   where(isPart(finger1Key), function (finger) {
-                    expect(finger.get('x')).not.toBe(888);
-                    expect(finger.get('y')).not.toBe(999);
-                    return finger;
-                  })])))));
+                      expect(finger.get('x')).not.toBe(888);
+                      expect(finger.get('y')).not.toBe(999);
+                      return finger;
+                    })])))));
+        });
+
+        it('should mark a hole as hovered when the finger is on top of it', function () {
+          var resistor = keyifiedResistor(),
+            breadboard = keyifiedBreadboard(),
+            diagram = diagramWithComponents([resistor, breadboard]),
+            Spaghetti = spaghettiWithDiagram(diagram);
+
+          var hole = breadboard.getIn(['holes', 0]),
+            leg = resistor.getIn(['legs', 0]),
+            finger = leg.get('finger'),
+            handler = LayoutManager.fingerEventHandler(finger, leg),
+            event = {
+              clientX: hole.get('x'),
+              clientY: hole.get('y')
+            };
+          handler.onDrag(event);
+
+          var holeKey = hole.get('key');
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components',
+                where(isBreadboard,
+                  updateAll('holes',
+                    where(isPart(holeKey), function (hole) {
+                      expect(hole.get('hovered')).toBe(true);
+                      return hole;
+                    }))))));
+        });
+
+        it('should unmark any hole as hovered when the finger is not on top of it', function () {
+          var resistor = keyifiedResistor(),
+            breadboard = keyifiedBreadboard(),
+            diagram = diagramWithComponents([resistor, breadboard]),
+            Spaghetti = spaghettiWithDiagram(diagram);
+
+          // hover all holes
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components',
+                where(isBreadboard,
+                  updateAll('holes', hover)))));
+
+          var leg = resistor.getIn(['legs', 0]),
+            finger = leg.get('finger'),
+            handler = LayoutManager.fingerEventHandler(finger, leg),
+            event = {
+              // away from all the holes
+              clientX: 999999,
+              clientY: 999999
+            };
+          handler.onDrag(event);
+
+          var updater = jasmine.createSpy();
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components',
+                where(isBreadboard,
+                  updateAll('holes',
+                    where(isHovered, updater))))));
+          expect(updater).not.toHaveBeenCalled();
+        });
       });
 
-      it('should mark as hovered a hole when onDrag is called on top of it', function () {
-        var resistor = keyifiedResistor(),
-          breadboard = keyifiedBreadboard(),
-          diagram = diagramWithComponents([resistor, breadboard]),
-          Spaghetti = spaghettiWithDiagram(diagram);
+      describe('onMouseUp', function () {
+        xit('should connect the finger and a hole when they are close', function () {});
 
-        var hole = breadboard.getIn(['holes', 0]),
-          leg = resistor.getIn(['legs', 0]),
-          finger = leg.get('finger'),
-          handler = LayoutManager.fingerEventHandler(finger, leg),
-          event = {
-            clientX: hole.get('x'),
-            clientY: hole.get('y')
-          };
-        handler.onDrag(event);
-
-        var holeKey = hole.get('key');
-        dissect(Spaghetti.state,
-          update('diagram',
-            updateAll('components',
-              where(isBreadboard,
-                updateAll('holes',
-                  where(isPart(holeKey), function (hole) {
-                    expect(hole.get('hovered')).toBe(true);
-                    return hole;
-                  }))))));
-      });
-
-      it('should mark as unhovered any hole when onDrag is not called on top of it', function () {
-        var resistor = keyifiedResistor(),
-          breadboard = keyifiedBreadboard(),
-          diagram = diagramWithComponents([resistor, breadboard]),
-          Spaghetti = spaghettiWithDiagram(diagram);
-
-        // select all holes
-        dissect(Spaghetti.state,
-          update('diagram',
-            updateAll('components',
-              where(isBreadboard,
-                updateAll('holes', hover)))));
-
-        var leg = resistor.getIn(['legs', 0]),
-          finger = leg.get('finger'),
-          handler = LayoutManager.fingerEventHandler(finger, leg),
-          event = {
-            // away from all the holes
-            clientX: 999999,
-            clientY: 999999
-          };
-        handler.onDrag(event);
-
-        var updater = jasmine.createSpy();
-        dissect(Spaghetti.state,
-          update('diagram',
-            updateAll('components',
-              where(isBreadboard,
-                updateAll('holes',
-                  where(isHovered, updater))))));
-        expect(updater).not.toHaveBeenCalled();
+        xit('should unmark any hole as hovered', function () {});
+        
+        xit('should disconnect the finger when its connect hole is not close anymore', function () {});
       });
     });
   });
