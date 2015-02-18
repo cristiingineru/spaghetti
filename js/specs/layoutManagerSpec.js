@@ -239,7 +239,7 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
                     }))))));
         });
 
-        it('should unmark any hole as hovered when the finger is not on top of it', function () {
+        it('should mark any hovered hole as unhovered when the finger is not on top of it', function () {
           var resistor = keyifiedResistor(),
             breadboard = keyifiedBreadboard(),
             diagram = diagramWithComponents([resistor, breadboard]),
@@ -274,11 +274,82 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
       });
 
       describe('onMouseUp', function () {
-        xit('should connect the finger and a hole when they are close', function () {});
+        it('should connect the finger, its leg and a hole when they are close', function () {
+          var resistor = keyifiedResistor(),
+            breadboard = keyifiedBreadboard(),
+            diagram = diagramWithComponents([resistor, breadboard]),
+            Spaghetti = spaghettiWithDiagram(diagram);
 
-        xit('should unmark any hole as hovered', function () {});
-        
-        xit('should disconnect the finger when its connect hole is not close anymore', function () {});
+          var hole = breadboard.getIn(['holes', 0]),
+            leg = resistor.getIn(['legs', 0]),
+            finger = leg.get('finger'),
+            handler = LayoutManager.fingerEventHandler(finger, leg),
+            event = {
+              clientX: hole.get('x'),
+              clientY: hole.get('y')
+            };
+          handler.onMouseUp(event);
+
+          var holeKey = hole.get('key'),
+            legKey = leg.get('key');
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components', [
+                where(isBreadboard,
+                  updateAll('holes',
+                    where(isPart(holeKey), function (hole) {
+                      expect(hole.get('connected')).toBe(true);
+                      expect(hole.get('legKey')).toBe(legKey);
+                      return hole;
+                    }))),
+                updateAll('legs', [
+                  where(isPart(legKey), function (leg) {
+                    expect(leg.get('connected')).toBe(true);
+                    expect(leg.get('holeKey')).toBe(holeKey);
+                    return leg;
+                  }),
+                  where(isPart(legKey),
+                    update('finger', function (finger) {
+                      expect(finger.get('connected')).toBe(true);
+                      expect(finger.get('holeKey')).toBe(holeKey);
+                      return finger;
+                    }))])])));
+        });
+
+        it('should mark any hovered hole as unhovered', function () {
+          var resistor = keyifiedResistor(),
+            breadboard = keyifiedBreadboard(),
+            diagram = diagramWithComponents([resistor, breadboard]),
+            Spaghetti = spaghettiWithDiagram(diagram);
+
+          // hover all holes
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components',
+                where(isBreadboard,
+                  updateAll('holes', hover)))));
+
+          var leg = resistor.getIn(['legs', 0]),
+            finger = leg.get('finger'),
+            handler = LayoutManager.fingerEventHandler(finger, leg),
+            event = {
+              // away from all the holes
+              clientX: 999999,
+              clientY: 999999
+            };
+          handler.onMouseUp(event);
+
+          var updater = jasmine.createSpy();
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components',
+                where(isBreadboard,
+                  updateAll('holes',
+                    where(isHovered, updater))))));
+          expect(updater).not.toHaveBeenCalled();
+        });
+
+        xit('should disconnect the finger and its leg when its connect hole is not close anymore', function () {});
       });
     });
   });
