@@ -120,6 +120,14 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                 .tryToSetX2Y2(event.clientX, event.clientY)
                 .model();
             },
+            makeSureIsDisconnected = function (leg) {
+              if (leg.get('connected')) {
+                leg = leg.objectify()
+                  .disconnect()
+                  .model();
+              }
+              return leg;
+            },
             isNear = function (hole) {
               var x1 = hole.get('x'),
                 y1 = hole.get('y'),
@@ -128,13 +136,21 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                 distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)),
                 radius = 3;
               return distance <= radius;
+            },
+            isConnectedToThisLeg = function (hole) {
+              return hole.get('connected') && hole.get('legKey') === legKey;
+            },
+            disconnect = function (hole) {
+              return hole.objectify()
+                .disconnect()
+                .model();
             };
 
           dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 updateAll('legs',
-                  where(isDragging, setX2Y2)))));
+                  where(isDragging, [setX2Y2, makeSureIsDisconnected])))));
 
           dissect(Spaghetti.state,
             update('diagram',
@@ -142,7 +158,8 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                 where(isBreadboard,
                   updateAll('holes', [
                     where(isHovered, unhover),
-                    where(isNear, hover)])))));
+                    where(isNear, hover),
+                    where(isConnectedToThisLeg, disconnect)])))));
 
           dragging = true;
           Spaghetti.redraw();
@@ -187,14 +204,6 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                 .connectTo(holeKey)
                 .model();
             },
-            makeSureIsDisconnected = function (leg) {
-              if (leg.get('connected')) {
-                leg = leg.objectify()
-                  .disconnect()
-                  .model();
-              }
-              return leg;
-            },
             holeFound = false,
             holeKey = -1,
             holeX = -1,
@@ -214,14 +223,8 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                 updateAll('components',
                   updateAll('legs',
                     where(isDragging, [snapToHole, connectToHole])))));
-
-          } else {
-            dissect(Spaghetti.state,
-              update('diagram',
-                updateAll('components',
-                  updateAll('legs',
-                    where(isDragging, makeSureIsDisconnected)))));
           }
+          
           dragging = false;
           Spaghetti.redraw();
         }

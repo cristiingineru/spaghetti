@@ -271,6 +271,54 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
                     where(isHovered, updater))))));
           expect(updater).not.toHaveBeenCalled();
         });
+        
+        it('should disconnect the finger and its leg when its connect hole is not near anymore', function () {
+          var resistor = keyifiedResistor(),
+            breadboard = keyifiedBreadboard(),
+            diagram = diagramWithComponents([resistor, breadboard]),
+            Spaghetti = spaghettiWithDiagram(diagram);
+
+          var hole = breadboard.getIn(['holes', 0]),
+            leg = resistor.getIn(['legs', 0]),
+            finger = leg.get('finger'),
+            handler = LayoutManager.fingerEventHandler(finger, leg),
+            event1 = {
+              clientX: hole.get('x'),
+              clientY: hole.get('y')
+            };
+          handler.onMouseUp(event1);
+          var event2 = {
+              // away from all the holes
+              clientX: 999999,
+              clientY: 999999
+            };
+          handler.onDrag(event2);
+
+          var holeKey = hole.get('key'),
+            legKey = leg.get('key');
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components', [
+                where(isBreadboard,
+                  updateAll('holes',
+                    where(isPart(holeKey), function (hole) {
+                      expect(hole.get('connected')).toBeFalsy();
+                      expect(hole.get('legKey')).toBeFalsy();
+                      return hole;
+                    }))),
+                updateAll('legs', [
+                  where(isPart(legKey), function (leg) {
+                    expect(leg.get('connected')).toBeFalsy();
+                    expect(leg.get('holeKey')).toBeFalsy();
+                    return leg;
+                  }),
+                  where(isPart(legKey),
+                    update('finger', function (finger) {
+                      expect(finger.get('connected')).toBeFalsy();
+                      expect(finger.get('holeKey')).toBeFalsy();
+                      return finger;
+                    }))])])));
+        });
       });
 
       describe('onMouseUp', function () {
@@ -348,8 +396,10 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
                     where(isHovered, updater))))));
           expect(updater).not.toHaveBeenCalled();
         });
+        
+        xit('should snap the finger when connecting it to a hole', function () {});
 
-        xit('should disconnect the finger and its leg when its connect hole is not close anymore', function () {});
+
       });
     });
   });
