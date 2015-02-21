@@ -1,7 +1,7 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn, jasmine, set, beforeEach, afterEach */
 
 
-define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor', 'app/component-breadboard', 'app/diagram', 'app/dissect', 'app/spaghetti', 'app/keyProvider'], function (LayoutManager, Immutable, Squire, Resistor, Breadboard, Diagram, Dissect, Spaghetti, KeyProvider) {
+define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-resistor', 'app/component-breadboard', 'app/diagram', 'app/dissect', 'app/spaghetti', 'app/keyProvider'], function (LayoutManager, React, Immutable, Squire, Resistor, Breadboard, Diagram, Dissect, Spaghetti, KeyProvider) {
   describe('LayoutManager', function () {
     it('should return component, body, diagram and finger event handlers', function () {
       expect(LayoutManager.componentEventHandler).not.toBeFalsy();
@@ -28,6 +28,13 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
       },
       isHovered = function (hole) {
         return hole.get('hovered') || false;
+      },
+      setXY = function (x, y) {
+        return function (partOrComponent) {
+          return partOrComponent.objectify()
+            .setXY(x, y)
+            .model();
+        };
       },
       hover = function (hole) {
         return hole.set('hovered', true);
@@ -138,29 +145,67 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
     });
 
     describe('diagram event handler', function () {
-      it('should return a specialized instance with onClick function', function () {
+      it('should return a specialized instance with onClick and onKeyPress function', function () {
         var handler = LayoutManager.diagramEventHandler();
         expect(handler.onClick).not.toBeFalsy();
+        expect(handler.onKeyPress).not.toBeFalsy();
       });
 
-      it('should delete the selected components when onClick is called and Ctrl is pressed', function () {
-        var key = 9999,
-          resistor = resistorWithKey(key).objectify().select(true).model(),
-          diagram = diagramWithComponent(resistor),
-          Spaghetti = spaghettiWithDiagram(diagram);
+      describe('onClick', function () {
+        it('should delete the selected components when Ctrl is pressed', function () {
+          var key = 9999,
+            resistor = resistorWithKey(key).objectify().select(true).model(),
+            diagram = diagramWithComponent(resistor),
+            Spaghetti = spaghettiWithDiagram(diagram);
 
-        var handler = LayoutManager.diagramEventHandler(resistor),
-          event = {
-            ctrlKey: true,
-            stopPropagation: function () {}
-          };
-        handler.onClick(event);
+          var handler = LayoutManager.diagramEventHandler(resistor),
+            event = {
+              ctrlKey: true,
+              stopPropagation: function () {}
+            };
+          handler.onClick(event);
 
-        var updater = jasmine.createSpy();
-        dissect(Spaghetti.state,
-          update('diagram',
-            updateAll('components', updater)));
-        expect(updater).not.toHaveBeenCalled();
+          var updater = jasmine.createSpy();
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components', updater)));
+          expect(updater).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('onKeyPress', function () {
+
+        var TestUtils = React.addons.TestUtils;
+
+        it('should call undo when Ctrl + Z is pressed', function () {
+          var resistor = keyifiedResistor(),
+            diagram = diagramWithComponent(resistor),
+            Spaghetti = spaghettiWithDiagram(diagram);
+
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components', setXY(1111, 1111))));
+          Spaghetti.checkpoint();
+
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components', setXY(9999, 9999))));
+          Spaghetti.checkpoint();
+
+          var handler = LayoutManager.diagramEventHandler(diagram),
+            event = {
+              ctrlKey: true,
+              keyIdentifier: 'U+001A'
+            };
+          handler.onKeyPress(event);
+
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components', function (component) {
+                expect(component.get('x')).toBe(1111);
+                expect(component.get('y')).toBe(1111);
+              })));
+        });
       });
     });
 
@@ -271,7 +316,7 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
                     where(isHovered, updater))))));
           expect(updater).not.toHaveBeenCalled();
         });
-        
+
         it('should disconnect the finger and its leg when its connect hole is not near anymore', function () {
           var resistor = keyifiedResistor(),
             breadboard = keyifiedBreadboard(),
@@ -288,10 +333,10 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
             };
           handler.onMouseUp(event1);
           var event2 = {
-              // away from all the holes
-              clientX: 999999,
-              clientY: 999999
-            };
+            // away from all the holes
+            clientX: 999999,
+            clientY: 999999
+          };
           handler.onDrag(event2);
 
           var holeKey = hole.get('key'),
@@ -396,7 +441,7 @@ define(['app/layoutManager', 'immutable.min', 'Squire', 'app/component-resistor'
                     where(isHovered, updater))))));
           expect(updater).not.toHaveBeenCalled();
         });
-        
+
         xit('should snap the finger when connecting it to a hole', function () {});
 
 

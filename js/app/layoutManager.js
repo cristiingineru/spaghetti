@@ -83,6 +83,16 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
             Spaghetti.redraw();
           }
           event.stopPropagation();
+        },
+        
+        onKeyPress: function (event, ui) {
+          if (event.keyIdentifier === 'U+001A' && event.ctrlKey === true)
+          {
+            Spaghetti.undo();
+          }
+          else if (event.keyIdentifier === 'U+0019' && event.ctrlKey === true) {
+            Spaghetti.redo();
+          }
         }
       };
     },

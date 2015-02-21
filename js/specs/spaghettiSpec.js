@@ -50,6 +50,7 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       checkpoints.push(Spaghetti.checkpoint());
       checkpoints.push(Spaghetti.checkpoint('my name is X'));
       checkpoints.push(Spaghetti.checkpoint('my name is Y'));
+      Spaghetti.undo();
       expect(Spaghetti.checkpoints()).toEqual(checkpoints);
     });
 
@@ -110,6 +111,23 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       Spaghetti.redo();
 
       expect(Spaghetti.state()).toBe(state2);
+    });
+
+    it('should remove the redo checkpoints when state is changed', function () {
+      var state1 = Immutable.fromJS([1]),
+        state2 = Immutable.fromJS([2]),
+        state3 = Immutable.fromJS([3]);
+      Spaghetti.state(state1);
+      Spaghetti.checkpoint('checkpoint 1');
+      Spaghetti.state(state2);
+      Spaghetti.checkpoint('checkpoint 2');
+
+      Spaghetti.undo();
+      Spaghetti.state(state3);
+      Spaghetti.checkpoint('checkpoint 3');
+      Spaghetti.redo();
+
+      expect(Spaghetti.state()).toBe(state3);
     });
   });
 });

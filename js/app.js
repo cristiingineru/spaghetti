@@ -43,6 +43,10 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
       .model();
     dissect(Spaghetti.state,
       set('diagram', myTopDiagram));
+  
+  var LayoutManager = require('app/layoutManager');
+  var eventHandler = LayoutManager.diagramEventHandler(myTopDiagram);
+  document.addEventListener('keypress', eventHandler.onKeyPress);
 
     var redraw = function () {
       var element = React.createElement(Diagram.class(), {
