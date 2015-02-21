@@ -11,7 +11,8 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   Spaghetti.prototype.init = function () {
     theWholeState = Immutable.fromJS({});
-    this.checkpoints = [];
+    this.undoCheckpoints = [];
+    this.redoCheckpoints = [];
     this.nextCheckpointId = 0;
     return this;
   };
@@ -23,29 +24,64 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     return theWholeState;
   };
 
-  
+
   Spaghetti.prototype.redraw = function () {};
 
   Spaghetti.prototype.setRedraw = function (fn) {
     this.redraw = fn;
     return this;
   };
-  
-  
-  Spaghetti.prototype.checkpoints = [];
+
+  /**
+   * The order of storing the checkpoints in the undo stack is:
+   *  [oldest, old, ... new, newest]
+   **/
+  Spaghetti.prototype.undoCheckpoints = [];
+
+  /**
+   * The order of storing the checkpoints in the redo stack is:
+   *  [oldest undo, old undo, ... new undo, newest undo]
+   **/
+  Spaghetti.prototype.redoCheckpoints = [];
+
   Spaghetti.prototype.nextCheckpointId = 0;
-  
+
   Spaghetti.prototype.checkpoint = function (name) {
     var checkpoint = {
       state: theWholeState,
       id: this.nextCheckpointId,
       name: name
     };
-    this.checkpoints.push(checkpoint);
+    this.undoCheckpoints.push(checkpoint);
+    this.redoCheckpoints = [];
     this.nextCheckpointId += 1;
     return checkpoint;
   };
-  
+
+  Spaghetti.prototype.checkpoints = function () {
+    var allCheckpoints = this.undoCheckpoints.concat(this.redoCheckpoints);
+    return allCheckpoints;
+  };
+
+  Spaghetti.prototype.undo = function () {
+    if (this.undoCheckpoints.length > 1) {
+      var checkpoint = this.undoCheckpoints.pop();
+      this.redoCheckpoints.push(checkpoint);
+
+      var currentCheckpoint = this.undoCheckpoints[this.undoCheckpoints.length - 1];
+      theWholeState = currentCheckpoint.state;
+    }
+  };
+
+  Spaghetti.prototype.redo = function () {
+    if (this.redoCheckpoints.length > 0) {
+      var checkpoint = this.redoCheckpoints.pop();
+      this.undoCheckpoints.push(checkpoint);
+
+      var currentCheckpoint = this.undoCheckpoints[this.undoCheckpoints.length - 1];
+      theWholeState = currentCheckpoint.state;
+    }
+  };
 
   return new Spaghetti();
 });

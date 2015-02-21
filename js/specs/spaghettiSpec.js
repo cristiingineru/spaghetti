@@ -45,17 +45,71 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       expect(checkpoint.name).toBe(name);
     });
 
-    it('should a have checkpoint list', function () {
+    it('should return all knwon checkpoints when checkpoints() is called', function () {
       var checkpoints = [];
       checkpoints.push(Spaghetti.checkpoint());
       checkpoints.push(Spaghetti.checkpoint('my name is X'));
       checkpoints.push(Spaghetti.checkpoint('my name is Y'));
-      expect(Spaghetti.checkpoints).toEqual(checkpoints);
+      expect(Spaghetti.checkpoints()).toEqual(checkpoints);
     });
-    
-    xit('should restore the state to a previous checkpoint when undo() is called');
-    xit('should restore the state to a next checkpoint when redo() is called');
-    xit('should restore the state to a specific checkpoint when restore() is called with an id');
 
+    it('should restore the state to a previous checkpoint when undo() is called', function () {
+      var state1 = Immutable.fromJS([1]),
+        state2 = Immutable.fromJS([2]);
+      Spaghetti.state(state1);
+      Spaghetti.checkpoint('checkpoint 1');
+      Spaghetti.state(state2);
+      Spaghetti.checkpoint('checkpoint 2');
+
+      Spaghetti.undo();
+
+      expect(Spaghetti.state()).toBe(state1);
+    });
+
+    it('should keep the state unchanged if there is nothing to undo', function () {
+      var state1 = Immutable.fromJS([1]),
+        state2 = Immutable.fromJS([2]);
+      Spaghetti.state(state1);
+      Spaghetti.checkpoint('checkpoint 1');
+      Spaghetti.state(state2);
+      Spaghetti.checkpoint('checkpoint 2');
+
+      Spaghetti.undo();
+      Spaghetti.undo();
+      Spaghetti.undo();
+      Spaghetti.undo();
+
+      expect(Spaghetti.state()).toBe(state1);
+    });
+
+    it('should restore the state to a next checkpoint when redo() is called', function () {
+      var state1 = Immutable.fromJS([1]),
+        state2 = Immutable.fromJS([2]);
+      Spaghetti.state(state1);
+      Spaghetti.checkpoint('checkpoint 1');
+      Spaghetti.state(state2);
+      Spaghetti.checkpoint('checkpoint 2');
+
+      Spaghetti.undo();
+      Spaghetti.redo();
+
+      expect(Spaghetti.state()).toBe(state2);
+    });
+
+    it('should keep the state unchanged if there is nothing to redo', function () {
+      var state1 = Immutable.fromJS([1]),
+        state2 = Immutable.fromJS([2]);
+      Spaghetti.state(state1);
+      Spaghetti.checkpoint('checkpoint 1');
+      Spaghetti.state(state2);
+      Spaghetti.checkpoint('checkpoint 2');
+
+      Spaghetti.undo();
+      Spaghetti.redo();
+      Spaghetti.redo();
+      Spaghetti.redo();
+
+      expect(Spaghetti.state()).toBe(state2);
+    });
   });
 });
