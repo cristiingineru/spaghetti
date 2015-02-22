@@ -5,26 +5,42 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
   return {
 
 
-    componentEventHandler: function (component) {
-      var componentKey = component.get('key');
+    componentEventHandler: function (component, reactComponent) {
+      var componentKey = component.get('key'),
+        isDragging = function (component) {
+          return component.get('key') === componentKey;
+        };
 
       return {
 
 
 
         onDragStart: function (event, ui) {
-
+          var originalX,
+            originalY;
+          
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components',
+                where(isDragging, function (component) {
+                  originalX = component.get('x');
+                  originalY = component.get('y');
+                  return component;
+                }))));
+          
+          var delta = {
+            deltaX: originalX - event.clientX,
+            deltaY: originalY - event.clientY
+          };
+          reactComponent.setState(delta);
         },
-        
+
         onDrag: function (event, ui) {
-          var isDragging = function (component) {
-              return component.get('key') === componentKey;
-            },
-            setXY = function (component) {
-              return component.objectify()
-                .setXY(event.clientX, event.clientY)
-                .model();
-            };
+          var setXY = function (component) {
+            return component.objectify()
+              .setXY(event.clientX + reactComponent.state.deltaX, event.clientY + reactComponent.state.deltaY)
+              .model();
+          };
 
           dissect(Spaghetti.state,
             update('diagram',
@@ -33,11 +49,11 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
 
           Spaghetti.redraw();
         },
-        
+
         onDragStop: function (event, ui) {
 
         },
-        
+
         onMouseUp: function (event, ui) {
           Spaghetti.checkpoint();
         }
@@ -89,14 +105,12 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
           }
           event.stopPropagation();
         },
-        
+
         onKeyPress: function (event, ui) {
-          if (event.keyIdentifier === 'U+001A' && event.ctrlKey === true)
-          {
+          if (event.keyIdentifier === 'U+001A' && event.ctrlKey === true) {
             Spaghetti.undo();
             Spaghetti.redraw();
-          }
-          else if (event.keyIdentifier === 'U+0019' && event.ctrlKey === true) {
+          } else if (event.keyIdentifier === 'U+0019' && event.ctrlKey === true) {
             Spaghetti.redo();
             Spaghetti.redraw();
           }
@@ -241,7 +255,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                   updateAll('legs',
                     where(isDragging, [snapToHole, connectToHole])))));
           }
-          
+
           dragging = false;
           Spaghetti.checkpoint();
           Spaghetti.redraw();

@@ -96,9 +96,16 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var key = 9999,
             resistor = resistorWithKey(key),
             diagram = diagramWithComponent(resistor),
-            Spaghetti = spaghettiWithDiagram(diagram);
+            Spaghetti = spaghettiWithDiagram(diagram),
+            reactResistorMock = {
+              state: {
+                deltaX: 0,
+                deltaY: 0
+              },
+              setState: function () {}
+            };
 
-          var handler = LayoutManager.componentEventHandler(resistor),
+          var handler = LayoutManager.componentEventHandler(resistor, reactResistorMock),
             event = {
               clientX: 888,
               clientY: 999
@@ -123,15 +130,15 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             redraw: jasmine.createSpy(),
             checkpoint: jasmine.createSpy()
           };
-          
+
           var squire = new Squire()
             .mock('app/spaghetti', spaghettiMock)
             .require(['app/spaghetti', 'app/layoutManager'], function (Spaghetti2, LayoutManager2) {
               var component = keyifiedResistor(),
                 handler = LayoutManager2.componentEventHandler(component);
-              
+
               handler.onMouseUp();
-              
+
               expect(spaghettiMock.checkpoint).toHaveBeenCalled();
               done();
             });

@@ -10,9 +10,15 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/layoutMana
         model: null
       };
     },
+    getInitialState: function () {
+      return {
+        deltaX: 0,
+        deltaY: 0
+      };
+    },
     render: function () {
 
-      var eventHandler = LayoutManager.componentEventHandler(this.props.model);
+      var eventHandler = LayoutManager.componentEventHandler(this.props.model, this);
 
       var leg1 = React.createElement(partLeg.class(), {
         model: this.props.model.getIn(['legs', 0]),
