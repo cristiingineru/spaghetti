@@ -43,6 +43,7 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
       .model();
     dissect(Spaghetti.state,
       set('diagram', myTopDiagram));
+  Spaghetti.checkpoint();
   
   var LayoutManager = require('app/layoutManager');
   var eventHandler = LayoutManager.diagramEventHandler(myTopDiagram);

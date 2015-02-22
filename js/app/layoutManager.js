@@ -15,6 +15,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
         onDragStart: function (event, ui) {
 
         },
+        
         onDrag: function (event, ui) {
           var isDragging = function (component) {
               return component.get('key') === componentKey;
@@ -32,9 +33,13 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
 
           Spaghetti.redraw();
         },
+        
         onDragStop: function (event, ui) {
 
-          Spaghetti.redraw();
+        },
+        
+        onMouseUp: function (event, ui) {
+          Spaghetti.checkpoint();
         }
       };
     },
@@ -89,9 +94,11 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
           if (event.keyIdentifier === 'U+001A' && event.ctrlKey === true)
           {
             Spaghetti.undo();
+            Spaghetti.redraw();
           }
           else if (event.keyIdentifier === 'U+0019' && event.ctrlKey === true) {
             Spaghetti.redo();
+            Spaghetti.redraw();
           }
         }
       };
@@ -236,6 +243,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
           }
           
           dragging = false;
+          Spaghetti.checkpoint();
           Spaghetti.redraw();
         }
 

@@ -26,14 +26,17 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/layoutMana
         model: this.props.model.get('body'),
         owner: this.props.model
       });
-      // this wrapper is required to make the react.draggable work
-      var bodyWrapper = React.createElement('g', null, body);
+      // this wrappers are required to make the react.draggable work
+      var bodyWrapper = React.createElement('g', {
+        onMouseUp: eventHandler.onMouseUp
+      }, body);
+      var bodySecondWrapper = React.createElement('g', null, bodyWrapper);
       var draggableBody = React.createElement(Draggable, {
         axis: 'both',
         onStart: eventHandler.onDragStart,
         onDrag: eventHandler.onDrag,
         onStop: eventHandler.onDragStop
-      }, bodyWrapper);
+      }, bodySecondWrapper);
       return React.createElement('g', null, [leg1, leg2, draggableBody]);
     }
   });

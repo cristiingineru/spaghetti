@@ -82,35 +82,60 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
       };
 
     describe('component event handler', function () {
-      it('should return a specialized instance with onDragStart, onDrag and onDragEnd functions', function () {
+      it('should return a specialized instance with onDragStart, onDrag, onDragEnd and onMouseUp functions', function () {
         var component = Immutable.fromJS({});
         var handler = LayoutManager.componentEventHandler(component);
         expect(handler.onDragStart).not.toBeFalsy();
         expect(handler.onDrag).not.toBeFalsy();
         expect(handler.onDragStop).not.toBeFalsy();
+        expect(handler.onMouseUp).not.toBeFalsy();
       });
 
-      it('should move the component when onDrag is called', function () {
-        var key = 9999,
-          resistor = resistorWithKey(key),
-          diagram = diagramWithComponent(resistor),
-          Spaghetti = spaghettiWithDiagram(diagram);
+      describe('onDrag', function () {
+        it('should move the component', function () {
+          var key = 9999,
+            resistor = resistorWithKey(key),
+            diagram = diagramWithComponent(resistor),
+            Spaghetti = spaghettiWithDiagram(diagram);
 
-        var handler = LayoutManager.componentEventHandler(resistor),
-          event = {
-            clientX: 888,
-            clientY: 999
+          var handler = LayoutManager.componentEventHandler(resistor),
+            event = {
+              clientX: 888,
+              clientY: 999
+            };
+          handler.onDrag(event);
+
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components',
+                where(isComponent(key), function (myResistor) {
+                  expect(myResistor.get('x')).toBe(888);
+                  expect(myResistor.get('y')).toBe(999);
+                  return myResistor;
+                }))));
+        });
+      });
+
+      describe('onMouseUp', function () {
+        it('should create a new checkpoint', function (done) {
+          var spaghettiMock = {
+            dissect: jasmine.createSpy(),
+            redraw: jasmine.createSpy(),
+            checkpoint: jasmine.createSpy()
           };
-        handler.onDrag(event);
-
-        dissect(Spaghetti.state,
-          update('diagram',
-            updateAll('components',
-              where(isComponent(key), function (myResistor) {
-                expect(myResistor.get('x')).toBe(888);
-                expect(myResistor.get('y')).toBe(999);
-                return myResistor;
-              }))));
+          
+          var squire = new Squire()
+            .mock('app/spaghetti', spaghettiMock)
+            .require(['app/spaghetti', 'app/layoutManager'], function (Spaghetti2, LayoutManager2) {
+              var component = keyifiedResistor(),
+                handler = LayoutManager2.componentEventHandler(component);
+              
+              handler.onMouseUp();
+              
+              expect(spaghettiMock.checkpoint).toHaveBeenCalled();
+              done();
+            });
+        });
       });
     });
 
