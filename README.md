@@ -9,6 +9,7 @@ A simple online editor for electronic breadboards.
  - resistor and capacitor components
  - connectable finger-hole
  - bendable wire leads
+ - undo
 
 ![preview](http://cristiingineru.github.io/spaghetti/images/preview.png)
 
