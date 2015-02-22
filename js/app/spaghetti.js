@@ -1,23 +1,87 @@
 /* global define */
 
-define(['app/state'], function (State) {
+define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
-  var Spaghetti = Object.create(null);
+  // keep it here so the state() or init() functions can work even whithout 'this'
+  var theWholeState;
 
-  Spaghetti.init = function () {
-    this.theOnlyState = State;
-    this.theOnlyState.cursor().withMutations(function (st) {
-      st.clear()
-        .set('diagram', {
-          components: []
-        });
-    });
+  function Spaghetti() {
+    this.init();
+  }
+
+  Spaghetti.prototype.init = function () {
+    theWholeState = Immutable.fromJS({});
+    this.undoCheckpoints = [];
+    this.redoCheckpoints = [];
+    this.nextCheckpointId = 0;
     return this;
   };
 
-  Spaghetti.state = function () {
-    return this.theOnlyState.cursor();
+  Spaghetti.prototype.state = function (newValue) {
+    if (newValue !== undefined) {
+      theWholeState = newValue;
+    }
+    return theWholeState;
   };
 
-  return Spaghetti;
+
+  Spaghetti.prototype.redraw = function () {};
+
+  Spaghetti.prototype.setRedraw = function (fn) {
+    this.redraw = fn;
+    return this;
+  };
+
+  /**
+   * The order of storing the checkpoints in the undo stack is:
+   *  [oldest, old, ... new, newest]
+   **/
+  Spaghetti.prototype.undoCheckpoints = [];
+
+  /**
+   * The order of storing the checkpoints in the redo stack is:
+   *  [oldest undo, old undo, ... new undo, newest undo]
+   **/
+  Spaghetti.prototype.redoCheckpoints = [];
+
+  Spaghetti.prototype.nextCheckpointId = 0;
+
+  Spaghetti.prototype.checkpoint = function (name) {
+    var checkpoint = {
+      state: theWholeState,
+      id: this.nextCheckpointId,
+      name: name
+    };
+    this.undoCheckpoints.push(checkpoint);
+    this.redoCheckpoints = [];
+    this.nextCheckpointId += 1;
+    return checkpoint;
+  };
+
+  Spaghetti.prototype.checkpoints = function () {
+    var allCheckpoints = this.undoCheckpoints.concat(this.redoCheckpoints);
+    return allCheckpoints;
+  };
+
+  Spaghetti.prototype.undo = function () {
+    if (this.undoCheckpoints.length > 1) {
+      var checkpoint = this.undoCheckpoints.pop();
+      this.redoCheckpoints.push(checkpoint);
+
+      var currentCheckpoint = this.undoCheckpoints[this.undoCheckpoints.length - 1];
+      theWholeState = currentCheckpoint.state;
+    }
+  };
+
+  Spaghetti.prototype.redo = function () {
+    if (this.redoCheckpoints.length > 0) {
+      var checkpoint = this.redoCheckpoints.pop();
+      this.undoCheckpoints.push(checkpoint);
+
+      var currentCheckpoint = this.undoCheckpoints[this.undoCheckpoints.length - 1];
+      theWholeState = currentCheckpoint.state;
+    }
+  };
+
+  return new Spaghetti();
 });

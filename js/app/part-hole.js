@@ -62,6 +62,11 @@ define(['React', 'immutable.min'], function (React, Immutable) {
         .set('connected', true);
       return this;
     };
+    thisProto.disconnect = function () {
+      model = model.delete('legKey')
+        .set('connected', false);
+      return this;
+    };
     thisProto.keyify = function (keyProvider) {
       var key = keyProvider();
       model = model.set('key', key);

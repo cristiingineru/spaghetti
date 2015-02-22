@@ -31,47 +31,15 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       return cursor;
   };
 
-  Immutable.Seq.Keyed.prototype.objectify3 = function () {
-    var map = this.toJS();
-    var functions = {};
-    for (var key in map) {
-      var value = map[key];
-      if (map.hasOwnProperty(key) && typeof (value) == 'function') {
-        var f = value;
-        functions[key] = (function (f) {
-          return function () {
-            var newArguments = [this];
-            for (var i = 0; i < arguments.length; i++) {
-              newArguments.push(arguments[i]);
-            }
-            var mutatedObject = f.apply(null, newArguments);
-            // decorating the mutated object with functions as well as the initial object
-            mixin(functions, mutatedObject);
-            return mutatedObject;
-          };
-        })(f);
+  Immutable.Seq.prototype.objectify =
+    Immutable.Map.prototype.objectify = function () {
+      var model = this;
+      var proto = this.get('proto');
+      if (!proto) {
+        throw new Error('Attempted objectify an invalid model.');
       }
-    }
-    // decorating the current object with functions
-    mixin(functions, this);
-    return this;
-  };
-
-  Immutable.Map.prototype.objectify =
-  Immutable.Seq.prototype.objectify = function () {
-    var model = this;
-    var proto = this.get('proto');
-    if (!proto) {
-      throw new Error('Attempted objectify an invalid model.');
-    }
-    var object = proto(model);
-    return object;
-  };
-
-  Immutable.Map.prototype.asObject =
-  Immutable.Seq.prototype.asObject = function (fn) {
-    var object = this.objectify();
-    return fn(object).model();
+      var object = proto(model);
+      return object;
   };
 
   return {

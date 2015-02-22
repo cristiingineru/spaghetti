@@ -1,76 +1,119 @@
 /* global define, console, dissect, update, updateAll, filter, where */
 
-define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
+define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Dissect) {
 
   return {
 
 
-    componentEventHandler: function (component) {
-      var key = component.get('key');
+    componentEventHandler: function (component, reactComponent) {
+      var componentKey = component.get('key'),
+        isDragging = function (component) {
+          return component.get('key') === componentKey;
+        };
 
       return {
 
 
 
         onDragStart: function (event, ui) {
-          //console.log('*** START ***');
-        },
-        onDrag: function (event, ui) {
-          dissect(State,
+          var originalX,
+            originalY;
+          
+          dissect(Spaghetti.state,
             update('diagram',
-              updateAll('components', function (component) {
-                if (component.get('key') === key) {
-                  component = component.objectify()
-                    .setXY(event.clientX, event.clientY)
-                    .model();
-                }
-                return component;
-              })
-            )
-          );
-          State.redraw();
+              updateAll('components',
+                where(isDragging, function (component) {
+                  originalX = component.get('x');
+                  originalY = component.get('y');
+                  return component;
+                }))));
+          
+          var delta = {
+            deltaX: originalX - event.clientX,
+            deltaY: originalY - event.clientY
+          };
+          reactComponent.setState(delta);
         },
+
+        onDrag: function (event, ui) {
+          var setXY = function (component) {
+            return component.objectify()
+              .setXY(event.clientX + reactComponent.state.deltaX, event.clientY + reactComponent.state.deltaY)
+              .model();
+          };
+
+          dissect(Spaghetti.state,
+            update('diagram',
+              updateAll('components',
+                where(isDragging, setXY))));
+
+          Spaghetti.redraw();
+        },
+
         onDragStop: function (event, ui) {
-          //console.log('*** STOP ***');
-          State.redraw();
+
+        },
+
+        onMouseUp: function (event, ui) {
+          Spaghetti.checkpoint();
         }
       };
     },
 
 
 
-    diagramEventHandler: function (component) {
-      var key = component.get('key');
+    bodyEventHandler: function (component) {
+      var componentKey = component.get('key'),
+        isClicked = function (component) {
+          return component.get('key') === componentKey;
+        },
+        select = function (component) {
+          return component.objectify()
+            .select(true)
+            .model();
+        };
+
       return {
-        onBodyClickHandler: function (event, ui) {
+        onClick: function (event, ui) {
           if (event.ctrlKey) {
-            dissect(State,
+            dissect(Spaghetti.state,
               update('diagram',
-                updateAll('components', function (component) {
-                  if (component.get('key') === key) {
-                    component = component.objectify()
-                      .update(true)
-                      .model();
-                  }
-                  return component;
-                })
-              )
-            );
+                updateAll('components',
+                  where(isClicked, select))));
+          }
+
+          event.stopPropagation();
+        }
+      };
+    },
+
+
+
+    diagramEventHandler: function () {
+      var isNotSelected = function (component) {
+        return component.get('selected') !== true;
+      };
+
+      return {
+        onClick: function (event, ui) {
+          if (event.ctrlKey) {
+            dissect(Spaghetti.state,
+              update('diagram',
+                filter('components', isNotSelected)));
+
+            Spaghetti.redraw();
           }
           event.stopPropagation();
         },
-        onDiagramClickHandler: function (event, ui) {
-          if (event.ctrlKey) {
-            dissect(State,
-              update('diagram',
-                filter('components', function (component) {
-                  return component.get('selected') !== true;
-                })
-              )
-            );
-            State.redraw();
+
+        onKeyPress: function (event, ui) {
+          if (event.keyIdentifier === 'U+001A' && event.ctrlKey === true) {
+            Spaghetti.undo();
+            Spaghetti.redraw();
+          } else if (event.keyIdentifier === 'U+0019' && event.ctrlKey === true) {
+            Spaghetti.redo();
+            Spaghetti.redraw();
           }
-          event.stopPropagation();
         }
       };
     },
@@ -108,6 +151,14 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
                 .tryToSetX2Y2(event.clientX, event.clientY)
                 .model();
             },
+            makeSureIsDisconnected = function (leg) {
+              if (leg.get('connected')) {
+                leg = leg.objectify()
+                  .disconnect()
+                  .model();
+              }
+              return leg;
+            },
             isNear = function (hole) {
               var x1 = hole.get('x'),
                 y1 = hole.get('y'),
@@ -116,34 +167,37 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
                 distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)),
                 radius = 3;
               return distance <= radius;
+            },
+            isConnectedToThisLeg = function (hole) {
+              return hole.get('connected') && hole.get('legKey') === legKey;
+            },
+            disconnect = function (hole) {
+              return hole.objectify()
+                .disconnect()
+                .model();
             };
 
-          dissect(State,
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 updateAll('legs',
-                  where(isDragging, setX2Y2)
-                )
-              )
-            )
-          );
-          dissect(State,
+                  where(isDragging, [setX2Y2, makeSureIsDisconnected])))));
+
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
                   updateAll('holes', [
                     where(isHovered, unhover),
-                    where(isNear, hover)])
-                )
-              )
-            )
-          );
+                    where(isNear, hover),
+                    where(isConnectedToThisLeg, disconnect)])))));
+
           dragging = true;
-          State.redraw();
+          Spaghetti.redraw();
         },
 
-        onDragEnd: function (event, domID) {
-
+        onDragStop: function (event, domID) {
+          // this function doesn't get called so its content was moved to onMouseUp
         },
 
         onMouseUp: function (event, domID) {
@@ -181,53 +235,30 @@ define(['React', 'app/state', 'app/dissect'], function (React, State, Dissect) {
                 .connectTo(holeKey)
                 .model();
             },
-            makeSureIsDisconnected = function (leg) {
-              if (leg.get('connected')) {
-                leg = leg.objectify()
-                  .disconnect()
-                  .model();
-              }
-              return leg;
-            },
             holeFound = false,
             holeKey = -1,
             holeX = -1,
             holeY = -1;
 
-          dissect(State,
+          dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
                   updateAll('holes', [
                     where(isNear, [connectToLeg, storeHoleData]),
-                    where(isHovered, unhover)])
-                )
-              )
-            )
-          );
+                    where(isHovered, unhover)])))));
+
           if (holeFound) {
-            dissect(State,
+            dissect(Spaghetti.state,
               update('diagram',
                 updateAll('components',
                   updateAll('legs',
-                    where(isDragging, [snapToHole, connectToHole])
-                  )
-                )
-              )
-            );
-          } else {
-            dissect(State,
-              update('diagram',
-                updateAll('components',
-                  updateAll('legs',
-                    where(isDragging, makeSureIsDisconnected)
-                  )
-                )
-              )
-            );
+                    where(isDragging, [snapToHole, connectToHole])))));
           }
+
           dragging = false;
-          State.redraw();
+          Spaghetti.checkpoint();
+          Spaghetti.redraw();
         }
 
       };
