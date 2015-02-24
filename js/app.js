@@ -43,19 +43,28 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
       .model();
     dissect(Spaghetti.state,
       set('diagram', myTopDiagram));
-  Spaghetti.checkpoint();
-  
-  var LayoutManager = require('app/layoutManager');
-  var eventHandler = LayoutManager.diagramEventHandler(myTopDiagram);
-  document.addEventListener('keypress', eventHandler.onKeyPress);
+    Spaghetti.checkpoint();
+
+    var LayoutManager = require('app/layoutManager');
+    var eventHandler = LayoutManager.diagramEventHandler(myTopDiagram);
+    document.addEventListener('keypress', eventHandler.onKeyPress);
 
     var redraw = function () {
       var element = React.createElement(Diagram.class(), {
         model: Spaghetti.state().get('diagram')
       });
-      React.render(element, document.getElementById('svg'));
+      React.render(element, document.getElementById('mainDiagramSvg'));
     };
     Spaghetti.setRedraw(redraw);
     Spaghetti.redraw();
+
+    var checkpointTreeRedraw = function () {
+      var element = React.createElement(CheckpointTree.class(), {
+        model: Spaghetti.checkpoints()
+      });
+      React.render(element, document.getElementById('checkpointTreeSvg'));
+    };
+    Spaghetti.setCheckpointTreeRedraw(redraw);
+    Spaghetti.checkpointTreeRedraw();
 
   });
