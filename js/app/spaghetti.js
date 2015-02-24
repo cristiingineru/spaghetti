@@ -50,7 +50,9 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     var checkpoint = {
       state: theWholeState,
       id: this.nextCheckpointId,
-      name: name
+      name: name,
+      timestamp: Date.now(),
+      previouse: this.undoCheckpoints[this.undoCheckpoints.length - 1]
     };
     this.undoCheckpoints.push(checkpoint);
     this.redoCheckpoints = [];

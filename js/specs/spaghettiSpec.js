@@ -38,21 +38,24 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       expect(checkpoint).not.toBeNull();
       expect(checkpoint.id).toEqual(jasmine.any(Number));
     });
-
-    it('should create a named checkpoint when checkpoint() is called with a name', function () {
-      var name = 'my name is X',
-        checkpoint = Spaghetti.checkpoint(name);
-      expect(checkpoint.name).toBe(name);
+    
+    it('should create a named checkpoint even without a name', function () {
+      var checkpoint = Spaghetti.checkpoint();
+      expect(checkpoint.name).toBeFalsy();
     });
 
-    xit('should create checkpoints with id, timestamp and previouse timestamp', function () {
-      var now = Date.now(),
+    it('should create checkpoints with name, id, timestamp and previouse checkpoint', function () {
+      var name = 'another name',
+          before = Date.now(),
           firstCheckpoint = Spaghetti.checkpoint(),
-          checkpoint = Spaghetti.checkpoint();
-      expect(checkpoint.name).toBeFalsy();
+          secondCheckpoint = Spaghetti.checkpoint(),
+          checkpoint = Spaghetti.checkpoint(name),
+          after = Date.now();
+      expect(checkpoint.name).toBe(name);
       expect(checkpoint.id).toEqual(jasmine.any(Number));
-      expect(checkpoint.timeStamp).toBeGreaterThan(now);
-      expect(checkpoint.previouse).toBe(firstCheckpoint);
+      expect(checkpoint.timestamp - before <= after - before).toBeTruthy();
+      expect(checkpoint.previouse).toBe(secondCheckpoint);
+      expect(secondCheckpoint.previouse).toBe(firstCheckpoint);
       expect(firstCheckpoint.previous).toBeFalsy();
     });
 
