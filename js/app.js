@@ -9,8 +9,8 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/keyProvider', 'app/layoutManager'],
-  function (React, Immutable, Catalog, Spaghetti, Dissect, Diagram, KeyProvider, LayoutManager) {
+requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/keyProvider', 'app/layoutManager', 'app/checkpointTree'],
+  function (React, Immutable, Catalog, Spaghetti, Dissect, Diagram, KeyProvider, LayoutManager, CheckpointTree) {
 
     var breadboard = Catalog('breadboard');
     var myBreadboardModel = breadboard.model().objectify()
