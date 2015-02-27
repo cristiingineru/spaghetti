@@ -14,6 +14,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     this.undoCheckpoints = [];
     this.redoCheckpoints = [];
     this.nextCheckpointId = 0;
+    this.allCheckpoints = [];
     return this;
   };
 
@@ -45,6 +46,13 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
   Spaghetti.prototype.redoCheckpoints = [];
 
   Spaghetti.prototype.nextCheckpointId = 0;
+  
+  /**
+   * All checkpoints ever created. This list is necessary because
+   * creating a new checkpoint after an undo operation will empy
+   * the redo checkpoints list.
+   **/
+  Spaghetti.prototype.allCheckpoints = [];
 
   Spaghetti.prototype.checkpoint = function (name) {
     var checkpoint = {
@@ -55,14 +63,14 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       previouse: this.undoCheckpoints[this.undoCheckpoints.length - 1]
     };
     this.undoCheckpoints.push(checkpoint);
+    this.allCheckpoints.push(checkpoint);
     this.redoCheckpoints = [];
     this.nextCheckpointId += 1;
     return checkpoint;
   };
 
   Spaghetti.prototype.checkpoints = function () {
-    var allCheckpoints = this.undoCheckpoints.concat(this.redoCheckpoints);
-    return allCheckpoints;
+    return this.allCheckpoints;
   };
 
   Spaghetti.prototype.undo = function () {

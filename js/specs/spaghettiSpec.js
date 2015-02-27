@@ -38,7 +38,7 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       expect(checkpoint).not.toBeNull();
       expect(checkpoint.id).toEqual(jasmine.any(Number));
     });
-    
+
     it('should create a named checkpoint even without a name', function () {
       var checkpoint = Spaghetti.checkpoint();
       expect(checkpoint.name).toBeFalsy();
@@ -46,11 +46,11 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
 
     it('should create checkpoints with name, id, timestamp and previouse checkpoint', function () {
       var name = 'another name',
-          before = Date.now(),
-          firstCheckpoint = Spaghetti.checkpoint(),
-          secondCheckpoint = Spaghetti.checkpoint(),
-          checkpoint = Spaghetti.checkpoint(name),
-          after = Date.now();
+        before = Date.now(),
+        firstCheckpoint = Spaghetti.checkpoint(),
+        secondCheckpoint = Spaghetti.checkpoint(),
+        checkpoint = Spaghetti.checkpoint(name),
+        after = Date.now();
       expect(checkpoint.name).toBe(name);
       expect(checkpoint.id).toEqual(jasmine.any(Number));
       expect(checkpoint.timestamp - before <= after - before).toBeTruthy();
@@ -59,13 +59,26 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       expect(firstCheckpoint.previous).toBeFalsy();
     });
 
-    it('should return all knwon checkpoints when checkpoints() is called', function () {
-      var checkpoints = [];
+    it('should return all ever created checkpoints when checkpoints() is called', function () {
+      var checkpoints = [],
+        checkpointComparer = function (c1, c2) {
+          return c1.id - c2.id;
+        };
+
       checkpoints.push(Spaghetti.checkpoint());
-      checkpoints.push(Spaghetti.checkpoint('my name is X'));
-      checkpoints.push(Spaghetti.checkpoint('my name is Y'));
+      checkpoints.push(Spaghetti.checkpoint());
       Spaghetti.undo();
-      expect(Spaghetti.checkpoints()).toEqual(checkpoints);
+      checkpoints.push(Spaghetti.checkpoint());
+      Spaghetti.undo();
+
+      var spaghettiCheckpoints = Spaghetti.checkpoints();
+      expect(checkpoints.length).toBe(spaghettiCheckpoints.length);
+
+      spaghettiCheckpoints = spaghettiCheckpoints.sort(checkpointComparer);
+      checkpoints = checkpoints.sort(checkpointComparer);
+      checkpoints.forEach(function (c, i) {
+        expect(spaghettiCheckpoints.indexOf(c)).toBe(i);
+      });
     });
 
     it('should restore the state to a previous checkpoint when undo() is called', function () {
