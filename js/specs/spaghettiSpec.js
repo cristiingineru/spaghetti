@@ -81,6 +81,22 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       });
     });
 
+    it('should return the curent checkpoint when curentCheckpoint() is called', function () {
+      var state1 = Immutable.fromJS([1]),
+        state2 = Immutable.fromJS([2]);
+      
+      Spaghetti.state(state1);
+      var checkpoint1 = Spaghetti.checkpoint('checkpoint 1');
+      expect(Spaghetti.curentCheckpoint()).toBe(checkpoint1);
+      
+      Spaghetti.state(state2);
+      var checkpoint2 = Spaghetti.checkpoint('checkpoint 2');
+      expect(Spaghetti.curentCheckpoint()).toBe(checkpoint2);
+      
+      Spaghetti.undo();
+      expect(Spaghetti.curentCheckpoint()).toBe(checkpoint1);
+    });
+
     it('should restore the state to a previous checkpoint when undo() is called', function () {
       var state1 = Immutable.fromJS([1]),
         state2 = Immutable.fromJS([2]);
@@ -155,6 +171,19 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       Spaghetti.redo();
 
       expect(Spaghetti.state()).toBe(state3);
+    });
+    
+    it('should call the checkpointsRedraw() function everytime checkpoint(), undo() or redo() are called', function () {
+      var state1 = Immutable.fromJS([1]),
+          checkpointsRedraw = jasmine.createSpy();
+      Spaghetti.setCheckpointsRedraw(checkpointsRedraw);
+      
+      Spaghetti.state(state1);
+      Spaghetti.checkpoint('checkpoint 1');
+      Spaghetti.undo();
+      Spaghetti.redo();
+
+      expect(checkpointsRedraw.calls.count()).toBe(3);
     });
   });
 });
