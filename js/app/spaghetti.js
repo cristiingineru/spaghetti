@@ -67,7 +67,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       id: this.nextCheckpointId,
       name: name,
       timestamp: Date.now(),
-      previouse: this.undoCheckpoints[this.undoCheckpoints.length - 1]
+      previous: this.undoCheckpoints[this.undoCheckpoints.length - 1]
     };
     this.undoCheckpoints.push(checkpoint);
     this.allCheckpoints.push(checkpoint);
@@ -103,7 +103,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     this.checkpointsRedraw();
   };
   
-  Spaghetti.prototype.curentCheckpoint = function () {
+  Spaghetti.prototype.currentCheckpoint = function () {
     return this.undoCheckpoints[this.undoCheckpoints.length - 1];
   };
 

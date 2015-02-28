@@ -44,7 +44,7 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       expect(checkpoint.name).toBeFalsy();
     });
 
-    it('should create checkpoints with name, id, timestamp and previouse checkpoint', function () {
+    it('should create checkpoints with name, id, timestamp and previous checkpoint', function () {
       var name = 'another name',
         before = Date.now(),
         firstCheckpoint = Spaghetti.checkpoint(),
@@ -54,8 +54,8 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       expect(checkpoint.name).toBe(name);
       expect(checkpoint.id).toEqual(jasmine.any(Number));
       expect(checkpoint.timestamp - before <= after - before).toBeTruthy();
-      expect(checkpoint.previouse).toBe(secondCheckpoint);
-      expect(secondCheckpoint.previouse).toBe(firstCheckpoint);
+      expect(checkpoint.previous).toBe(secondCheckpoint);
+      expect(secondCheckpoint.previous).toBe(firstCheckpoint);
       expect(firstCheckpoint.previous).toBeFalsy();
     });
 
@@ -81,20 +81,20 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       });
     });
 
-    it('should return the curent checkpoint when curentCheckpoint() is called', function () {
+    it('should return the current checkpoint when currentCheckpoint() is called', function () {
       var state1 = Immutable.fromJS([1]),
         state2 = Immutable.fromJS([2]);
       
       Spaghetti.state(state1);
       var checkpoint1 = Spaghetti.checkpoint('checkpoint 1');
-      expect(Spaghetti.curentCheckpoint()).toBe(checkpoint1);
+      expect(Spaghetti.currentCheckpoint()).toBe(checkpoint1);
       
       Spaghetti.state(state2);
       var checkpoint2 = Spaghetti.checkpoint('checkpoint 2');
-      expect(Spaghetti.curentCheckpoint()).toBe(checkpoint2);
+      expect(Spaghetti.currentCheckpoint()).toBe(checkpoint2);
       
       Spaghetti.undo();
-      expect(Spaghetti.curentCheckpoint()).toBe(checkpoint1);
+      expect(Spaghetti.currentCheckpoint()).toBe(checkpoint1);
     });
 
     it('should restore the state to a previous checkpoint when undo() is called', function () {
