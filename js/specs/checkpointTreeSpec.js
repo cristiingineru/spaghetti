@@ -85,5 +85,17 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
       expect(n3.get('checkpoint')).toBe(c3);
       expect(n3.get('children').size).toBe(0);
     });
+
+    it('should return a node with 3 children when 3 checkpoints have the same parent', function () {
+      var p = checkpoint('parent'),
+        c1 = checkpoint('c1', p),
+        c2 = checkpoint('c2', p),
+        c3 = checkpoint('c3', p),
+        checkpoints = Immutable.OrderedSet.of(p, c1, c2, c3);
+
+      var n = builder(checkpoints, c3);
+      expect(n.get('checkpoint')).toBe(p);
+      expect(n.get('children').size).toBe(3);
+    });
   });
 });
