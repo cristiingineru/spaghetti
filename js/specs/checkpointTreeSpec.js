@@ -29,6 +29,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
         return {
           name: name,
           id: id(),
+          timestamp: Date.now(),
           previousCheckpointId: previous && previous.id
         };
       };
@@ -96,6 +97,31 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
       var n = builder(checkpoints, c3);
       expect(n.get('checkpoint')).toBe(p);
       expect(n.get('children').size).toBe(3);
+    });
+
+    it('should sort the children by timestamp', function () {
+
+      jasmine.clock().install();
+      jasmine.clock().mockDate();
+      var p = checkpoint('parent');
+      jasmine.clock().tick(10);
+      var c1 = checkpoint('c1', p);
+      jasmine.clock().tick(10);
+      var c2 = checkpoint('c2', p);
+      jasmine.clock().tick(10);
+      var c3 = checkpoint('c3', p);
+      jasmine.clock().uninstall();
+
+      var checkpoints = Immutable.OrderedSet.of(p, c2, c3, p, c1);
+
+      var n = builder(checkpoints, c3),
+        children = n.get('children'),
+        index = 0,
+        sortedCheckpointChildren = [c1, c2, c3];
+      children.forEach(function (child) {
+        expect(child.get('checkpoint')).toBe(sortedCheckpointChildren[index]);
+        index += 1;
+      });
     });
   });
 });

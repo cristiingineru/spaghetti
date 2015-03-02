@@ -27,9 +27,13 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
         return checkpoint.previousCheckpointId === parent.get('checkpoint').id;
       };
     },
+    byTimestampSorter = function (c1, c2) {
+      return c1.timestamp - c2.timestamp;
+    },
     childrenOf = function (parent, checkpoints) {
       var children = checkpoints
         .filter(isCheckpointChildOfNode(parent))
+        .sort(byTimestampSorter)
         .map(function (checkpointChild) {
           var child = node(checkpointChild),
             childrenOfChild = childrenOf(child, checkpoints);
