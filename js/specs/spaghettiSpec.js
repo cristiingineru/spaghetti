@@ -60,39 +60,35 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
     });
 
     it('should return all ever created checkpoints when checkpoints() is called', function () {
-      var checkpoints = [],
+      var checkpoints = Immutable.OrderedSet(),
         checkpointComparer = function (c1, c2) {
           return c1.id - c2.id;
         };
 
-      checkpoints.push(Spaghetti.checkpoint());
-      checkpoints.push(Spaghetti.checkpoint());
+      checkpoints = checkpoints.add(Spaghetti.checkpoint());
+      checkpoints = checkpoints.add(Spaghetti.checkpoint());
       Spaghetti.undo();
-      checkpoints.push(Spaghetti.checkpoint());
+      checkpoints = checkpoints.add(Spaghetti.checkpoint());
       Spaghetti.undo();
 
       var spaghettiCheckpoints = Spaghetti.checkpoints();
-      expect(checkpoints.length).toBe(spaghettiCheckpoints.length);
 
-      spaghettiCheckpoints = spaghettiCheckpoints.sort(checkpointComparer);
-      checkpoints = checkpoints.sort(checkpointComparer);
-      checkpoints.forEach(function (c, i) {
-        expect(spaghettiCheckpoints.indexOf(c)).toBe(i);
-      });
+      expect(checkpoints.size).toBe(spaghettiCheckpoints.size);
+      expect(checkpoints.equals(spaghettiCheckpoints)).toBe(true);
     });
 
     it('should return the current checkpoint when currentCheckpoint() is called', function () {
       var state1 = Immutable.fromJS([1]),
         state2 = Immutable.fromJS([2]);
-      
+
       Spaghetti.state(state1);
       var checkpoint1 = Spaghetti.checkpoint('checkpoint 1');
       expect(Spaghetti.currentCheckpoint()).toBe(checkpoint1);
-      
+
       Spaghetti.state(state2);
       var checkpoint2 = Spaghetti.checkpoint('checkpoint 2');
       expect(Spaghetti.currentCheckpoint()).toBe(checkpoint2);
-      
+
       Spaghetti.undo();
       expect(Spaghetti.currentCheckpoint()).toBe(checkpoint1);
     });
@@ -172,12 +168,12 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
 
       expect(Spaghetti.state()).toBe(state3);
     });
-    
+
     it('should call the checkpointsRedraw() function everytime checkpoint(), undo() or redo() are called', function () {
       var state1 = Immutable.fromJS([1]),
-          checkpointsRedraw = jasmine.createSpy();
+        checkpointsRedraw = jasmine.createSpy();
       Spaghetti.setCheckpointsRedraw(checkpointsRedraw);
-      
+
       Spaghetti.state(state1);
       Spaghetti.checkpoint('checkpoint 1');
       Spaghetti.undo();

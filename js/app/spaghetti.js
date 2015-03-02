@@ -11,10 +11,10 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   Spaghetti.prototype.init = function () {
     theWholeState = Immutable.fromJS({});
-    this.undoCheckpoints = [];
-    this.redoCheckpoints = [];
+    this.undoCheckpoints = this.undoCheckpoints.clear();
+    this.redoCheckpoints = this.redoCheckpoints.clear();
     this.nextCheckpointId = 0;
-    this.allCheckpoints = [];
+    this.allCheckpoints = this.allCheckpoints.clear();
     return this;
   };
 
@@ -40,17 +40,9 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     return this;
   };
 
-  /**
-   * The order of storing the checkpoints in the undo stack is:
-   *  [oldest, old, ... new, newest]
-   **/
-  Spaghetti.prototype.undoCheckpoints = [];
+  Spaghetti.prototype.undoCheckpoints = Immutable.Stack();
 
-  /**
-   * The order of storing the checkpoints in the redo stack is:
-   *  [oldest undo, old undo, ... new undo, newest undo]
-   **/
-  Spaghetti.prototype.redoCheckpoints = [];
+  Spaghetti.prototype.redoCheckpoints = Immutable.Stack();
 
   Spaghetti.prototype.nextCheckpointId = 0;
   
@@ -59,7 +51,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
    * creating a new checkpoint after an undo operation will empy
    * the redo checkpoints list.
    **/
-  Spaghetti.prototype.allCheckpoints = [];
+  Spaghetti.prototype.allCheckpoints = Immutable.OrderedSet();
 
   Spaghetti.prototype.checkpoint = function (name) {
     var checkpoint = {
@@ -67,11 +59,11 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       id: this.nextCheckpointId,
       name: name,
       timestamp: Date.now(),
-      previous: this.undoCheckpoints[this.undoCheckpoints.length - 1]
+      previous: this.undoCheckpoints.peek()
     };
-    this.undoCheckpoints.push(checkpoint);
-    this.allCheckpoints.push(checkpoint);
-    this.redoCheckpoints = [];
+    this.undoCheckpoints = this.undoCheckpoints.push(checkpoint);
+    this.allCheckpoints = this.allCheckpoints.add(checkpoint);
+    this.redoCheckpoints = this.redoCheckpoints.clear();
     this.nextCheckpointId += 1;
     this.checkpointsRedraw();
     return checkpoint;
@@ -82,29 +74,31 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
   };
 
   Spaghetti.prototype.undo = function () {
-    if (this.undoCheckpoints.length > 1) {
-      var checkpoint = this.undoCheckpoints.pop();
-      this.redoCheckpoints.push(checkpoint);
+    if (this.undoCheckpoints.size > 1) {
+      var checkpoint = this.undoCheckpoints.peek();
+      this.undoCheckpoints = this.undoCheckpoints.pop();
+      this.redoCheckpoints = this.redoCheckpoints.push(checkpoint);
 
-      var currentCheckpoint = this.undoCheckpoints[this.undoCheckpoints.length - 1];
+      var currentCheckpoint = this.undoCheckpoints.peek();
       theWholeState = currentCheckpoint.state;
     }
     this.checkpointsRedraw();
   };
 
   Spaghetti.prototype.redo = function () {
-    if (this.redoCheckpoints.length > 0) {
-      var checkpoint = this.redoCheckpoints.pop();
-      this.undoCheckpoints.push(checkpoint);
+    if (this.redoCheckpoints.size > 0) {
+      var checkpoint = this.redoCheckpoints.peek();
+      this.redoCheckpoints = this.redoCheckpoints.pop();
+      this.undoCheckpoints = this.undoCheckpoints.push(checkpoint);
 
-      var currentCheckpoint = this.undoCheckpoints[this.undoCheckpoints.length - 1];
+      var currentCheckpoint = this.undoCheckpoints.peek();
       theWholeState = currentCheckpoint.state;
     }
     this.checkpointsRedraw();
   };
   
   Spaghetti.prototype.currentCheckpoint = function () {
-    return this.undoCheckpoints[this.undoCheckpoints.length - 1];
+    return this.undoCheckpoints.peek();
   };
 
   return new Spaghetti();
