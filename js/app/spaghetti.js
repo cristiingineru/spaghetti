@@ -59,7 +59,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       id: this.nextCheckpointId,
       name: name,
       timestamp: Date.now(),
-      previous: this.undoCheckpoints.peek()
+      previousCheckpointId: this.undoCheckpoints.peek() && this.undoCheckpoints.peek().id
     };
     this.undoCheckpoints = this.undoCheckpoints.push(checkpoint);
     this.allCheckpoints = this.allCheckpoints.add(checkpoint);

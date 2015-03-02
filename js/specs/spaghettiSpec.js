@@ -54,9 +54,9 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       expect(checkpoint.name).toBe(name);
       expect(checkpoint.id).toEqual(jasmine.any(Number));
       expect(checkpoint.timestamp - before <= after - before).toBeTruthy();
-      expect(checkpoint.previous).toBe(secondCheckpoint);
-      expect(secondCheckpoint.previous).toBe(firstCheckpoint);
-      expect(firstCheckpoint.previous).toBeFalsy();
+      expect(checkpoint.previousCheckpointId).toBe(secondCheckpoint.id);
+      expect(secondCheckpoint.previousCheckpointId).toBe(firstCheckpoint.id);
+      expect(firstCheckpoint.previousCheckpointId).toBeFalsy();
     });
 
     it('should return all ever created checkpoints when checkpoints() is called', function () {
