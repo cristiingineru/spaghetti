@@ -3,7 +3,60 @@
 
 define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function (React, Immutable, Core, Catalog) {
 
-  var checkpointTreeClass = null; //React.createClass({ });
+  var nodeCircleRadius = 3,
+    nodeCircleDistance = 15,
+    renderNode = function (checkpoint, x, y) {
+      return React.createElement('circle', {
+        r: nodeCircleRadius,
+        cx: x,
+        cy: y,
+        stroke: '#575555',
+        fill: '#575555'
+      });
+    },
+    renderLine = function (x1, y1, x2, y2) {
+      return React.createElement('line', {
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2,
+        strokeWidth: '2',
+        stroke: '#575555',
+        fill: '#575555'
+      });
+    },
+    renderBranch = function (node, x, y) {
+      var circle = renderNode(node, x, y);
+
+      var leftWidth = 0,
+        childBranches = node.get('children')
+        .reverse()
+        .map(function (child) {
+          var branchX = x - leftWidth,
+            branchY = y - nodeCircleDistance,
+            childBranch = renderBranch(child, branchX, branchY),
+            line = renderLine(x, y, branchX, branchY);
+          leftWidth += childBranch.width;
+          return React.createElement('g', null, [childBranch.element, line]);
+        })
+        .toArray();
+
+      return {
+        element: React.createElement('g', null, [circle].concat(childBranches)),
+        width: Math.max(leftWidth, nodeCircleDistance)
+      };
+    },
+    checkpointTreeClass = React.createClass({
+      displayName: 'checkpointTree',
+      getDefaultProps: function () {
+        return {
+          root: null
+        };
+      },
+      render: function () {
+        return renderBranch(this.props.root, 200, 350).element;
+      }
+    });
 
 
   var node = function (checkpoint) {
@@ -27,13 +80,13 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
         return checkpoint.previousCheckpointId === parent.get('checkpoint').id;
       };
     },
-    byTimestampSorter = function (c1, c2) {
+    byTimestampAscending = function (c1, c2) {
       return c1.timestamp - c2.timestamp;
     },
     childrenOf = function (parent, checkpoints) {
       var children = checkpoints
         .filter(isCheckpointChildOfNode(parent))
-        .sort(byTimestampSorter)
+        .sort(byTimestampAscending)
         .map(function (checkpointChild) {
           var child = node(checkpointChild),
             childrenOfChild = childrenOf(child, checkpoints);
@@ -41,17 +94,16 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
           return child;
         });
       return children;
+    },
+    treeBuilder = function (checkpoints, currentCheckpoint) {
+      validateTreeBuilderArguments(checkpoints, currentCheckpoint);
+
+      var root = node(checkpoints.find(isCheckpointRoot)),
+        children = childrenOf(root, checkpoints);
+      root = root.set('children', children);
+
+      return root;
     };
-
-  var treeBuilder = function (checkpoints, currentCheckpoint) {
-    validateTreeBuilderArguments(checkpoints, currentCheckpoint);
-
-    var root = node(checkpoints.find(isCheckpointRoot)),
-      children = childrenOf(root, checkpoints);
-    root = root.set('children', children);
-
-    return root;
-  };
 
 
   return {
