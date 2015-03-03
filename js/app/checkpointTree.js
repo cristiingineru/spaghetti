@@ -1,21 +1,37 @@
 /* global define, require */
 
 
-define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core) {
+define(['React', 'immutable.min', 'app/core', 'app/spaghetti'], function (React, Immutable, Core, Spaghetti) {
 
-  var nodeCircleRadius = 3,
-    nodeCircleDistance = 15,
+  var lam = {
+    checkpointEventHandler: function (checkpoint) {
+      
+      return {
+        onClick: function (event, domID) {
+          Spaghetti.state(checkpoint.state);
+          Spaghetti.redraw();
+        }
+      };
+    }
+  };
+
+  var nodeCircleRadius = 8,
+    nodeCircleDistance = 25,
     onClick = function (checkpoint) {
-      return function (event, ui) {};
+      return function (event, domID) {
+        Spaghetti.state(checkpoint.state);
+        Spaghetti.redraw();
+      };
     },
-    renderNode = function (checkpoint, x, y) {
+    renderNode = function (node, x, y) {
+      var eventHandler = lam.checkpointEventHandler(node.get('checkpoint'));
       return React.createElement('circle', {
         r: nodeCircleRadius,
         cx: x,
         cy: y,
         stroke: '#575555',
         fill: '#575555',
-        onClick: onClick(checkpoint)
+        onClick: eventHandler.onClick
       });
     },
     renderLine = function (x1, y1, x2, y2) {
