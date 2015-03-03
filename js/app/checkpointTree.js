@@ -1,17 +1,21 @@
 /* global define, require */
 
 
-define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function (React, Immutable, Core, Catalog) {
+define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core) {
 
   var nodeCircleRadius = 3,
     nodeCircleDistance = 15,
+    onClick = function (checkpoint) {
+      return function (event, ui) {};
+    },
     renderNode = function (checkpoint, x, y) {
       return React.createElement('circle', {
         r: nodeCircleRadius,
         cx: x,
         cy: y,
         stroke: '#575555',
-        fill: '#575555'
+        fill: '#575555',
+        onClick: onClick(checkpoint)
       });
     },
     renderLine = function (x1, y1, x2, y2) {
