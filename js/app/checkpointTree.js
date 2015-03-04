@@ -1,36 +1,18 @@
-/* global define, require */
+/* global define */
 
 
-define(['React', 'immutable.min', 'app/core', 'app/spaghetti'], function (React, Immutable, Core, Spaghetti) {
+define(['React', 'immutable.min', 'app/checkpointTreeEventHandler'], function (React, Immutable, CheckpointTreeEventHandler) {
 
-  var lam = {
-    checkpointEventHandler: function (checkpoint) {
-      
-      return {
-        onClick: function (event, domID) {
-          Spaghetti.state(checkpoint.state);
-          Spaghetti.redraw();
-        }
-      };
-    }
-  };
-
-  var nodeCircleRadius = 8,
-    nodeCircleDistance = 25,
-    onClick = function (checkpoint) {
-      return function (event, domID) {
-        Spaghetti.state(checkpoint.state);
-        Spaghetti.redraw();
-      };
-    },
+  var nodeCircleRadius = 4,
+    nodeCircleDistance = 20,
     renderNode = function (node, x, y) {
-      var eventHandler = lam.checkpointEventHandler(node.get('checkpoint'));
+      var eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(node.get('checkpoint'));
       return React.createElement('circle', {
         r: nodeCircleRadius,
         cx: x,
         cy: y,
-        stroke: '#575555',
-        fill: '#575555',
+        stroke: '#2f6b7c',
+        fill: '#2f6b7c',
         onClick: eventHandler.onClick
       });
     },
@@ -41,8 +23,8 @@ define(['React', 'immutable.min', 'app/core', 'app/spaghetti'], function (React,
         x2: x2,
         y2: y2,
         strokeWidth: '2',
-        stroke: '#575555',
-        fill: '#575555'
+        stroke: '#4a9eb5',
+        fill: '#4a9eb5'
       });
     },
     renderBranch = function (node, x, y) {
@@ -57,12 +39,12 @@ define(['React', 'immutable.min', 'app/core', 'app/spaghetti'], function (React,
             childBranch = renderBranch(child, branchX, branchY),
             line = renderLine(x, y, branchX, branchY);
           leftWidth += childBranch.width;
-          return React.createElement('g', null, [childBranch.element, line]);
+          return React.createElement('g', null, [line, childBranch.element]);
         })
         .toArray();
 
       return {
-        element: React.createElement('g', null, [circle].concat(childBranches)),
+        element: React.createElement('g', null, childBranches.concat([circle])),
         width: Math.max(leftWidth, nodeCircleDistance)
       };
     },
@@ -74,7 +56,7 @@ define(['React', 'immutable.min', 'app/core', 'app/spaghetti'], function (React,
         };
       },
       render: function () {
-        return renderBranch(this.props.root, 200, 350).element;
+        return renderBranch(this.props.root, 200, 400).element;
       }
     });
 
