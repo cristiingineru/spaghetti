@@ -61,9 +61,10 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler'], function (R
     });
 
 
-  var node = function (checkpoint) {
+  var node = function (checkpoint, isCurrent) {
       return Immutable.Map()
         .set('checkpoint', checkpoint)
+        .set('isCurrent', isCurrent)
         .set('children', Immutable.List());
     },
     validateTreeBuilderArguments = function (checkpoints, currentCheckpoint) {
@@ -90,7 +91,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler'], function (R
         .filter(isCheckpointChildOfNode(parent))
         .sort(byTimestampAscending)
         .map(function (checkpointChild) {
-          var child = node(checkpointChild),
+          var child = node(checkpointChild, false),
             childrenOfChild = childrenOf(child, checkpoints);
           child = child.set('children', childrenOfChild);
           return child;
@@ -100,7 +101,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler'], function (R
     treeBuilder = function (checkpoints, currentCheckpoint) {
       validateTreeBuilderArguments(checkpoints, currentCheckpoint);
 
-      var root = node(checkpoints.find(isCheckpointRoot)),
+      var root = node(checkpoints.find(isCheckpointRoot), false),
         children = childrenOf(root, checkpoints);
       root = root.set('children', children);
 

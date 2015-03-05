@@ -123,5 +123,32 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
         index += 1;
       });
     });
+
+    it('should mark the node of the current checkpoint', function () {
+      var c1 = checkpoint('c1'),
+        c2 = checkpoint('c2', c1),
+        c3 = checkpoint('c3', c2),
+        checkpoints = Immutable.OrderedSet.of(c1, c2, c3),
+        currentCheckpoint = c2,
+        checkpointOfNode = function (node) {
+          return node.get('checkpoint');
+        },
+        allCheckpoints = function (root) {
+          var sequence = Immutable.Seq.of(root)
+            .concat(root.get('children').map(allCheckpoints).flatten(true));
+          return sequence;
+        },
+        isCurrent = function (node) {
+          return node.get('isCurrent');
+        };
+
+      var root = builder(checkpoints, currentCheckpoint);
+
+      var currentNodes = allCheckpoints(root)
+        .filter(isCurrent)
+        .map(checkpointOfNode);
+      expect(currentNodes.count()).toBe(1);
+      expect(currentNodes.first()).toBe(currentCheckpoint);
+    });
   });
 });
