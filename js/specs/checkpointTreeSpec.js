@@ -124,7 +124,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
       });
     });
 
-    it('should mark the node of the current checkpoint', function () {
+    it('should mark the node of the current checkpoint accordingly', function () {
       var c1 = checkpoint('c1'),
         c2 = checkpoint('c2', c1),
         c3 = checkpoint('c3', c2),

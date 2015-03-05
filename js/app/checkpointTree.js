@@ -1,10 +1,13 @@
-/* global define */
+/* global define, dissect, updateAll */
 
 
-define(['React', 'immutable.min', 'app/checkpointTreeEventHandler'], function (React, Immutable, CheckpointTreeEventHandler) {
+define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect'], function (React, Immutable, CheckpointTreeEventHandler, Dissect) {
 
   var nodeCircleRadius = 4,
     nodeCircleDistance = 20,
+    isCurrent = function (node) {
+      return node.get('isCurrent');
+    },
     renderNode = function (node, x, y) {
       var eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(node.get('checkpoint'));
       return React.createElement('circle', {
@@ -12,7 +15,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler'], function (R
         cx: x,
         cy: y,
         stroke: '#2f6b7c',
-        fill: '#2f6b7c',
+        fill: isCurrent(node) ? '#000' : '#2f6b7c',
         onClick: eventHandler.onClick
       });
     },
@@ -98,12 +101,23 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler'], function (R
         });
       return children;
     },
+    markCurrentCheckpoint = function (root, currentCheckpoint) {
+      if (root.get('checkpoint') === currentCheckpoint) {
+        return root.set('isCurrent', true);
+      }
+      return dissect(root,
+        updateAll('children', function (child) {
+          return markCurrentCheckpoint(child, currentCheckpoint);
+        }));
+    },
     treeBuilder = function (checkpoints, currentCheckpoint) {
       validateTreeBuilderArguments(checkpoints, currentCheckpoint);
 
       var root = node(checkpoints.find(isCheckpointRoot), false),
         children = childrenOf(root, checkpoints);
       root = root.set('children', children);
+
+      root = markCurrentCheckpoint(root, currentCheckpoint);
 
       return root;
     };
