@@ -67,10 +67,9 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
               expect(args[0].contains(c32)).toBe(true);
               expect(args[0].contains(c31)).toBe(false);
               expect(args[0].contains(c311)).toBe(false);
+            
               expect(Immutable.Stack.isStack(args[1])).toBe(true);
-              //expect(args[1].contains(c321)).toBe(true);
-              expect(args[1].contains(c31)).toBe(false);
-              expect(args[1].contains(c311)).toBe(false);
+              expect(args[1].count()).toBe(0);
 
               done();
             });
@@ -80,10 +79,14 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
           new Squire()
             .mock('app/spaghetti', newSpaghettiMock())
             .require(['app/spaghetti', 'app/checkpointTreeEventHandler'], function (Spaghetti2, CheckpointTreeEventHandler2) {
-              var checkpoint = {
-                  state: {}
-                },
-                handler = CheckpointTreeEventHandler2.checkpointEventHandler(checkpoint);
+              var c11 = dummyCheckpoint('c11'),
+                c21 = dummyCheckpoint('c21', c11),
+                checkpoints = Immutable.Seq.of(c11, c21),
+                currentCheckpoint = c21,
+                rootNode = CheckpointTree.treeBuilder()(checkpoints, currentCheckpoint),
+                toBeTheNewCurrentCheckpoint = c11,
+                handler = CheckpointTreeEventHandler2.checkpointEventHandler(
+                  toBeTheNewCurrentCheckpoint, rootNode, CheckpointTree.currentCheckpointMarker());
 
               handler.onClick();
 
