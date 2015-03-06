@@ -12,6 +12,9 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
 
       expect(typeof (CheckpointTree.treeBuilder)).toBe('function');
       expect(CheckpointTree.treeBuilder).not.toThrow();
+
+      expect(typeof (CheckpointTree.currentCheckpointMarker)).toBe('function');
+      expect(CheckpointTree.currentCheckpointMarker).not.toThrow();
     });
   });
 
@@ -25,7 +28,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
         nextId += 1;
         return id;
       },
-      checkpoint = function (name, previous) {
+      dummyCheckpoint = function (name, previous) {
         return {
           name: name,
           id: id(),
@@ -35,7 +38,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
       };
 
     it('should throw if the checkpoint list is empty', function () {
-      var c = checkpoint('c'),
+      var c = dummyCheckpoint('c'),
         checkpoints = Immutable.OrderedSet();
 
       var builderWrapper = function () {
@@ -46,8 +49,8 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
     });
 
     it('should throw if the currentCheckpoint is not in the checkpoint list', function () {
-      var c1 = checkpoint('c1'),
-        c2 = checkpoint('c2'),
+      var c1 = dummyCheckpoint('c1'),
+        c2 = dummyCheckpoint('c2'),
         checkpoints = Immutable.OrderedSet.of(c1);
 
       var builderWrapper = function () {
@@ -58,7 +61,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
     });
 
     it('should return a single node tree when there is a single checkpoint', function () {
-      var c = checkpoint('c'),
+      var c = dummyCheckpoint('c'),
         checkpoints = Immutable.OrderedSet.of(c);
 
       var root = builder(checkpoints, c);
@@ -69,9 +72,9 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
     });
 
     it('should return a list-like tree when there is no branch', function () {
-      var c1 = checkpoint('c1'),
-        c2 = checkpoint('c2', c1),
-        c3 = checkpoint('c3', c2),
+      var c1 = dummyCheckpoint('c1'),
+        c2 = dummyCheckpoint('c2', c1),
+        c3 = dummyCheckpoint('c3', c2),
         checkpoints = Immutable.OrderedSet.of(c1, c2, c3);
 
       var n1 = builder(checkpoints, c3);
@@ -88,10 +91,10 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
     });
 
     it('should return a node with 3 children when 3 checkpoints have the same parent', function () {
-      var p = checkpoint('parent'),
-        c1 = checkpoint('c1', p),
-        c2 = checkpoint('c2', p),
-        c3 = checkpoint('c3', p),
+      var p = dummyCheckpoint('parent'),
+        c1 = dummyCheckpoint('c1', p),
+        c2 = dummyCheckpoint('c2', p),
+        c3 = dummyCheckpoint('c3', p),
         checkpoints = Immutable.OrderedSet.of(p, c1, c2, c3);
 
       var n = builder(checkpoints, c3);
@@ -103,13 +106,13 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
 
       jasmine.clock().install();
       jasmine.clock().mockDate();
-      var p = checkpoint('parent');
+      var p = dummyCheckpoint('parent');
       jasmine.clock().tick(10);
-      var c1 = checkpoint('c1', p);
+      var c1 = dummyCheckpoint('c1', p);
       jasmine.clock().tick(10);
-      var c2 = checkpoint('c2', p);
+      var c2 = dummyCheckpoint('c2', p);
       jasmine.clock().tick(10);
-      var c3 = checkpoint('c3', p);
+      var c3 = dummyCheckpoint('c3', p);
       jasmine.clock().uninstall();
 
       var checkpoints = Immutable.OrderedSet.of(p, c2, c3, p, c1);
@@ -125,9 +128,9 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
     });
 
     it('should mark the node of the current checkpoint accordingly', function () {
-      var c1 = checkpoint('c1'),
-        c2 = checkpoint('c2', c1),
-        c3 = checkpoint('c3', c2),
+      var c1 = dummyCheckpoint('c1'),
+        c2 = dummyCheckpoint('c2', c1),
+        c3 = dummyCheckpoint('c3', c2),
         checkpoints = Immutable.OrderedSet.of(c1, c2, c3),
         currentCheckpoint = c2,
         checkpointOfNode = function (node) {
@@ -151,4 +154,6 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
       expect(currentNodes.first()).toBe(currentCheckpoint);
     });
   });
+
+  describe('currentCheckpointMarker', function () {});
 });

@@ -3,67 +3,6 @@
 
 define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect'], function (React, Immutable, CheckpointTreeEventHandler, Dissect) {
 
-  var nodeCircleRadius = 4,
-    nodeCircleDistance = 20,
-    isCurrent = function (node) {
-      return node.get('isCurrent');
-    },
-    renderNode = function (node, x, y) {
-      var eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(node.get('checkpoint'));
-      return React.createElement('circle', {
-        r: nodeCircleRadius,
-        cx: x,
-        cy: y,
-        stroke: '#2f6b7c',
-        fill: isCurrent(node) ? '#000' : '#2f6b7c',
-        onClick: eventHandler.onClick
-      });
-    },
-    renderLine = function (x1, y1, x2, y2) {
-      return React.createElement('line', {
-        x1: x1,
-        y1: y1,
-        x2: x2,
-        y2: y2,
-        strokeWidth: '2',
-        stroke: '#4a9eb5',
-        fill: '#4a9eb5'
-      });
-    },
-    renderBranch = function (node, x, y) {
-      var circle = renderNode(node, x, y);
-
-      var leftWidth = 0,
-        childBranches = node.get('children')
-        .reverse()
-        .map(function (child) {
-          var branchX = x - leftWidth,
-            branchY = y - nodeCircleDistance,
-            childBranch = renderBranch(child, branchX, branchY),
-            line = renderLine(x, y, branchX, branchY);
-          leftWidth += childBranch.width;
-          return React.createElement('g', null, [line, childBranch.element]);
-        })
-        .toArray();
-
-      return {
-        element: React.createElement('g', null, childBranches.concat([circle])),
-        width: Math.max(leftWidth, nodeCircleDistance)
-      };
-    },
-    checkpointTreeClass = React.createClass({
-      displayName: 'checkpointTree',
-      getDefaultProps: function () {
-        return {
-          root: null
-        };
-      },
-      render: function () {
-        return renderBranch(this.props.root, 200, 400).element;
-      }
-    });
-
-
   var node = function (checkpoint, isCurrent) {
       return Immutable.Map()
         .set('checkpoint', checkpoint)
@@ -104,6 +43,8 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     markCurrentCheckpoint = function (root, currentCheckpoint) {
       if (root.get('checkpoint') === currentCheckpoint) {
         return root.set('isCurrent', true);
+      } else {
+        root = root.set('isCurrent', false);
       }
       return dissect(root,
         updateAll('children', function (child) {
@@ -123,6 +64,68 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     };
 
 
+  var nodeCircleRadius = 4,
+    nodeCircleDistance = 20,
+    isCurrent = function (node) {
+      return node.get('isCurrent');
+    },
+    renderNode = function (node, x, y, root) {
+      var eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(
+        node.get('checkpoint'), root, markCurrentCheckpoint);
+      return React.createElement('circle', {
+        r: nodeCircleRadius,
+        cx: x,
+        cy: y,
+        stroke: '#2f6b7c',
+        fill: isCurrent(node) ? '#000' : '#2f6b7c',
+        onClick: eventHandler.onClick
+      });
+    },
+    renderLine = function (x1, y1, x2, y2) {
+      return React.createElement('line', {
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2,
+        strokeWidth: '2',
+        stroke: '#4a9eb5',
+        fill: '#4a9eb5'
+      });
+    },
+    renderBranch = function (node, x, y, root) {
+      var circle = renderNode(node, x, y, root);
+
+      var leftWidth = 0,
+        childBranches = node.get('children')
+        .reverse()
+        .map(function (child) {
+          var branchX = x - leftWidth,
+            branchY = y - nodeCircleDistance,
+            childBranch = renderBranch(child, branchX, branchY, root),
+            line = renderLine(x, y, branchX, branchY);
+          leftWidth += childBranch.width;
+          return React.createElement('g', null, [line, childBranch.element]);
+        })
+        .toArray();
+
+      return {
+        element: React.createElement('g', null, childBranches.concat([circle])),
+        width: Math.max(leftWidth, nodeCircleDistance)
+      };
+    },
+    checkpointTreeClass = React.createClass({
+      displayName: 'checkpointTree',
+      getDefaultProps: function () {
+        return {
+          root: null
+        };
+      },
+      render: function () {
+        return renderBranch(this.props.root, 200, 400, this.props.root).element;
+      }
+    });
+
+
   return {
     name: function () {
       return 'checkpointTree';
@@ -132,6 +135,9 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     },
     treeBuilder: function () {
       return treeBuilder;
+    },
+    currentCheckpointMarker: function () {
+      return markCurrentCheckpoint;
     }
   };
 });
