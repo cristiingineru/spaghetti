@@ -100,6 +100,15 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
   Spaghetti.prototype.currentCheckpoint = function () {
     return this.undoCheckpoints.peek();
   };
+  
+  Spaghetti.prototype.setUndoRedoStacks = function (undoCheckpoints, redoCheckpoints) {
+    this.undoCheckpoints = undoCheckpoints;
+    this.redoCheckpoints = redoCheckpoints;
+    var currentCheckpoint = this.undoCheckpoints.peek();
+    theWholeState = currentCheckpoint.state;
+    
+    this.checkpointsRedraw();
+  };
 
   return new Spaghetti();
 });

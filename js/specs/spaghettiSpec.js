@@ -4,6 +4,12 @@
 define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
   describe('Spaghetti', function () {
 
+    var dummyCheckpointWithState = function (state) {
+      return {
+        state: state
+      };
+    };
+
     beforeEach(function () {
       Spaghetti.init();
     });
@@ -169,17 +175,43 @@ define(['app/spaghetti', 'immutable.min'], function (Spaghetti, Immutable) {
       expect(Spaghetti.state()).toBe(state3);
     });
 
-    it('should call the checkpointsRedraw() function everytime checkpoint(), undo() or redo() are called', function () {
-      var state1 = Immutable.fromJS([1]),
+    it('should trigger the checkpoints redraw everytime checkpoint(), undo(), redo() or setUndoRedoStacks() are called', function () {
+      var c1 = dummyCheckpointWithState(1),
+          undoStack = Immutable.Stack.of(c1),
+          redoStack = new Immutable.Stack(),
         checkpointsRedraw = jasmine.createSpy();
       Spaghetti.setCheckpointsRedraw(checkpointsRedraw);
-
-      Spaghetti.state(state1);
+      
       Spaghetti.checkpoint('checkpoint 1');
       Spaghetti.undo();
       Spaghetti.redo();
+      Spaghetti.setUndoRedoStacks(undoStack, redoStack);
 
-      expect(checkpointsRedraw.calls.count()).toBe(3);
+      expect(checkpointsRedraw.calls.count()).toBe(4);
+    });
+
+    it('should use the specified undo and redo stacks', function () {
+      var c1 = dummyCheckpointWithState(1),
+        c2 = dummyCheckpointWithState(2),
+        c3 = dummyCheckpointWithState(3),
+        c4 = dummyCheckpointWithState(4),
+        c5 = dummyCheckpointWithState(5),
+        undoStack = Immutable.Stack.of(c3, c2, c1),
+        redoStack = Immutable.Stack.of(c4, c5);
+
+      Spaghetti.setUndoRedoStacks(undoStack, redoStack);
+
+      expect(Spaghetti.currentCheckpoint()).toBe(c3);
+      expect(Spaghetti.state()).toBe(3);
+      
+      Spaghetti.undo();
+      expect(Spaghetti.currentCheckpoint()).toBe(c2);
+      expect(Spaghetti.state()).toBe(2);
+      
+      Spaghetti.redo();
+      Spaghetti.redo();
+      expect(Spaghetti.currentCheckpoint()).toBe(c4);
+      expect(Spaghetti.state()).toBe(4);
     });
   });
 });
