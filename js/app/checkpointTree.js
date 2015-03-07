@@ -51,6 +51,31 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
           return markCurrentCheckpoint(child, currentCheckpoint);
         }));
     },
+    markPathToCheckpointCore = function (root, targetCheckpoint) {
+      if (root.get('checkpoint') === targetCheckpoint) {
+        return {
+          root: root,
+          targetFoundUpstream: true
+        };
+      }
+      var targetFoundUpstream = false;
+      root = dissect(root,
+        updateAll('children', function (child) {
+          var result = markPathToCheckpointCore(child, targetCheckpoint);
+          targetFoundUpstream = result.targetFoundUpstream || targetFoundUpstream;
+          return result.root;
+        }));
+      root.get('children').toArray(); // <- forcing the above enumeration to evaluate the targetFoundUpstream
+      root = root.set('isOnPath', targetFoundUpstream);
+      return {
+        root: root,
+        targetFoundUpstream: targetFoundUpstream
+      };
+    },
+    markPathToCheckpoint = function (root, targetCheckpoint) {
+      return markPathToCheckpointCore(root, targetCheckpoint)
+        .root;
+    },
     treeBuilder = function (checkpoints, currentCheckpoint) {
       validateTreeBuilderArguments(checkpoints, currentCheckpoint);
 
@@ -139,6 +164,9 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     },
     currentCheckpointMarker: function () {
       return markCurrentCheckpoint;
+    },
+    pathToCheckpointMarker: function () {
+      return markPathToCheckpoint;
     }
   };
 });

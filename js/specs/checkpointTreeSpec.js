@@ -18,24 +18,30 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
     });
   });
 
+  var nextId = 0,
+    id = function () {
+      var id = nextId;
+      nextId += 1;
+      return id;
+    },
+    dummyCheckpoint = function (name, previous) {
+      return {
+        name: name,
+        id: id(),
+        timestamp: Date.now(),
+        previousCheckpointId: previous && previous.id
+      };
+    },
+    allNodesInTree = function (root) {
+      var sequence = Immutable.Seq.of(root)
+        .concat(root.get('children').map(allNodesInTree).flatten(true));
+      return sequence;
+    };
+
   describe('CheckpointTree class', function () {});
 
   describe('treeBuilder', function () {
-    var builder = CheckpointTree.treeBuilder(),
-      nextId = 0,
-      id = function () {
-        var id = nextId;
-        nextId += 1;
-        return id;
-      },
-      dummyCheckpoint = function (name, previous) {
-        return {
-          name: name,
-          id: id(),
-          timestamp: Date.now(),
-          previousCheckpointId: previous && previous.id
-        };
-      };
+    var builder = CheckpointTree.treeBuilder();
 
     it('should throw if the checkpoint list is empty', function () {
       var c = dummyCheckpoint('c'),
@@ -136,18 +142,13 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
         checkpointOfNode = function (node) {
           return node.get('checkpoint');
         },
-        allCheckpoints = function (root) {
-          var sequence = Immutable.Seq.of(root)
-            .concat(root.get('children').map(allCheckpoints).flatten(true));
-          return sequence;
-        },
         isCurrent = function (node) {
           return node.get('isCurrent');
         };
 
       var root = builder(checkpoints, currentCheckpoint);
 
-      var currentNodes = allCheckpoints(root)
+      var currentNodes = allNodesInTree(root)
         .filter(isCurrent)
         .map(checkpointOfNode);
       expect(currentNodes.count()).toBe(1);
@@ -156,4 +157,42 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
   });
 
   describe('currentCheckpointMarker', function () {});
+
+  describe('pathToCheckpointMarker', function () {
+
+    var markPathToCheckpoint = CheckpointTree.pathToCheckpointMarker();
+
+    it('should mark the nodes on the path to a specified checkpoint', function () {
+      var c11 = dummyCheckpoint('c11'),
+        c21 = dummyCheckpoint('c21', c11),
+        c31 = dummyCheckpoint('c31', c21),
+        c311 = dummyCheckpoint('c311', c31),
+        c32 = dummyCheckpoint('c32', c21),
+        c321 = dummyCheckpoint('c321', c32),
+        checkpoints = Immutable.Seq.of(c11, c21, c31, c311, c32, c321),
+        currentCheckpoint = c21,
+        root = CheckpointTree.treeBuilder()(checkpoints, currentCheckpoint);
+
+      var targetCheckpoint = c32;
+      root = markPathToCheckpoint(root, targetCheckpoint);
+
+      var nodes = allNodesInTree(root),
+        nodeWithCheckpoint = function (checkpoint) {
+          return function (node) {
+            return node.get('checkpoint') === checkpoint;
+          };
+        },
+        isOnPath = function (node) {
+          return node.get('isOnPath');
+        };
+      [c11, c21].forEach(function (checkpoint) {
+        var node = nodes.find(nodeWithCheckpoint(checkpoint));
+        expect(isOnPath(node)).toBe(true);
+      });
+      [c31, c311, c32, c321].forEach(function (checkpoint) {
+        var node = nodes.find(nodeWithCheckpoint(checkpoint));
+        expect(isOnPath(node)).toBeFalsy();
+      });
+    });
+  });
 });
