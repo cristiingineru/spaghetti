@@ -54,7 +54,8 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     treeBuilder = function (checkpoints, currentCheckpoint) {
       validateTreeBuilderArguments(checkpoints, currentCheckpoint);
 
-      var root = node(checkpoints.find(isCheckpointRoot), false),
+      var checkpointWithNoParent = checkpoints.find(isCheckpointRoot),
+        root = node(checkpointWithNoParent, false),
         children = childrenOf(root, checkpoints);
       root = root.set('children', children);
 

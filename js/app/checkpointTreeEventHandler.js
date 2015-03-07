@@ -32,7 +32,6 @@ define(['immutable.min', 'app/spaghetti'], function (Immutable, Spaghetti) {
         },
         buildUndoStack = function (node) {
           return pathToCurrentCheckpoint(node)
-            //.reverse()
             .map(nodeToCheckpoint)
             .toStack();
         };
