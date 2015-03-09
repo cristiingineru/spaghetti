@@ -51,30 +51,43 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
           return markCurrentCheckpoint(child, currentCheckpoint);
         }));
     },
-    markPathToCheckpointCore = function (root, targetCheckpoint) {
-      if (root.get('checkpoint') === targetCheckpoint) {
-        return {
-          root: root,
-          targetFoundUpstream: true
-        };
-      }
-      var targetFoundUpstream = false;
-      root = dissect(root,
-        updateAll('children', function (child) {
-          var result = markPathToCheckpointCore(child, targetCheckpoint);
-          targetFoundUpstream = result.targetFoundUpstream || targetFoundUpstream;
-          return result.root;
-        }));
-      root.get('children').toArray(); // <- forcing the above enumeration to evaluate the targetFoundUpstream
-      root = root.set('isOnPath', targetFoundUpstream);
-      return {
-        root: root,
-        targetFoundUpstream: targetFoundUpstream
+    field = function (name) {
+      return function (item) {
+        return item.get(name);
       };
+    },
+    orReducer = function (reduction, value) {
+      return reduction || value;
+    },
+    markPathToCheckpointResult = function (node, targetFoundUpstream) {
+      return Immutable.fromJS({
+        node: node,
+        targetFoundUpstream: targetFoundUpstream
+      });
+    },
+    markPathToCheckpointCore = function (node, targetCheckpoint) {
+      if (node.get('checkpoint') === targetCheckpoint) {
+        return markPathToCheckpointResult(node, true);
+      }
+
+      var childrenWithMetadata = node.get('children')
+        .map(function (child) {
+          return markPathToCheckpointCore(child, targetCheckpoint);
+          //return markPathToCheckpointResult(result.get('node'), result.get('targetFoundUpstream'));
+        });
+
+      node = node.set('children', childrenWithMetadata.map(field('node')));
+
+      var targetFoundUpstream = childrenWithMetadata
+        .map(field('targetFoundUpstream'))
+        .reduce(orReducer, false);
+      node = node.set('isOnPath', targetFoundUpstream);
+
+      return markPathToCheckpointResult(node, targetFoundUpstream);
     },
     markPathToCheckpoint = function (root, targetCheckpoint) {
       return markPathToCheckpointCore(root, targetCheckpoint)
-        .root;
+        .get('node');
     },
     treeBuilder = function (checkpoints, currentCheckpoint) {
       validateTreeBuilderArguments(checkpoints, currentCheckpoint);
