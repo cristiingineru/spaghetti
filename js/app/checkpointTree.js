@@ -59,7 +59,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     orReducer = function (reduction, value) {
       return reduction || value;
     },
-    markPathToCheckpointResult = function (node, targetFoundUpstream) {
+    markPathToCheckpointCoreResult = function (node, targetFoundUpstream) {
       return Immutable.fromJS({
         node: node,
         targetFoundUpstream: targetFoundUpstream
@@ -67,13 +67,12 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     },
     markPathToCheckpointCore = function (node, targetCheckpoint) {
       if (node.get('checkpoint') === targetCheckpoint) {
-        return markPathToCheckpointResult(node, true);
+        return markPathToCheckpointCoreResult(node, true);
       }
 
       var childrenWithMetadata = node.get('children')
         .map(function (child) {
           return markPathToCheckpointCore(child, targetCheckpoint);
-          //return markPathToCheckpointResult(result.get('node'), result.get('targetFoundUpstream'));
         });
 
       node = node.set('children', childrenWithMetadata.map(field('node')));
@@ -83,7 +82,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         .reduce(orReducer, false);
       node = node.set('isOnPath', targetFoundUpstream);
 
-      return markPathToCheckpointResult(node, targetFoundUpstream);
+      return markPathToCheckpointCoreResult(node, targetFoundUpstream);
     },
     markPathToCheckpoint = function (root, targetCheckpoint) {
       return markPathToCheckpointCore(root, targetCheckpoint)
@@ -131,26 +130,46 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         fill: '#4a9eb5'
       });
     },
+    member = function (name) {
+      return function (object) {
+        return object[name];
+      };
+    },
+    sumReducer = function (reduction, value) {
+      return reduction + value;
+    },
+    renderedResult = function (element, width) {
+      return {
+        element: element,
+        width: width
+      };
+    },
     renderBranch = function (node, x, y, root) {
       var circle = renderNode(node, x, y, root);
 
-      var leftWidth = 0,
-        childBranches = node.get('children')
+      var childBranchesAndWidth = node.get('children')
         .reverse()
-        .map(function (child) {
-          var branchX = x - leftWidth,
+        .reduce(function (reduction, child) {
+          var branchX = x - reduction.width,
             branchY = y - nodeCircleDistance,
             childBranch = renderBranch(child, branchX, branchY, root),
-            line = renderLine(x, y, branchX, branchY);
-          leftWidth += childBranch.width;
-          return React.createElement('g', null, [line, childBranch.element]);
-        })
-        .toArray();
+            line = renderLine(x, y, branchX, branchY),
+            element = React.createElement('g', null, [line, childBranch.element]);
+          return {
+            elements: reduction.elements.concat(element),
+            width: reduction.width + childBranch.width
+          };
+        }, {
+          elements: [],
+          width: 0
+        });
 
-      return {
-        element: React.createElement('g', null, childBranches.concat([circle])),
-        width: Math.max(leftWidth, nodeCircleDistance)
-      };
+      var childBranches = childBranchesAndWidth.elements;
+      var width = childBranchesAndWidth.width;
+
+      return renderedResult(
+        React.createElement('g', null, childBranches.concat(circle)),
+        Math.max(width, nodeCircleDistance));
     },
     checkpointTreeClass = React.createClass({
       displayName: 'checkpointTree',
