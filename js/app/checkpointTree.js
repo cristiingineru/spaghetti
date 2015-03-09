@@ -107,6 +107,12 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     isCurrent = function (node) {
       return node.get('isCurrent');
     },
+    isOnPath = function (node) {
+      return node.get('isOnPath');
+    },
+    isSpecial = function (node) {
+      return isOnPath(node) || isCurrent(node);
+    },
     renderNode = function (node, x, y, root) {
       var eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(
         node.get('checkpoint'), root, markCurrentCheckpoint);
@@ -138,13 +144,16 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     sumReducer = function (reduction, value) {
       return reduction + value;
     },
-    renderedChildBranchesAndWidths = function (children, x, y, root) {
+    toLeft = function (x, delta) {
+      return x + delta;
+    },
+    renderedChildBranchesAndWidths = function (children, x, y, root, aligner) {
       return children
         .reverse()
         .reduce(
           //reducer:
           function (reduction, child) {
-            var branchX = x - reduction.width,
+            var branchX = aligner(x, reduction.width),
               branchY = y - nodeCircleDistance,
               childBranchAndWidth = renderedBranchAndWidth(child, branchX, branchY, root),
               line = renderLine(x, y, branchX, branchY),
@@ -163,9 +172,26 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     renderedBranchAndWidth = function (node, x, y, root) {
       var circle = renderNode(node, x, y, root);
 
-      var renderedChildBranchesAndWidthsResult = renderedChildBranchesAndWidths(node.get('children'), x, y, root),
+      var renderedChildBranchesAndWidthsResult = renderedChildBranchesAndWidths(node.get('children'), x, y, root, toLeft),
         subBranchesElements = renderedChildBranchesAndWidthsResult.elements,
         width = renderedChildBranchesAndWidthsResult.width;
+
+      /*
+      var children = node.get('children').toKeyedSeq(),
+        count = children.count();
+
+      var specialChildIndex = children.findIndex(isSpecial);
+      if (specialChildIndex === -1) {
+        //if there is no special node then just treat the last one as special
+        specialChildIndex = count - 1;
+      }
+
+      var leftChildren = children.take(specialChildIndex - 1),
+        middleChild = children.get(specialChildIndex),
+        rightchildren = children.slice(specialChildIndex + 1, count);
+
+      var left = 
+      */
 
       return {
         element: React.createElement('g', null, subBranchesElements.concat(circle)),
@@ -176,11 +202,14 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
       displayName: 'checkpointTree',
       getDefaultProps: function () {
         return {
-          root: null
+          root: null,
+          currentCheckpoint: null
         };
       },
       render: function () {
-        return renderedBranchAndWidth(this.props.root, 200, 400, this.props.root).element;
+        var root = markPathToCheckpoint(this.props.root, this.props.currentCheckpoint),
+          currentNode = root;
+        return renderedBranchAndWidth(currentNode, 200, 400, root).element;
       }
     });
 
