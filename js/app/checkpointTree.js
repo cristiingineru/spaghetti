@@ -145,6 +145,9 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
       return reduction + value;
     },
     toLeft = function (x, delta) {
+      return x - delta;
+    },
+    toRight = function (x, delta) {
       return x + delta;
     },
     renderedChildBranchesAndWidths = function (children, x, y, root, aligner) {
@@ -172,12 +175,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     renderedBranchAndWidth = function (node, x, y, root) {
       var circle = renderNode(node, x, y, root);
 
-      var renderedChildBranchesAndWidthsResult = renderedChildBranchesAndWidths(node.get('children'), x, y, root, toLeft),
-        subBranchesElements = renderedChildBranchesAndWidthsResult.elements,
-        width = renderedChildBranchesAndWidthsResult.width;
-
-      /*
-      var children = node.get('children').toKeyedSeq(),
+      var children = node.get('children').toIndexedSeq(),
         count = children.count();
 
       var specialChildIndex = children.findIndex(isSpecial);
@@ -186,16 +184,35 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         specialChildIndex = count - 1;
       }
 
-      var leftChildren = children.take(specialChildIndex - 1),
-        middleChild = children.get(specialChildIndex),
-        rightchildren = children.slice(specialChildIndex + 1, count);
+      var leftChildren = children.take(specialChildIndex),
+        middleChildren = specialChildIndex === -1 ? new Immutable.Seq() : Immutable.Seq.of(children.get(specialChildIndex)),
+        rightChildren = children.slice(specialChildIndex + 1, count);
 
-      var left = 
-      */
+
+      var left = renderedChildBranchesAndWidths(
+          leftChildren, x - nodeCircleDistance, y, root, toLeft),
+        middle = renderedChildBranchesAndWidths(
+          middleChildren, x, y, root, toLeft),
+        right = renderedChildBranchesAndWidths(
+          rightChildren, x + nodeCircleDistance, y, root, toRight);
+
+      var elements = left.elements
+        .concat(middle.elements)
+        .concat(right.elements)
+        .concat(circle),
+        width = left.width + middle.width + right.width;
+
+
+      var renderedChildBranchesAndWidthsResult = renderedChildBranchesAndWidths(node.get('children'), x, y, root, toLeft);
+      elements = renderedChildBranchesAndWidthsResult.elements
+        .concat(circle);
+      width = renderedChildBranchesAndWidthsResult.width;
 
       return {
-        element: React.createElement('g', null, subBranchesElements.concat(circle)),
-        width: Math.max(width, nodeCircleDistance)
+        element: React.createElement('g', null, elements),
+        width: Math.max(width, nodeCircleDistance),
+        leftWidth: left.width,
+        rightWidth: right.width
       };
     },
     checkpointTreeClass = React.createClass({
