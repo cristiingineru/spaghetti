@@ -138,38 +138,39 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     sumReducer = function (reduction, value) {
       return reduction + value;
     },
-    renderedResult = function (element, width) {
-      return {
-        element: element,
-        width: width
-      };
+    renderedChildBranchesAndWidths = function (children, x, y, root) {
+      return children
+        .reverse()
+        .reduce(
+          //reducer:
+          function (reduction, child) {
+            var branchX = x - reduction.width,
+              branchY = y - nodeCircleDistance,
+              childBranchAndWidth = renderedBranchAndWidth(child, branchX, branchY, root),
+              line = renderLine(x, y, branchX, branchY),
+              element = React.createElement('g', null, [line, childBranchAndWidth.element]);
+            return {
+              elements: reduction.elements.concat(element),
+              width: reduction.width + childBranchAndWidth.width
+            };
+          },
+          //initialReduction:
+          {
+            elements: [],
+            width: 0
+          });
     },
-    renderBranch = function (node, x, y, root) {
+    renderedBranchAndWidth = function (node, x, y, root) {
       var circle = renderNode(node, x, y, root);
 
-      var childBranchesAndWidth = node.get('children')
-        .reverse()
-        .reduce(function (reduction, child) {
-          var branchX = x - reduction.width,
-            branchY = y - nodeCircleDistance,
-            childBranch = renderBranch(child, branchX, branchY, root),
-            line = renderLine(x, y, branchX, branchY),
-            element = React.createElement('g', null, [line, childBranch.element]);
-          return {
-            elements: reduction.elements.concat(element),
-            width: reduction.width + childBranch.width
-          };
-        }, {
-          elements: [],
-          width: 0
-        });
+      var renderedChildBranchesAndWidthsResult = renderedChildBranchesAndWidths(node.get('children'), x, y, root),
+        subBranchesElements = renderedChildBranchesAndWidthsResult.elements,
+        width = renderedChildBranchesAndWidthsResult.width;
 
-      var childBranches = childBranchesAndWidth.elements;
-      var width = childBranchesAndWidth.width;
-
-      return renderedResult(
-        React.createElement('g', null, childBranches.concat(circle)),
-        Math.max(width, nodeCircleDistance));
+      return {
+        element: React.createElement('g', null, subBranchesElements.concat(circle)),
+        width: Math.max(width, nodeCircleDistance)
+      };
     },
     checkpointTreeClass = React.createClass({
       displayName: 'checkpointTree',
@@ -179,7 +180,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         };
       },
       render: function () {
-        return renderBranch(this.props.root, 200, 400, this.props.root).element;
+        return renderedBranchAndWidth(this.props.root, 200, 400, this.props.root).element;
       }
     });
 
