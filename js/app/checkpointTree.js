@@ -218,12 +218,15 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
       }
 
       if (leftChildren.count()) {
-        var leftX = toLeft(x, Math.max(leftWidth, leftWidth + nodeCircleDistance)),
+        // The leftX and the leftWidth are treated differently depending whether this is the last special node or not.
+        // If this is the last special node then all the left nodes are rendered starting from the middle
+        //to make the tree look better.
+        var leftX = specialChildIndex !== -1 ? toLeft(x, Math.max(leftWidth, leftWidth + nodeCircleDistance)) : x,
           leftY = y - nodeCircleDistance,
           left = renderedChildrenAndWidths(leftChildren, leftX, leftY, root, toLeft),
           leftConnector = connectPointsOfInterest(x, y, left.pointsOfInterest);
         elements = elements.concat(leftConnector, left.element);
-        leftWidth += left.width;
+        leftWidth += specialChildIndex !== -1 ? left.width : (left.width - nodeCircleDistance);
       }
 
       if (rightChildren.count()) {
