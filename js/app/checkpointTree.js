@@ -125,7 +125,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         onClick: eventHandler.onClick
       });
     },
-    renderLine = function (x1, y1, x2, y2) {
+    renderedLine = function (x1, y1, x2, y2) {
       return React.createElement('line', {
         x1: x1,
         y1: y1,
@@ -135,6 +135,14 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         stroke: '#4a9eb5',
         fill: '#4a9eb5'
       });
+    },
+    connectPointsOfInterest = function (x, y, pointsOfInterest) {
+      var elements = [];
+      pointsOfInterest.forEach(function (point) {
+        var line = renderedLine(x, y, point.x, point.y);
+        elements = elements.concat(line);
+      });
+      return React.createElement('g', null, elements);
     },
     member = function (name) {
       return function (object) {
@@ -150,30 +158,45 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     toRight = function (x, delta) {
       return x + delta;
     },
-    renderedChildBranchesAndWidths = function (children, x, y, root, aligner) {
-      return children
-        .reverse()
-        .reduce(
-          //reducer:
-          function (reduction, child) {
-            var branchX = aligner(x, reduction.width),
-              branchY = y - nodeCircleDistance,
-              childBranchAndWidth = renderedChildBranchesAndWidths(child, branchX, branchY, root, aligner),
-              line = renderLine(x, y, branchX, branchY),
-              element = React.createElement('g', null, [line, childBranchAndWidth.element]);
-            return {
-              elements: reduction.elements.concat(element),
-              width: reduction.width + childBranchAndWidth.width
-            };
-          },
-          //initialReduction:
-          {
-            elements: [],
-            width: 0
-          });
+    renderedChildrenAndWidths = function (children, x, y, root, aligner) {
+      var elements = [],
+        width = 0,
+        pointsOfInterest = [];
+
+      children.reverse().forEach(function (child) {
+        var circle = renderNode(child, x, y, root),
+          childrenOfChild = child.get('children');
+
+        if (childrenOfChild.count() > 0) {
+          var subBranchX = x,
+            subBranchY = y - nodeCircleDistance,
+            subBranch = renderedChildrenAndWidths(childrenOfChild, subBranchX, subBranchY, root, aligner);
+          elements.concat(subBranch.element);
+          width += subBranch.width;
+        }
+
+        elements = elements.concat(circle);
+        pointsOfInterest = pointsOfInterest.concat({
+          x: x,
+          y: y
+        });
+
+        x = aligner(x, Math.max(width, nodeCircleDistance));
+      });
+
+      return {
+        element: React.createElement('g', null, elements),
+        width: Math.max(width, nodeCircleDistance),
+        pointsOfInterest: pointsOfInterest
+      };
     },
     renderedPathToCurrentCheckpoint = function (node, x, y, root) {
+
+      var elements = [],
+        leftWidth = 0;
+
       var circle = renderNode(node, x, y, root);
+      elements = elements.concat(circle);
 
       var children = node.get('children').toIndexedSeq(),
         count = children.count(),
@@ -182,41 +205,27 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         leftChildren = children.take(specialChildIndex),
         rightChildren = children.slice(specialChildIndex + 1, count);
 
-
-      //var left = renderedChildBranchesAndWidths(
-      //    leftChildren, x - nodeCircleDistance, y, root, toLeft),
-      //  middle = renderedChildBranchesAndWidths(
-      //    middleChildren, x, y, root, toLeft),
-      //  right = renderedChildBranchesAndWidths(
-      //    rightChildren, x + nodeCircleDistance, y, root, toRight);
-
-      //var elements = left.elements
-      //  .concat(middle.elements)
-      //  .concat(right.elements)
-      //  .concat(circle),
-      //  width = left.width + middle.width + right.width;
-
-      //var renderedChildBranchesAndWidthsResult = renderedChildBranchesAndWidths(node.get('children'), x, y, root, toLeft);
-      //var elements = renderedChildBranchesAndWidthsResult.elements
-      //  .concat(circle),
-      //  width = renderedChildBranchesAndWidthsResult.width;
-
-
-      var elements = [circle];
-
-      if (leftChildren.count()) {
-        var left = renderedChildBranchesAndWidths(leftChildren, x - nodeCircleDistance, y, root, toLeft);
-        elements = elements.concat(leftChildren.elements);
+      if (specialChild) {
+        var middleX = x,
+          middleY = y - nodeCircleDistance,
+          middle = renderedPathToCurrentCheckpoint(specialChild, middleX, middleY, root),
+          middleConnector = renderedLine(x, y, middleX, middleY);
+        elements = elements.concat(middleConnector, middle.element);
+        leftWidth += middle.leftWidth;
       }
 
-      if (specialChild) {
-        var middle = renderedPathToCurrentCheckpoint(specialChild, x, y - nodeCircleDistance, root);
-        elements = elements.concat(middle);
+      if (leftChildren.count()) {
+        var leftX = toLeft(x, leftWidth),
+          leftY = y - nodeCircleDistance,
+          left = renderedChildrenAndWidths(leftChildren, leftX, leftY, root, toLeft),
+          leftConnector = connectPointsOfInterest(x, y, left.pointsOfInterest);
+        elements = elements.concat(leftConnector, left.element);
+        leftWidth += left.width;
       }
 
       return {
         element: React.createElement('g', null, elements),
-        //width: Math.max(width, nodeCircleDistance),
+        leftWidth: Math.max(leftWidth, nodeCircleDistance)
       };
     },
     checkpointTreeClass = React.createClass({
