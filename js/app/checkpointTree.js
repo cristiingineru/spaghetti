@@ -102,8 +102,8 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     };
 
 
-  var nodeCircleRadius = 4,
-    nodeCircleDistance = 20,
+  var nodeCircleRadius = 5,
+    nodeCircleDistance = 25,
     isCurrent = function (node) {
       return node.get('isCurrent');
     },
@@ -125,21 +125,29 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         onClick: eventHandler.onClick
       });
     },
-    renderedLine = function (x1, y1, x2, y2) {
-      return React.createElement('line', {
-        x1: x1,
-        y1: y1,
-        x2: x2,
-        y2: y2,
-        strokeWidth: '2',
+    curvedPath = function (x1, y1, x2, y2) {
+      var cx1 = x1,
+        cy1 = (y1 + y2) / 2,
+        cx2 = x2,
+        cy2 = (y1 + y2) / 2,
+        start = 'M' + x1.toFixed(2) + ',' + y1.toFixed(2),
+        control1 = 'C' + cx1.toFixed(2) + ',' + cy1.toFixed(2),
+        control2 = cx2.toFixed(2) + ',' + cy2.toFixed(2),
+        end = x2.toFixed(2) + ',' + y2.toFixed(2);
+      return start + ' ' + control1 + ' ' + control2 + ' ' + end;
+    },
+    renderedConnecter = function (x1, y1, x2, y2) {
+      return React.createElement('path', {
+        d: curvedPath(x1, y1, x2, y2),
         stroke: '#4a9eb5',
-        fill: '#4a9eb5'
+        strokeWidth: 1,
+        fillOpacity: 0.0
       });
     },
     connectPointsOfInterest = function (x, y, pointsOfInterest) {
       var elements = [];
       pointsOfInterest.forEach(function (point) {
-        var line = renderedLine(x, y, point.x, point.y);
+        var line = renderedConnecter(x, y, point.x, point.y);
         elements = elements.concat(line);
       });
       return React.createElement('g', null, elements);
@@ -221,7 +229,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         var middleX = x,
           middleY = y - nodeCircleDistance,
           middle = renderedPathToCurrentCheckpoint(specialChild, middleX, middleY, root),
-          middleConnector = renderedLine(x, y, middleX, middleY);
+          middleConnector = renderedConnecter(x, y, middleX, middleY);
         elements = elements.concat(middleConnector, middle.element);
         leftWidth += middle.leftWidth;
         rightWidth += middle.rightWidth;
