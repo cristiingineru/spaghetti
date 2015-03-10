@@ -165,7 +165,9 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
 
       children.reverse().forEach(function (child) {
         var circle = renderNode(child, x, y, root),
-          childrenOfChild = child.get('children');
+          childrenOfChild = child.get('children'),
+          defaultWidth = nodeCircleDistance,
+          widthOfTheLastSubBranch = defaultWidth;
 
         if (childrenOfChild.count() > 0) {
           var subBranchX = x,
@@ -173,6 +175,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
             subBranch = renderedChildrenAndWidths(childrenOfChild, subBranchX, subBranchY, root, aligner),
             connector = connectPointsOfInterest(x, y, subBranch.pointsOfInterest);
           elements = elements.concat(connector, subBranch.element);
+          widthOfTheLastSubBranch = subBranch.width;
           width += subBranch.width;
         }
 
@@ -182,7 +185,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
           y: y
         });
 
-        x = aligner(x, Math.max(width, nodeCircleDistance));
+        x = aligner(x, widthOfTheLastSubBranch);
       });
 
       return {
