@@ -88,6 +88,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
       return markPathToCheckpointCore(root, targetCheckpoint)
         .get('node');
     },
+    updateNodes = function (root, updater) {},
     treeBuilder = function (checkpoints, currentCheckpoint) {
       validateTreeBuilderArguments(checkpoints, currentCheckpoint);
 
@@ -296,6 +297,9 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     },
     pathToCheckpointMarker: function () {
       return markPathToCheckpoint;
+    },
+    nodesUpdater: function () {
+      return updateNodes;
     }
   };
 });
