@@ -68,7 +68,8 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
               expect(args[0].contains(c311)).toBe(false);
 
               expect(Immutable.Stack.isStack(args[1])).toBe(true);
-              expect(args[1].count()).toBe(0);
+              expect(args[1].count()).toBe(1);
+              expect(args[1].contains(c321)).toBe(true);
 
               done();
             });
