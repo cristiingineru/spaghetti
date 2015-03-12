@@ -10,14 +10,10 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
       expect(typeof (CheckpointTree.class)).toBe('function');
       expect(CheckpointTree.class).not.toThrow();
 
-      expect(typeof (CheckpointTree.treeBuilder)).toBe('function');
-      expect(CheckpointTree.treeBuilder).not.toThrow();
-
-      expect(typeof (CheckpointTree.currentCheckpointMarker)).toBe('function');
-      expect(CheckpointTree.currentCheckpointMarker).not.toThrow();
-
-      expect(typeof (CheckpointTree.nodesUpdater)).toBe('function');
-      expect(CheckpointTree.nodesUpdater).not.toThrow();
+      expect(typeof (CheckpointTree.buildTree)).toBe('function');
+      expect(typeof (CheckpointTree.markCurrentCheckpoint)).toBe('function');
+      expect(typeof (CheckpointTree.markPathToCheckpoint)).toBe('function');
+      expect(typeof (CheckpointTree.updateNodes)).toBe('function');
     });
   });
 
@@ -41,17 +37,14 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
       return sequence;
     };
 
-  describe('CheckpointTree class', function () {});
-
-  describe('treeBuilder', function () {
-    var builder = CheckpointTree.treeBuilder();
+  describe('buildTree', function () {
 
     it('should throw if the checkpoint list is empty', function () {
       var c = dummyCheckpoint('c'),
         checkpoints = Immutable.OrderedSet();
 
       var builderWrapper = function () {
-        builder(checkpoints, c);
+        CheckpointTree.buildTree(checkpoints, c);
       };
 
       expect(builderWrapper).toThrow();
@@ -63,7 +56,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
         checkpoints = Immutable.OrderedSet.of(c1);
 
       var builderWrapper = function () {
-        builder(checkpoints, c2);
+        CheckpointTree.buildTree(checkpoints, c2);
       };
 
       expect(builderWrapper).toThrow();
@@ -73,7 +66,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
       var c = dummyCheckpoint('c'),
         checkpoints = Immutable.OrderedSet.of(c);
 
-      var root = builder(checkpoints, c);
+      var root = CheckpointTree.buildTree(checkpoints, c);
 
       expect(root).not.toBeFalsy();
       expect(root.get('checkpoint')).toBe(c);
@@ -86,7 +79,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
         c3 = dummyCheckpoint('c3', c2),
         checkpoints = Immutable.OrderedSet.of(c1, c2, c3);
 
-      var n1 = builder(checkpoints, c3);
+      var n1 = CheckpointTree.buildTree(checkpoints, c3);
       expect(n1.get('checkpoint')).toBe(c1);
       expect(n1.get('children').size).toBe(1);
 
@@ -106,7 +99,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
         c3 = dummyCheckpoint('c3', p),
         checkpoints = Immutable.OrderedSet.of(p, c1, c2, c3);
 
-      var n = builder(checkpoints, c3);
+      var n = CheckpointTree.buildTree(checkpoints, c3);
       expect(n.get('checkpoint')).toBe(p);
       expect(n.get('children').size).toBe(3);
     });
@@ -126,7 +119,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
 
       var checkpoints = Immutable.OrderedSet.of(p, c2, c3, p, c1);
 
-      var n = builder(checkpoints, c3),
+      var n = CheckpointTree.buildTree(checkpoints, c3),
         children = n.get('children'),
         index = 0,
         sortedCheckpointChildren = [c1, c2, c3];
@@ -149,7 +142,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
           return node.get('isCurrent');
         };
 
-      var root = builder(checkpoints, currentCheckpoint);
+      var root = CheckpointTree.buildTree(checkpoints, currentCheckpoint);
 
       var currentNodes = allNodesInTree(root)
         .filter(isCurrent)
@@ -159,11 +152,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
     });
   });
 
-  describe('currentCheckpointMarker', function () {});
-
   describe('pathToCheckpointMarker', function () {
-
-    var markPathToCheckpoint = CheckpointTree.pathToCheckpointMarker();
 
     it('should mark the nodes on the path to a specified checkpoint', function () {
       var c11 = dummyCheckpoint('c11'),
@@ -174,10 +163,10 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
         c321 = dummyCheckpoint('c321', c32),
         checkpoints = Immutable.Seq.of(c11, c21, c31, c311, c32, c321),
         currentCheckpoint = c21,
-        root = CheckpointTree.treeBuilder()(checkpoints, currentCheckpoint);
+        root = CheckpointTree.buildTree(checkpoints, currentCheckpoint);
 
       var targetCheckpoint = c32;
-      root = markPathToCheckpoint(root, targetCheckpoint);
+      root = CheckpointTree.markPathToCheckpoint(root, targetCheckpoint);
 
       var nodes = allNodesInTree(root),
         nodeWithCheckpoint = function (checkpoint) {
@@ -199,11 +188,9 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
     });
   });
 
-  describe('nodesUpdater', function () {
+  describe('updateNodes', function () {
 
-    var updateNodes = CheckpointTree.nodesUpdater();
-
-    it('should update any checkpoint from tree', function () {
+    it('should update any checkpoint in a tree', function () {
       var c11 = dummyCheckpoint('c11'),
         c21 = dummyCheckpoint('c21', c11),
         c31 = dummyCheckpoint('c31', c21),
@@ -212,12 +199,12 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
         c321 = dummyCheckpoint('c321', c32),
         checkpoints = Immutable.Seq.of(c11, c21, c31, c311, c32, c321),
         currentCheckpoint = c21,
-        root = CheckpointTree.treeBuilder()(checkpoints, currentCheckpoint);
+        root = CheckpointTree.buildTree(checkpoints, currentCheckpoint);
 
       var updater = function (node) {
         return node.set('marked', true);
       };
-      root = updateNodes(root, updater);
+      root = CheckpointTree.updateNodes(root, updater);
 
       var nodes = allNodesInTree(root);
       nodes.forEach(function (node) {

@@ -59,11 +59,10 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
     Spaghetti.redraw();
 
     var checkpointsRedraw = function () {
-      var builder = CheckpointTree.treeBuilder(),
-        element = React.createElement(CheckpointTree.class(), {
-          root: builder(Spaghetti.checkpoints(), Spaghetti.currentCheckpoint()),
-          currentCheckpoint: Spaghetti.currentCheckpoint()
-        });
+      var element = React.createElement(CheckpointTree.class(), {
+        root: CheckpointTree.treeBuilder(Spaghetti.checkpoints(), Spaghetti.currentCheckpoint()),
+        currentCheckpoint: Spaghetti.currentCheckpoint()
+      });
       React.render(element, document.getElementById('checkpointTreeSvg'));
     };
     Spaghetti.setCheckpointsRedraw(checkpointsRedraw);

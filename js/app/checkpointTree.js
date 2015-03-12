@@ -88,8 +88,15 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
       return markPathToCheckpointCore(root, targetCheckpoint)
         .get('node');
     },
-    updateNodes = function (root, updater) {},
-    treeBuilder = function (checkpoints, currentCheckpoint) {
+    updateNodes = function (root, updater) {
+      root = updater(root);
+      var children = root.get('children')
+        .map(function (child) {
+          return updateNodes(child, updater);
+        });
+      return root.set('children', children);
+    },
+    buildTree = function (checkpoints, currentCheckpoint) {
       validateTreeBuilderArguments(checkpoints, currentCheckpoint);
 
       var checkpointWithNoParent = checkpoints.find(isCheckpointRoot),
@@ -289,17 +296,9 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     class: function () {
       return checkpointTreeClass;
     },
-    treeBuilder: function () {
-      return treeBuilder;
-    },
-    currentCheckpointMarker: function () {
-      return markCurrentCheckpoint;
-    },
-    pathToCheckpointMarker: function () {
-      return markPathToCheckpoint;
-    },
-    nodesUpdater: function () {
-      return updateNodes;
-    }
+    buildTree: buildTree,
+    markCurrentCheckpoint: markCurrentCheckpoint,
+    markPathToCheckpoint: markPathToCheckpoint,
+    updateNodes: updateNodes
   };
 });

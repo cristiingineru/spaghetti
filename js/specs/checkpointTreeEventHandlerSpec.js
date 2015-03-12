@@ -23,8 +23,7 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
           };
         };
 
-        var builder = CheckpointTree.treeBuilder(),
-          nextId = 0,
+        var nextId = 0,
           id = function () {
             var id = nextId;
             nextId += 1;
@@ -51,10 +50,10 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
                 c321 = dummyCheckpoint('c321', c32),
                 checkpoints = Immutable.Seq.of(c11, c21, c31, c311, c32, c321),
                 currentCheckpoint = c31,
-                rootNode = CheckpointTree.treeBuilder()(checkpoints, currentCheckpoint),
+                rootNode = CheckpointTree.buildTree(checkpoints, currentCheckpoint),
                 toBeTheNewCurrentCheckpoint = c32,
                 handler = CheckpointTreeEventHandler2.checkpointEventHandler(
-                  toBeTheNewCurrentCheckpoint, rootNode, CheckpointTree.currentCheckpointMarker());
+                  toBeTheNewCurrentCheckpoint, rootNode, CheckpointTree.markCurrentCheckpoint);
 
               handler.onClick();
 
@@ -67,7 +66,7 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
               expect(args[0].contains(c32)).toBe(true);
               expect(args[0].contains(c31)).toBe(false);
               expect(args[0].contains(c311)).toBe(false);
-            
+
               expect(Immutable.Stack.isStack(args[1])).toBe(true);
               expect(args[1].count()).toBe(0);
 
@@ -83,10 +82,10 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
                 c21 = dummyCheckpoint('c21', c11),
                 checkpoints = Immutable.Seq.of(c11, c21),
                 currentCheckpoint = c21,
-                rootNode = CheckpointTree.treeBuilder()(checkpoints, currentCheckpoint),
+                rootNode = CheckpointTree.buildTree(checkpoints, currentCheckpoint),
                 toBeTheNewCurrentCheckpoint = c11,
                 handler = CheckpointTreeEventHandler2.checkpointEventHandler(
-                  toBeTheNewCurrentCheckpoint, rootNode, CheckpointTree.currentCheckpointMarker());
+                  toBeTheNewCurrentCheckpoint, rootNode, CheckpointTree.markCurrentCheckpoint);
 
               handler.onClick();
 
