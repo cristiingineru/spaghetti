@@ -141,8 +141,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
       return node.get('isInRedoStack');
     },
     isSpecial = function (node) {
-      //return isOnPath(node) || isCurrent(node);
-      return isInUndoStack(node);
+      return isInUndoStack(node) || isInRedoStack(node);
     },
     renderNode = function (node, x, y, root) {
       var eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(
