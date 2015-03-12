@@ -134,8 +134,15 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     isOnPath = function (node) {
       return node.get('isOnPath');
     },
+    isInUndoStack = function (node) {
+      return node.get('isInUndoStack');
+    },
+    isInRedoStack = function (node) {
+      return node.get('isInRedoStack');
+    },
     isSpecial = function (node) {
-      return isOnPath(node) || isCurrent(node);
+      //return isOnPath(node) || isCurrent(node);
+      return isInUndoStack(node);
     },
     renderNode = function (node, x, y, root) {
       var eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(
@@ -145,7 +152,8 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         cx: x,
         cy: y,
         stroke: '#2f6b7c',
-        fill: isCurrent(node) ? '#000' : '#2f6b7c',
+        strokeWidth: (isInUndoStack(node) || isInRedoStack(node)) ? 2 : 1,
+        fill: isCurrent(node) ? '#000' : (isInUndoStack(node) ? '#2f6b7c' : '#fff'),
         onClick: eventHandler.onClick
       });
     },
@@ -285,8 +293,8 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
 
       return {
         element: React.createElement('g', null, elements),
-        leftWidth: leftWidth, //Math.max(leftWidth, nodeCircleDistance),
-        rightWidth: rightWidth //Math.max(rightWidth, nodeCircleDistance)
+        leftWidth: leftWidth,
+        rightWidth: rightWidth
       };
     },
     checkpointTreeClass = React.createClass({
@@ -308,6 +316,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         root = markPathToCheckpoint(root, currentCheckpoint);
         root = markUndoStack(root, undoStack);
         root = markRedoStack(root, redoStack);
+        currentNode = root;
         return renderedPathToCurrentCheckpoint(currentNode, 200, 500, root).element;
       }
     });
