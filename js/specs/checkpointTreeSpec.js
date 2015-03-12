@@ -152,7 +152,7 @@ define(['app/checkpointTree', 'immutable.min', 'React'], function (CheckpointTre
     });
   });
 
-  describe('pathToCheckpointMarker', function () {
+  describe('markPathToCheckpoint', function () {
 
     it('should mark the nodes on the path to a specified checkpoint', function () {
       var c11 = dummyCheckpoint('c11'),

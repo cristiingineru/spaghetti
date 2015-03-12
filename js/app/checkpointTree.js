@@ -107,6 +107,22 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
       root = markCurrentCheckpoint(root, currentCheckpoint);
 
       return root;
+    },
+    markUndoStack = function (root, stack) {
+      return updateNodes(root, function (node) {
+        if (stack.contains(node.get('checkpoint'))) {
+          node = node.set('isInUndoStack', true);
+        }
+        return node;
+      });
+    },
+    markRedoStack = function (root, stack) {
+      return updateNodes(root, function (node) {
+        if (stack.contains(node.get('checkpoint'))) {
+          node = node.set('isInRedoStack', true);
+        }
+        return node;
+      });
     };
 
 
@@ -278,12 +294,20 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
       getDefaultProps: function () {
         return {
           root: null,
-          currentCheckpoint: null
+          currentCheckpoint: null,
+          undoStack: new Immutable.Stack(),
+          redoStack: new Immutable.Stack()
         };
       },
       render: function () {
-        var root = markPathToCheckpoint(this.props.root, this.props.currentCheckpoint),
-          currentNode = root;
+        var root = this.props.root,
+          currentCheckpoint = this.props.currentCheckpoint,
+          currentNode,
+          undoStack = this.props.undoStack,
+          redoStack = this.props.redoStack;
+        root = markPathToCheckpoint(root, currentCheckpoint);
+        root = markUndoStack(root, undoStack);
+        root = markRedoStack(root, redoStack);
         return renderedPathToCurrentCheckpoint(currentNode, 200, 500, root).element;
       }
     });
