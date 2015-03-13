@@ -30,8 +30,8 @@ define(['immutable.min', 'app/spaghetti'], function (Immutable, Spaghetti) {
         nodeToCheckpoint = function (node) {
           return node.get('checkpoint');
         },
-        isInRedoStack = function (node) {
-          return node.get('isInRedoStack');
+        isInUndoOrRedoStack = function (node) {
+          return node.get('isInUndoStack') || node.get('isInRedoStack');
         },
         byTimestampDescending = function (c1, c2) {
           return c2.timestamp - c1.timestamp;
@@ -49,9 +49,9 @@ define(['immutable.min', 'app/spaghetti'], function (Immutable, Spaghetti) {
           if (isCurrent(node) || currentCheckpointFound) {
             currentCheckpointFound = true;
             var children = node.get('children'),
-              redoCheckpoint = children && children.find(isInRedoStack),
+              undoOrRedoCheckpoint = children && children.find(isInUndoOrRedoStack),
               newestChild = children && children.sort(byTimestampDescending).last(),
-              bestCandidate = redoCheckpoint || newestChild;
+              bestCandidate = undoOrRedoCheckpoint || newestChild;
             if (bestCandidate) {
               path = addToPath(path, bestCandidate);
               path = pathFromCurrentCheckpoint(bestCandidate, path, currentCheckpointFound);
