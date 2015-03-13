@@ -316,7 +316,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
         root = markUndoStack(root, undoStack);
         root = markRedoStack(root, redoStack);
         currentNode = root;
-        return renderedPathToCurrentCheckpoint(currentNode, 200, 500, root).element;
+        return renderedPathToCurrentCheckpoint(currentNode, 200.5, 500, root).element;
       }
     });
 
