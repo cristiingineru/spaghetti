@@ -3,8 +3,9 @@
 
 define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkpointTree'], function (CheckpointTreeEventHandler, Immutable, Squire, CheckpointTree) {
   describe('CheckpointTreeEventHandler', function () {
-    it('should return a checkpoint event handler', function () {
+    it('should return a checkpoint and an svg event handlers', function () {
       expect(CheckpointTreeEventHandler.checkpointEventHandler).not.toBeFalsy();
+      expect(CheckpointTreeEventHandler.svgEventHandler).not.toBeFalsy();
     });
 
     describe('checkpoint event handler', function () {
@@ -96,6 +97,82 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
         });
       });
 
+    });
+
+    describe('svgEventHandler', function () {
+
+      var dummySvg = {
+        addEventListener: jasmine.createSpy()
+      };
+
+      it('should return a specialized instance with deltaX and deltaY functions', function () {
+        var handler = CheckpointTreeEventHandler.svgEventHandler(dummySvg);
+        expect(handler.deltaX).not.toBeFalsy();
+        expect(handler.deltaY).not.toBeFalsy();
+      });
+
+      describe('deltaX() and deltaY()', function () {
+        it('should return a default value when svg not moved', function () {
+          var handler = CheckpointTreeEventHandler.svgEventHandler(dummySvg);
+          expect(handler.deltaX()).toEqual(jasmine.any(Number));
+          expect(handler.deltaY()).toEqual(jasmine.any(Number));
+        });
+
+        it('should should attach mouse handlers to the svg', function () {
+          var thisDummySvg = {
+              addEventListener: jasmine.createSpy()
+            },
+            handler = CheckpointTreeEventHandler.svgEventHandler(thisDummySvg);
+
+          expect(thisDummySvg.addEventListener).toHaveBeenCalledWith('mousedown', jasmine.any(Function));
+          expect(thisDummySvg.addEventListener).toHaveBeenCalledWith('mousemove', jasmine.any(Function));
+          expect(thisDummySvg.addEventListener).toHaveBeenCalledWith('mouseup', jasmine.any(Function));
+        });
+
+        it('should return an deltaX and deltaY corespondeing to current svg pan', function () {
+          var onMouseDown,
+            onMouseMove,
+            onMouseUp,
+            thisDummySvg = {
+              addEventListener: function (name, handler) {
+                if (name === 'mousedown') {
+                  onMouseDown = handler;
+                } else if (name === 'mousemove') {
+                  onMouseMove = handler;
+                } else if (name === 'mouseup') {
+                  onMouseUp = handler;
+                }
+              }
+            },
+            handler = CheckpointTreeEventHandler.svgEventHandler(thisDummySvg),
+            initialDeltaX = handler.deltaX(),
+            initialDeltaY = handler.deltaY();
+
+          var mouseDownX = 40,
+            mouseDownY = 50,
+            mouseMoveX = 44,
+            mouseMoveY = 55;
+          onMouseDown({
+            clientX: mouseDownX,
+            clientY: mouseDownY
+          });
+          onMouseMove({
+            clientX: mouseMoveX,
+            clientY: mouseMoveY
+          });
+          expect(initialDeltaX - handler.deltaX()).toBe(mouseDownX - mouseMoveX);
+          expect(initialDeltaY - handler.deltaY()).toBe(mouseDownY - mouseMoveY);
+
+          var mouseUpX = 88,
+            mouseUpY = 110;
+          onMouseUp({
+            clientX: mouseUpX,
+            clientY: mouseUpY
+          });
+          expect(initialDeltaX - handler.deltaX()).toBe(mouseDownX - mouseUpX);
+          expect(initialDeltaY - handler.deltaY()).toBe(mouseDownY - mouseUpY);
+        });
+      });
     });
   });
 });

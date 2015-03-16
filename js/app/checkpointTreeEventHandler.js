@@ -87,7 +87,54 @@ define(['immutable.min', 'app/spaghetti'], function (Immutable, Spaghetti) {
         }
 
       };
-    }
+    },
 
+
+    svgEventHandler: function (svg) {
+
+      var deltaX = 0,
+        deltaY = 0,
+        panning = false,
+        lastClientX = 0,
+        lastClientY = 0;
+
+      var onMouseDown = function (event) {
+        panning = true;
+        lastClientX = event.clientX;
+        lastClientY = event.clientY;
+      };
+      var onMouseMove = function (event) {
+        if (panning) {
+          var mouseMoveX = event.clientX - lastClientX,
+            mouseMoveY = event.clientY - lastClientY;
+
+          lastClientX = event.clientX;
+          lastClientY = event.clientY;
+          deltaX += mouseMoveX;
+          deltaY += mouseMoveY;
+        }
+      };
+      var onMouseUp = function (event) {
+        onMouseMove(event);
+        panning = false;
+      };
+
+      svg.addEventListener('mousedown', onMouseDown);
+      svg.addEventListener('mousemove', onMouseMove);
+      svg.addEventListener('mouseup', onMouseUp);
+
+      return {
+
+        deltaX: function () {
+          return deltaX;
+        },
+
+        deltaY: function () {
+          return deltaY;
+        }
+
+      };
+
+    }
   };
 });

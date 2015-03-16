@@ -303,7 +303,9 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
           root: null,
           currentCheckpoint: null,
           undoStack: new Immutable.Stack(),
-          redoStack: new Immutable.Stack()
+          redoStack: new Immutable.Stack(),
+          rootX: 100.5,
+          rootY: 100
         };
       },
       render: function () {
@@ -311,12 +313,14 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
           currentCheckpoint = this.props.currentCheckpoint,
           currentNode,
           undoStack = this.props.undoStack,
-          redoStack = this.props.redoStack;
+          redoStack = this.props.redoStack,
+          rootX = this.props.rootX,
+          rootY = this.props.rootY;
         root = markPathToCheckpoint(root, currentCheckpoint);
         root = markUndoStack(root, undoStack);
         root = markRedoStack(root, redoStack);
         currentNode = root;
-        return renderedPathToCurrentCheckpoint(currentNode, 200.5, 500, root).element;
+        return renderedPathToCurrentCheckpoint(currentNode, rootX, rootY, root).element;
       }
     });
 
