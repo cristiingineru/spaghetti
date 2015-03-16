@@ -71,6 +71,7 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
       });
       React.render(element, document.getElementById('checkpointTreeSvg'));
     };
+    checkpointTreeSvgHandler.setCheckpointsRedraw(checkpointsRedraw);
     Spaghetti.setCheckpointsRedraw(checkpointsRedraw);
     Spaghetti.checkpointsRedraw();
 

@@ -96,7 +96,8 @@ define(['immutable.min', 'app/spaghetti'], function (Immutable, Spaghetti) {
         deltaY = 0,
         panning = false,
         lastClientX = 0,
-        lastClientY = 0;
+        lastClientY = 0,
+        checkpointsRedraw = function () {};
 
       var onMouseDown = function (event) {
         panning = true;
@@ -112,6 +113,8 @@ define(['immutable.min', 'app/spaghetti'], function (Immutable, Spaghetti) {
           lastClientY = event.clientY;
           deltaX += mouseMoveX;
           deltaY += mouseMoveY;
+
+          checkpointsRedraw();
         }
       };
       var onMouseUp = function (event) {
@@ -131,8 +134,11 @@ define(['immutable.min', 'app/spaghetti'], function (Immutable, Spaghetti) {
 
         deltaY: function () {
           return deltaY;
-        }
+        },
 
+        setCheckpointsRedraw: function (fn) {
+          checkpointsRedraw = fn;
+        }
       };
 
     }

@@ -105,10 +105,11 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
         addEventListener: jasmine.createSpy()
       };
 
-      it('should return a specialized instance with deltaX and deltaY functions', function () {
+      it('should return a specialized instance with deltaX, deltaY and setCheckpointsRedraw functions', function () {
         var handler = CheckpointTreeEventHandler.svgEventHandler(dummySvg);
         expect(handler.deltaX).not.toBeFalsy();
         expect(handler.deltaY).not.toBeFalsy();
+        expect(handler.setCheckpointsRedraw).not.toBeFalsy();
       });
 
       describe('deltaX() and deltaY()', function () {
