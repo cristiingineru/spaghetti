@@ -9,8 +9,8 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/keyProvider', 'app/layoutManager'],
-  function (React, Immutable, Catalog, Spaghetti, Dissect, Diagram, KeyProvider, LayoutManager) {
+requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/keyProvider', 'app/layoutManager', 'app/checkpointTree', 'app/checkpointTreeEventHandler'],
+  function (React, Immutable, Catalog, Spaghetti, Dissect, Diagram, KeyProvider, LayoutManager, CheckpointTree, CheckpointTreeEventHandler) {
 
     var breadboard = Catalog('breadboard');
     var myBreadboardModel = breadboard.model().objectify()
@@ -43,19 +43,36 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
       .model();
     dissect(Spaghetti.state,
       set('diagram', myTopDiagram));
-  Spaghetti.checkpoint();
-  
-  var LayoutManager = require('app/layoutManager');
-  var eventHandler = LayoutManager.diagramEventHandler(myTopDiagram);
-  document.addEventListener('keypress', eventHandler.onKeyPress);
+    Spaghetti.checkpoint();
+
+    var LayoutManager = require('app/layoutManager');
+    var eventHandler = LayoutManager.diagramEventHandler(myTopDiagram);
+    document.addEventListener('keypress', eventHandler.onKeyPress);
 
     var redraw = function () {
       var element = React.createElement(Diagram.class(), {
         model: Spaghetti.state().get('diagram')
       });
-      React.render(element, document.getElementById('svg'));
+      React.render(element, document.getElementById('mainDiagramSvg'));
     };
     Spaghetti.setRedraw(redraw);
     Spaghetti.redraw();
+
+    var checkpointTreeSvgHandler = CheckpointTreeEventHandler.svgEventHandler(document.getElementById('checkpointTreeSvg'));
+
+    var checkpointsRedraw = function () {
+      var element = React.createElement(CheckpointTree.class(), {
+        root: CheckpointTree.buildTree(Spaghetti.checkpoints(), Spaghetti.currentCheckpoint()),
+        currentCheckpoint: Spaghetti.currentCheckpoint(),
+        undoStack: Spaghetti.undoCheckpoints,
+        redoStack: Spaghetti.redoCheckpoints,
+        rootX: 200.5 + checkpointTreeSvgHandler.deltaX(),
+        rootY: 400 + checkpointTreeSvgHandler.deltaY()
+      });
+      React.render(element, document.getElementById('checkpointTreeSvg'));
+    };
+    checkpointTreeSvgHandler.setCheckpointsRedraw(checkpointsRedraw);
+    Spaghetti.setCheckpointsRedraw(checkpointsRedraw);
+    Spaghetti.checkpointsRedraw();
 
   });
