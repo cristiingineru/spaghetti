@@ -144,17 +144,44 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
       return isInUndoStack(node) || isInRedoStack(node);
     },
     renderNode = function (node, x, y, root) {
-      var eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(
-        node.get('checkpoint'), root, markCurrentCheckpoint);
-      return React.createElement('circle', {
-        r: nodeCircleRadius,
-        cx: x,
-        cy: y,
-        stroke: '#2f6b7c',
-        strokeWidth: (isInUndoStack(node) || isInRedoStack(node)) ? 2 : 1,
-        fill: isCurrent(node) ? '#000' : (isInUndoStack(node) ? '#2f6b7c' : '#fff'),
+      var elements = [],
+        eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(
+          node.get('checkpoint'), root, markCurrentCheckpoint);
+
+      if (isCurrent(node)) {
+        var mainCircle = React.createElement('circle', {
+            r: nodeCircleRadius,
+            cx: x,
+            cy: y,
+            stroke: '#2f6b7c',
+            strokeWidth: 2,
+            fill: '#fff'
+          }),
+          innerCircle = React.createElement('circle', {
+            r: nodeCircleRadius / 3,
+            cx: x,
+            cy: y,
+            stroke: '#2f6b7c',
+            strokeWidth: 2,
+            fill: '#2f6b7c'
+          });
+        elements.push(mainCircle);
+        elements.push(innerCircle);
+      } else {
+        var mainCircle = React.createElement('circle', {
+          r: nodeCircleRadius,
+          cx: x,
+          cy: y,
+          stroke: '#2f6b7c',
+          strokeWidth: (isInUndoStack(node) || isInRedoStack(node)) ? 2 : 1,
+          fill: isInUndoStack(node) ? '#2f6b7c' : '#fff'
+        });
+        elements.push(mainCircle);
+      }
+
+      return React.createElement('g', {
         onClick: eventHandler.onClick
-      });
+      }, elements);
     },
     curvedPath = function (x1, y1, x2, y2) {
       var cx1 = x1,
