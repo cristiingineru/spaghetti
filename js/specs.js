@@ -21,7 +21,9 @@ require(
     'specs/capacitorSpec',
     'specs/keyProviderSpec',
     'specs/coreSpec',
-    'specs/layoutManagerSpec'
+    'specs/layoutManagerSpec',
+    'specs/checkpointTreeSpec',
+    'specs/checkpointTreeEventHandlerSpec'
   ],
   function (document) {
     jasmine.getEnv().execute();
