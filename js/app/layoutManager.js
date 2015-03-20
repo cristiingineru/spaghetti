@@ -18,7 +18,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
         onDragStart: function (event, ui) {
           var originalX,
             originalY;
-          
+
           dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
@@ -27,7 +27,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                   originalY = component.get('y');
                   return component;
                 }))));
-          
+
           var delta = {
             deltaX: originalX - event.clientX,
             deltaY: originalY - event.clientY
