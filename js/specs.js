@@ -19,6 +19,7 @@ require(
     'specs/dissectSpec',
     'specs/resistorSpec',
     'specs/capacitorSpec',
+    'specs/breadboardSpec',
     'specs/keyProviderSpec',
     'specs/coreSpec',
     'specs/layoutManagerSpec',
