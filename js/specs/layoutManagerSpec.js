@@ -395,6 +395,18 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
                       expect(finger.get('holeKey')).toBeFalsy();
                       return finger;
                     }))])])));
+
+          /*
+          var holes = select(Spaghetti.state, ['diagram', 'components', 'holes', isTheSame(hole)]);
+          expect(holes.count()).toBe(1);
+          expect(holes[0].get('connected')).toBeFalsy();
+          expect(holes[0].get('legKey')).toBeFalsy();
+
+          var fingers = select(Spaghetti.state, ['diagram', 'components', 'legs', isTheSame(leg), 'finger']);
+          expect(fingers.count()).toBe(1);
+          expect(fingers[0].get('connected')).toBeFalsy();
+          expect(fingers[0].get('holeKey')).toBeFalsy();
+          */
         });
       });
 
