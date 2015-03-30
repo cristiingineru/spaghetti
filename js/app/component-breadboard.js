@@ -1,7 +1,7 @@
 /* global define, require, dissect, update, updateAll */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole', 'app/part-strip'], function (React, Draggable, Immutable, Core, partHole, partStrip) {
+define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole', 'app/part-strip'], function (React, Draggable, Immutable, Core, partHole, Strip) {
 
   var breadboardClass = React.createClass({
     displayName: 'breadboard',
@@ -36,12 +36,12 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       return React.createElement('g', null, [body].concat(holes));
       */
 
-      var stripModel = partStrip.model().objectify()
+      var stripModel = Strip.model().objectify()
         .setXY(this.props.model.get('x'), this.props.model.get('y'))
         .setOrientation('horizontal')
         .setHoleCount(5)
         .model(),
-        strip = React.createElement(partStrip.class(), {
+        strip = React.createElement(Strip.class(), {
           model: stripModel
         });
 
@@ -49,18 +49,35 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     }
   });
 
-  var rows = function (pattern) {
-      return pattern.split('\n');
+  var findGroups = function (row) {
+      var groupPattern = /((\d+)\*)?((\d+)(v|h))/g,
+        match = groupPattern.exec(row),
+        groups = [];
+      while (match) {
+        groups.push({
+          count: Number(match[2] || 1),
+          stripSize: Number(match[4]),
+          stripDirection: match[5] === 'h' ? 'horizontal' : 'vertical'
+        });
+        match = groupPattern.exec(row);
+      }
+      return groups;
     },
-    groups = function (row) {
-      return row.match(/\d+\*\d+(v|h)/g);
+    buildGroup = function (group) {
+      var strip = Strip.model().objectify()
+        .setHoleCount(group.stripSize)
+        .setDirection(group.stripDirection)
+        .model();
+      var stripsOfTheGroup = [];
+      for (var i = 0; i < group.count; i++) {
+        stripsOfTheGroup.push(strip);
+      }
+      return stripsOfTheGroup;
     },
     strips = function (pattern) {
-      var newRows = rows(pattern),
-        newStrips = [];
-      newRows.forEach(function (row) {
-        var newGroups = groups(row);
-      });
+      var foundGroup = findGroups(pattern)[0],
+        newGroup = buildGroup(foundGroup),
+        newStrips = newGroup.strips;
       return newStrips;
     };
 
