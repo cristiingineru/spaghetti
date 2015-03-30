@@ -21,7 +21,7 @@ define(['app/part-strip', 'Squire', 'immutable.min', 'app/layoutManager', 'React
         var model = Strip.model().objectify()
           .keyify(KeyProvider)
           .setOrientation(orientation)
-          .setHoleCount()
+          .setHoleCount(holeCount)
           .model(),
           strip = React.createElement(Strip.class(), {
             model: model
@@ -30,9 +30,9 @@ define(['app/part-strip', 'Squire', 'immutable.min', 'app/layoutManager', 'React
       };
 
       it('should contain holes', function () {
-        var strip = renderStrip();
+        var strip = renderStrip('vertical', 3);
         var holes = TestUtils.scryRenderedComponentsWithType(strip, Hole.class());
-        expect(holes.length).toBeGreaterThan(0);
+        expect(holes.length).toBe(3);
       });
     });
 
@@ -49,29 +49,26 @@ define(['app/part-strip', 'Squire', 'immutable.min', 'app/layoutManager', 'React
         expect(model.get('key')).toBe(hardCodedUniqueKey);
       });
 
-      it('should adapt the size acordingly to the hole count', function () {
-        var holeCounts = [1, 2, 5];
-
-        holeCounts.forEach(function (holeCount) {
-          var model = Strip.model().objectify()
-            .setOrientation('horizontal')
-            .setHoleCount(holeCount)
-            .model();
-
-          expect(model.get('holeCount')).toBe(holeCount);
-        });
-      });
-
-      it('should change the sizes accordingly to orientation', function () {
-        var orientations = ['horizontal', 'vertical'];
+      it('should change the sizes accordingly to orientation and hole count', function () {
+        var orientations = ['horizontal', 'vertical'],
+          holeCounts = [1, 3, 5],
+          holeSize = 10,
+          model = Strip.model();
 
         orientations.forEach(function (orientation) {
-          var model = Strip.model().objectify()
-            .setOrientation('horizontal')
-            .setHoleCount(3)
-            .model();
+          holeCounts.forEach(function (holeCount) {
 
-          expect(model.get('orientation')).toBe(orientation);
+            model = model.objectify()
+              .setOrientation(orientation)
+              .setHoleCount(holeCount)
+              .model();
+
+            expect(model.get('orientation')).toBe(orientation);
+            expect(model.get('width')).toBe(orientation === 'horizontal' ? holeSize * holeCount : holeSize);
+            expect(model.get('height')).toBe(orientation === 'vertical' ? holeCount * holeSize : holeSize);
+            expect(model.get('holeCount')).toBe(holeCount);
+            expect(model.get('holes').count()).toBe(holeCount);
+          });
         });
       });
     });

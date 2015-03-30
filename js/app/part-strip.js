@@ -41,7 +41,7 @@ define(['React', 'immutable.min', 'app/core', 'app/part-hole'], function (React,
     thisProto.setXY = function (x, y) {
       model = model.set('x', x);
       model = model.set('y', y);
-      return this.updateHoles();
+      return this.updateStrip();
     };
     thisProto.setOrientation = function (orientation) {
       model = model.set('orientation', orientation);
@@ -66,17 +66,26 @@ define(['React', 'immutable.min', 'app/core', 'app/part-hole'], function (React,
         holeCount = model.get('holeCount'),
         x = model.get('x'),
         y = model.get('y'),
-        holeSize = 10;
+        holeSize = 10,
+        widthCoefficient = orientation === 'horizontal' ? holeSize : 0,
+        heightCoefficient = orientation === 'vertical' ? holeSize : 0,
+        holes = [];
 
-      if (orientation === 'horizontal') {
-        model = model.set('width', holeCount * holeSize)
-          .set('height', holeSize);
-      } else {
-        model = model.set('height', holeCount * holeSize)
-          .set('height', holeSize);
+      model = model
+        .set('width', orientation === 'horizontal' ? holeCount * holeSize : holeSize)
+        .set('height', orientation === 'vertical' ? holeCount * holeSize : holeSize);
+
+      for (var i = 0; i < holeCount; i++) {
+        var margineOffset = holeSize / 2,
+          newHole = partHole.model().objectify()
+          .setXY(
+            x + margineOffset + i * widthCoefficient,
+            y + margineOffset + i * heightCoefficient)
+          .model();
+        holes.push(newHole);
       }
+      model = model.set('holes', Immutable.fromJS(holes));
 
-      for (var i = 0; i < holeCount; i++) {}
       return this;
     };
     thisProto.init = function () {

@@ -1,7 +1,7 @@
 /* global define, require, dissect, update, updateAll */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'], function (React, Draggable, Immutable, Core, partHole) {
+define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole', 'app/part-strip'], function (React, Draggable, Immutable, Core, partHole, partStrip) {
 
   var breadboardClass = React.createClass({
     displayName: 'breadboard',
@@ -14,6 +14,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       return nextProps.model.hashCode() !== this.props.model.hashCode();
     },
     render: function () {
+      /*
       var body = React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),
@@ -33,6 +34,18 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
           });
         }).toArray();
       return React.createElement('g', null, [body].concat(holes));
+      */
+
+      var stripModel = partStrip.model().objectify()
+        .setXY(this.props.model.get('x'), this.props.model.get('y'))
+        .setOrientation('horizontal')
+        .setHoleCount(5)
+        .model(),
+        strip = React.createElement(partStrip.class(), {
+          model: stripModel
+        });
+
+      return React.createElement('g', null, strip);
     }
   });
 
