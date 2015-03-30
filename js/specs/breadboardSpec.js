@@ -17,6 +17,24 @@ define(['app/component-breadboard', 'Squire', 'immutable.min', 'app/layoutManage
       expect(Breadboard.model).not.toThrow();
     });
 
+    [{
+      pattern: '1*5v',
+      stripCount: 1,
+      holeCount: 5
+    }].forEach(function (test) {
+      it('should build a new breadboard with ' + test.pattern + ' pattern', function () {
+        var model = Breadboard.model(test.pattern);
+
+        var strips = model.get('strips'),
+          holes = strips.map(function (strip) {
+            return strip.get('holes');
+          })
+          .flatten(1);
+        expect(strips.count()).toBe(test.stripCount);
+        expect(holes.count()).toBe(test.holeCount);
+      });
+    });
+
     describe('Breadboard class', function () {
 
       var TestUtils = React.addons.TestUtils;
@@ -48,7 +66,7 @@ define(['app/component-breadboard', 'Squire', 'immutable.min', 'app/layoutManage
         expect(Immutable.Map.isMap(model)).toBe(true);
       });
 
-      it('should have name, proto, x and y properties', function () {
+      it('should have name, proto, x, y and strips properties', function () {
         var model = Breadboard.model();
         expect(model.get('name')).not.toBeFalsy();
         expect(model.get('proto')).not.toBeFalsy();

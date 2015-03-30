@@ -49,6 +49,21 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     }
   });
 
+  var rows = function (pattern) {
+      return pattern.split('\n');
+    },
+    groups = function (row) {
+      return row.match(/\d+\*\d+(v|h)/g);
+    },
+    strips = function (pattern) {
+      var newRows = rows(pattern),
+        newStrips = [];
+      newRows.forEach(function (row) {
+        var newGroups = groups(row);
+      });
+      return newStrips;
+    };
+
   var breadboardProto = function (model) {
     var thisProto = Object.create(null);
     thisProto.model = function () {
@@ -65,6 +80,10 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     thisProto.setXY = function (x, y) {
       model = model.set('x', x);
       model = model.set('y', y);
+      return this.updateParts();
+    };
+    thisProto.pattern = function (pattern) {
+      model = model.set('strips', strips(pattern));
       return this.updateParts();
     };
     thisProto.updateParts = function () {
@@ -119,13 +138,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     width: 20,
     height: 60,
     holes: [],
+    strips: [],
     proto: breadboardProto
   });
-
-  var breadboard = breadboardProto(breadboardModel);
-  breadboardModel = breadboard
-    .init()
-    .model();
 
   return {
     name: function () {
@@ -137,8 +152,15 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     proto: function () {
       return breadboardProto;
     },
-    model: function () {
-      return breadboardModel;
+    model: function (pattern) {
+      var defaultBreadboardPattern = '1*5h';
+      pattern = pattern || defaultBreadboardPattern;
+      var newBreadboard = breadboardProto(breadboardModel);
+      var newBreadboardModel = newBreadboard
+        .init()
+        .pattern(pattern)
+        .model();
+      return newBreadboardModel;
     }
   };
 });
