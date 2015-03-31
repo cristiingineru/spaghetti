@@ -11,17 +11,20 @@ define(['React', 'immutable.min', 'app/core', 'app/part-hole'], function (React,
       };
     },
     render: function () {
-      var body = React.createElement('rect', {
-        x: this.props.model.get('x'),
-        y: this.props.model.get('y'),
-        width: this.props.model.get('width'),
-        height: this.props.model.get('height'),
-        stroke: '#9b988e',
-        fill: '#fdf6e6',
-        rx: 3,
-        ry: 3,
-        key: -1
-      });
+      var unitSize = 14,
+        x = this.props.model.get('x'),
+        y = this.props.model.get('y'),
+        width = this.props.model.get('width'),
+        height = this.props.model.get('height'),
+        body = React.createElement('line', {
+          x1: x + unitSize / 2,
+          y1: y + unitSize / 2,
+          x2: x + width - unitSize / 2,
+          y2: y + height - unitSize / 2,
+          stroke: '#b7b5ad',
+          strokeWidth: 1,
+          key: -1
+        });
       var holes = this.props.model.getIn(['holes'])
         .map(function (hole) {
           return React.createElement(partHole.class(), {
