@@ -14,7 +14,7 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
 
     var breadboard = Catalog('breadboard');
     var myBreadboardModel = breadboard.model().objectify()
-      .setXY(100.5, 300.5)
+      .setXY(100.5, 250.5)
       .model();
     var resistor = Catalog('resistor');
     var myResistorModel = resistor.model().objectify()

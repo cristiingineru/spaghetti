@@ -24,7 +24,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     }
   });
 
-  var getGroupDescriptions = function (row) {
+  var unitSize = 14,
+    getGroupDescriptions = function (row) {
       var groupPattern = /((\d+)\*)?((\d+)(v|h))/g,
         match = groupPattern.exec(row),
         groups = [];
@@ -56,7 +57,6 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       var count = groupDescription.count,
         stripSize = groupDescription.stripSize,
         stripOrientation = groupDescription.stripOrientation,
-        unitSize = 14,
         strip = Strip.model().objectify()
         .setHoleCount(groupDescription.stripSize)
         .setOrientation(groupDescription.stripOrientation)
@@ -92,7 +92,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
 
       return {
         strips: strips,
-        height: maxHeight
+        height: Math.max(maxHeight, unitSize)
       };
     },
     build = function (description) {
@@ -185,12 +185,20 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     },
     model: function (pattern) {
       var defaultBreadboardPattern = [
-        '1*30h',
-        '1*30h',
-        '30*5v',
-        '30*5v',
-        '1*30h',
-        '1*30h'
+        '1*60h',
+        '1*60h',
+        '',
+        '',
+        '',
+        '60*5v',
+        '',
+        '',
+        '60*5v',
+        '',
+        '',
+        '',
+        '1*60h',
+        '1*60h'
       ].join('\n');
       pattern = pattern || defaultBreadboardPattern;
       var newBreadboard = breadboardProto(breadboardModel);
