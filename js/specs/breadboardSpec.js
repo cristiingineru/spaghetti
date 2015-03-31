@@ -18,6 +18,13 @@ define(['app/component-breadboard', 'Squire', 'immutable.min', 'app/layoutManage
     });
 
     [{
+      pattern: [
+        '1*5v',
+        '2*5h'
+      ].join('\n'),
+      stripCount: 3,
+      holeCount: 15
+    }, {
       pattern: '1*5v',
       stripCount: 1,
       holeCount: 5

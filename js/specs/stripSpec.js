@@ -52,7 +52,8 @@ define(['app/part-strip', 'Squire', 'immutable.min', 'app/layoutManager', 'React
       it('should change the sizes accordingly to orientation and hole count', function () {
         var orientations = ['horizontal', 'vertical'],
           holeCounts = [1, 3, 5],
-          holeSize = 10,
+          unitSize = 14,
+          holeSize = unitSize,
           model = Strip.model();
 
         orientations.forEach(function (orientation) {

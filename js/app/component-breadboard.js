@@ -24,7 +24,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     }
   });
 
-  var findGroupDescriptions = function (row) {
+  var getGroupDescriptions = function (row) {
       var groupPattern = /((\d+)\*)?((\d+)(v|h))/g,
         match = groupPattern.exec(row),
         groups = [];
@@ -38,39 +38,83 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       }
       return groups;
     },
-    buildStrips = function (groupDescription) {
-      var strip = Strip.model().objectify()
+    getRowDescription = function (row) {
+      return {
+        groupDescriptions: getGroupDescriptions(row)
+      };
+    },
+    getDescription = function (pattern) {
+      var rows = pattern.split('\n');
+      var rowDescriptions = rows.map(function (row) {
+        return getRowDescription(row);
+      });
+      return {
+        rowDescriptions: rowDescriptions
+      };
+    },
+    buildGroup = function (groupDescription, x, y) {
+      var count = groupDescription.count,
+        stripSize = groupDescription.stripSize,
+        stripOrientation = groupDescription.stripOrientation,
+        unitSize = 14,
+        strip = Strip.model().objectify()
         .setHoleCount(groupDescription.stripSize)
         .setOrientation(groupDescription.stripOrientation)
-        .model();
-      var stripsOfTheGroup = [];
-      for (var i = 0; i < groupDescription.count; i++) {
-        stripsOfTheGroup.push(strip);
-      }
-      return stripsOfTheGroup;
-    },
-    distributeEvenly = function (strips, groupOrientation, stripWidth) {
-      var horizontalIncrementer = groupOrientation === 'horizontal' ? stripWidth : 0,
-        verticalIncrementer = groupOrientation === 'vertical' ? stripWidth : 0;
-      return strips.map(function (strip, index) {
-        var x = strip.get('x'),
-          y = strip.get('y'),
-          newX = x + index * horizontalIncrementer,
-          newY = y + index * verticalIncrementer;
-        return strip.objectify()
-          .setXY(newX, newY)
+        .model(),
+        strips = [],
+        groupStyle = stripOrientation === 'horizontal' ? 'long' : 'short',
+        horizontalIncrementer = groupStyle === 'short' ? unitSize : (unitSize * stripSize);
+      for (var index = 0; index < count; index++) {
+        var newStrip = strip.objectify()
+          .setXY(x + index * horizontalIncrementer, y)
           .model();
+        strips.push(newStrip);
+      }
+      return {
+        strips: strips,
+        width: groupStyle === 'short' ? count * unitSize : stripSize * unitSize,
+        height: groupStyle === 'long' ? unitSize : stripSize * unitSize
+      };
+    },
+    buildRow = function (rowDescription, y) {
+      var strips = [],
+        maxHeight = 0,
+        width = 0;
+
+      rowDescription.groupDescriptions.forEach(function (groupDescription) {
+        var groupResult = buildGroup(groupDescription, width, y);
+        strips = strips.concat(groupResult.strips);
+        width += groupResult.width;
+        if (groupResult.height > maxHeight) {
+          maxHeight = groupResult.height;
+        }
       });
+
+      return {
+        strips: strips,
+        height: maxHeight
+      };
+    },
+    build = function (description) {
+      var strips = [],
+        height = 0;
+
+      description.rowDescriptions.forEach(function (rowDescription) {
+        var rowResult = buildRow(rowDescription, height);
+        strips = strips.concat(rowResult.strips);
+        height += rowResult.height;
+      });
+
+      return {
+        strips: strips,
+        height: height
+      };
     },
     strips = function (pattern) {
-      var groupDescription = findGroupDescriptions(pattern)[0],
-        newStrips = buildStrips(groupDescription);
+      var description = getDescription(pattern),
+        result = build(description);
 
-      var groupOrientation = groupDescription.stripOrientation === 'vertical' ? 'horizontal' : 'vertical',
-        stripWidth = 10;
-      newStrips = distributeEvenly(newStrips, groupOrientation, stripWidth);
-
-      return Immutable.fromJS(newStrips);
+      return Immutable.fromJS(result.strips);
     };
 
   var breadboardProto = function (model) {
@@ -140,7 +184,12 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       return breadboardProto;
     },
     model: function (pattern) {
-      var defaultBreadboardPattern = '30*5v';
+      var defaultBreadboardPattern = [
+        '6*5h',
+        '30*5v',
+        '30*5v',
+        '6*5h'
+      ].join('\n');
       pattern = pattern || defaultBreadboardPattern;
       var newBreadboard = breadboardProto(breadboardModel);
       var newBreadboardModel = newBreadboard
