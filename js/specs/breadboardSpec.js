@@ -22,7 +22,7 @@ define(['app/component-breadboard', 'Squire', 'immutable.min', 'app/layoutManage
       stripCount: 1,
       holeCount: 5
     }, {
-      pattern: '2*3v',
+      pattern: '2*3h',
       stripCount: 2,
       holeCount: 6
     }].forEach(function (test) {

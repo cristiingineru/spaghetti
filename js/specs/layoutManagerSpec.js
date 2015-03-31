@@ -294,7 +294,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             diagram = diagramWithComponents([resistor, breadboard]),
             Spaghetti = spaghettiWithDiagram(diagram);
 
-          var hole = breadboard.getIn(['holes', 0]),
+          var hole = breadboard.getIn(['strips', 0, 'holes', 0]),
             leg = resistor.getIn(['legs', 0]),
             finger = leg.get('finger'),
             handler = LayoutManager.fingerEventHandler(finger, leg),
@@ -355,7 +355,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             diagram = diagramWithComponents([resistor, breadboard]),
             Spaghetti = spaghettiWithDiagram(diagram);
 
-          var hole = breadboard.getIn(['holes', 0]),
+          var hole = breadboard.getIn(['strips', 0, 'holes', 0]),
             leg = resistor.getIn(['legs', 0]),
             finger = leg.get('finger'),
             handler = LayoutManager.fingerEventHandler(finger, leg),
@@ -417,7 +417,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             diagram = diagramWithComponents([resistor, breadboard]),
             Spaghetti = spaghettiWithDiagram(diagram);
 
-          var hole = breadboard.getIn(['holes', 0]),
+          var hole = breadboard.getIn(['strips', 0, 'holes', 0]),
             leg = resistor.getIn(['legs', 0]),
             finger = leg.get('finger'),
             handler = LayoutManager.fingerEventHandler(finger, leg),
