@@ -185,10 +185,12 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     },
     model: function (pattern) {
       var defaultBreadboardPattern = [
-        '6*5h',
+        '1*30h',
+        '1*30h',
         '30*5v',
         '30*5v',
-        '6*5h'
+        '1*30h',
+        '1*30h'
       ].join('\n');
       pattern = pattern || defaultBreadboardPattern;
       var newBreadboard = breadboardProto(breadboardModel);
