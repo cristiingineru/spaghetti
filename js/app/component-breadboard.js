@@ -36,6 +36,14 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       return React.createElement('g', null, [body].concat(holes));
       */
 
+      var stripModels = this.props.model.get('strips');
+      var strips = stripModels.map(function (stripModel) {
+        return React.createElement(Strip.class(), {
+          model: stripModel
+        });
+      });
+
+      /*
       var stripModel = Strip.model().objectify()
         .setXY(this.props.model.get('x'), this.props.model.get('y'))
         .setOrientation('horizontal')
@@ -44,12 +52,13 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
         strip = React.createElement(Strip.class(), {
           model: stripModel
         });
+        */
 
-      return React.createElement('g', null, strip);
+      return React.createElement('g', null, strips);
     }
   });
 
-  var findGroups = function (row) {
+  var findGroupDescriptions = function (row) {
       var groupPattern = /((\d+)\*)?((\d+)(v|h))/g,
         match = groupPattern.exec(row),
         groups = [];
@@ -57,28 +66,45 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
         groups.push({
           count: Number(match[2] || 1),
           stripSize: Number(match[4]),
-          stripDirection: match[5] === 'h' ? 'horizontal' : 'vertical'
+          stripOrientation: match[5] === 'h' ? 'horizontal' : 'vertical'
         });
         match = groupPattern.exec(row);
       }
       return groups;
     },
-    buildGroup = function (group) {
+    buildStrips = function (groupDescription) {
       var strip = Strip.model().objectify()
-        .setHoleCount(group.stripSize)
-        .setDirection(group.stripDirection)
+        .setHoleCount(groupDescription.stripSize)
+        .setOrientation(groupDescription.stripOrientation)
         .model();
       var stripsOfTheGroup = [];
-      for (var i = 0; i < group.count; i++) {
+      for (var i = 0; i < groupDescription.count; i++) {
         stripsOfTheGroup.push(strip);
       }
       return stripsOfTheGroup;
     },
+    distributeEvenly = function (strips, groupOrientation, stripWidth) {
+      var horizontalIncrementer = groupOrientation === 'horizontal' ? stripWidth : 0,
+        verticalIncrementer = groupOrientation === 'vertical' ? stripWidth : 0;
+      return strips.map(function (strip, index) {
+        var x = strip.get('x'),
+          y = strip.get('y'),
+          newX = x + index * horizontalIncrementer,
+          newY = y + index * verticalIncrementer;
+        return strip.objectify()
+          .setXY(newX, newY)
+          .model();
+      });
+    },
     strips = function (pattern) {
-      var foundGroup = findGroups(pattern)[0],
-        newGroup = buildGroup(foundGroup),
-        newStrips = newGroup.strips;
-      return newStrips;
+      var groupDescription = findGroupDescriptions(pattern)[0],
+        newStrips = buildStrips(groupDescription);
+
+      var groupOrientation = groupDescription.stripOrientation === 'vertical' ? 'horizontal' : 'vertical',
+        stripWidth = 10;
+      newStrips = distributeEvenly(newStrips, groupOrientation, stripWidth);
+
+      return Immutable.fromJS(newStrips);
     };
 
   var breadboardProto = function (model) {
@@ -86,18 +112,11 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     thisProto.model = function () {
       return model;
     };
-    thisProto.setX = function (x) {
-      model = model.set('x', x);
-      return this.updateParts();
-    };
-    thisProto.setY = function (y) {
-      model = model.set('y', y);
-      return this.updateParts();
-    };
     thisProto.setXY = function (x, y) {
-      model = model.set('x', x);
-      model = model.set('y', y);
-      return this.updateParts();
+      this.moveTo(x, y);
+      model = model.set('x', x); // TODO: delete
+      model = model.set('y', y); // TODO: delete
+      return this.updateParts(); // TODO: delete
     };
     thisProto.pattern = function (pattern) {
       model = model.set('strips', strips(pattern));
@@ -124,10 +143,27 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       }
       model = model.set('holes', Immutable.fromJS(holes));
 
-      model = model.set('width', (columnCount - 1) * columnDistance + 2 * margine);
-      model = model.set('height', (rowCount - 1) * rowDistance + 2 * margine);
+      //model = model.set('width', (columnCount - 1) * columnDistance + 2 * margine);
+      //model = model.set('height', (rowCount - 1) * rowDistance + 2 * margine);
 
       return this;
+    };
+    thisProto.moveTo = function (x, y) {
+      var originalBreadboardX = model.get('x'),
+        originalBreadboardY = model.get('y'),
+        deltaX = x - originalBreadboardX,
+        deltaY = y - originalBreadboardY;
+      var strips = model.get('strips').map(function (strip) {
+        var originalX = strip.get('x'),
+          originalY = strip.get('y'),
+          newX = originalX + deltaX,
+          newY = originalY + deltaY;
+
+        return strip.objectify()
+          .setXY(newX, newY)
+          .model();
+      });
+      model = model.set('strips', strips);
     };
     thisProto.keyify = function (keyProvider) {
       model = model.set('key', keyProvider());
@@ -141,19 +177,19 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       return this;
     };
     thisProto.init = function () {
-      return this.updateParts();
+      return this.updateParts(); // TODO: delete
     };
     return thisProto;
   };
 
   var breadboardModel = Immutable.fromJS({
     name: 'breadboard',
-    x: 100,
-    y: 300,
+    x: 0,
+    y: 0,
     columnCount: 30,
     rowCount: 15,
-    width: 20,
-    height: 60,
+    //width: 20,
+    //height: 60,
     holes: [],
     strips: [],
     proto: breadboardProto
@@ -170,7 +206,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       return breadboardProto;
     },
     model: function (pattern) {
-      var defaultBreadboardPattern = '1*5h';
+      var defaultBreadboardPattern = '30*5v';
       pattern = pattern || defaultBreadboardPattern;
       var newBreadboard = breadboardProto(breadboardModel);
       var newBreadboardModel = newBreadboard

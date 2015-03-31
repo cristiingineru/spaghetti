@@ -21,6 +21,10 @@ define(['app/component-breadboard', 'Squire', 'immutable.min', 'app/layoutManage
       pattern: '1*5v',
       stripCount: 1,
       holeCount: 5
+    }, {
+      pattern: '2*3v',
+      stripCount: 2,
+      holeCount: 6
     }].forEach(function (test) {
       it('should build a new breadboard with ' + test.pattern + ' pattern', function () {
         var model = Breadboard.model(test.pattern);
@@ -28,8 +32,8 @@ define(['app/component-breadboard', 'Squire', 'immutable.min', 'app/layoutManage
         var strips = model.get('strips'),
           holes = strips.map(function (strip) {
             return strip.get('holes');
-          })
-          .flatten(1);
+          });
+        holes = (new Immutable.List(holes)).flatten(1);
         expect(strips.count()).toBe(test.stripCount);
         expect(holes.count()).toBe(test.holeCount);
       });
