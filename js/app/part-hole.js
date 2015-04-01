@@ -16,8 +16,9 @@ define(['React', 'immutable.min'], function (React, Immutable) {
         r: radius,
         cx: this.props.model.get('x'),
         cy: this.props.model.get('y'),
-        stroke: '#7c7c7c',
-        fill: '#7c7c7c'
+        //stroke: '#7c7c7c',
+        //fill: '#7c7c7c',
+        className: 'hole'
       });
       var decorators = [];
       if (this.props.model.get('hovered')) {
