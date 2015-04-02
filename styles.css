@@ -68,6 +68,7 @@
 }
 
 .color-complement-0,
+.unconnectedLeg,
 .unconnectedFinger {
   color: #236863;
   fill: #236863;
@@ -75,6 +76,7 @@
 }
 
 .color-complement-1,
+.connectedLeg,
 .connectedFinger {
   color: #648E8B;
   fill: #648E8B;
@@ -97,5 +99,15 @@
 .hole {}
 
 .holeDecorator {
+  fill-opacity: 0.0;
+}
+
+.finger {
+  stroke-width: 1px;
+  fill-opacity: 1.0;
+}
+
+.leg {
+  stroke-width: 3px;
   fill-opacity: 0.0;
 }
