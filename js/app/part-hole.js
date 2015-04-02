@@ -13,25 +13,21 @@ define(['React', 'immutable.min'], function (React, Immutable) {
     render: function () {
       var radius = 3;
       var circle = React.createElement('circle', {
-        r: radius,
         cx: this.props.model.get('x'),
         cy: this.props.model.get('y'),
-        //stroke: '#7c7c7c',
-        //fill: '#7c7c7c',
-        className: 'hole'
+        r: radius,
       });
       var decorators = [];
       if (this.props.model.get('hovered')) {
         decorators.push(React.createElement('circle', {
-          r: radius + 2,
           cx: this.props.model.get('x'),
           cy: this.props.model.get('y'),
-          stroke: '#404040',
-          fillOpacity: 0.0
+          r: radius + 2,
+          className: 'holeDecorator'
         }));
       }
       return React.createElement('g', {
-        className: 'part-hole'
+        className: 'hole'
       }, [circle].concat(decorators));
     }
   });

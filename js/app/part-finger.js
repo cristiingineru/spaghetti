@@ -15,18 +15,18 @@ define(['React', 'react.draggable', 'immutable.min'], function (React, Draggable
       var LayoutManager = require('app/layoutManager'),
         eventHandler = LayoutManager.fingerEventHandler(this.props.model, this.props.owner),
         connected = this.props.model.get('connected'),
-        radius = 3,
-        color = connected ? '#575555' : '#a73434';
+        radius = 3;
       var circle = React.createElement('circle', {
-        r: radius,
         cx: this.props.model.get('x'),
         cy: this.props.model.get('y'),
-        stroke: color,
-        fill: color,
+        r: radius,
+        className: connected ? 'connectedFinger' : 'unconnectedFinger',
         onMouseUp: eventHandler.onMouseUp
       });
       // this wrapper is required to make the react.draggable work
-      var circleWrapper = React.createElement('g', null, circle);
+      var circleWrapper = React.createElement('g', {
+        className: 'finger'
+      }, circle);
       return React.createElement(Draggable, {
         axis: 'both',
         onStart: eventHandler.onDragStart,
