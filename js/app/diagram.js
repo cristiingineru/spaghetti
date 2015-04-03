@@ -18,9 +18,10 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
-        stroke: '#AAAAAA',
-        fill: '#f4f4f4',
-        onClick: eventHandler.onClick,
+        //stroke: '#AAAAAA',
+        //fill: '#f4f4f4',
+        className: 'diagram',
+        onClick: eventHandler.onClick
       });
       var components = [];
       var models = this.props.model.getIn(['components']);

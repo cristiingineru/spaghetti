@@ -14,24 +14,24 @@ requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', '
 
     var breadboard = Catalog('breadboard');
     var myBreadboardModel = breadboard.model().objectify()
-      .setXY(35, 200)
+      .setXY(100.5, 250.5)
       .model();
     var resistor = Catalog('resistor');
     var myResistorModel = resistor.model().objectify()
-      .setXY(100, 50)
+      .setXY(100.5, 50.5)
       .keyify(KeyProvider)
       .model();
     var mySecondResistorModel = resistor.model().objectify()
-      .setXY(150, 100)
+      .setXY(150.5, 100.5)
       .keyify(KeyProvider)
       .model();
     var capacitor = Catalog('capacitor');
     var myCapacitorModel = capacitor.model().objectify()
-      .setXY(200, 75)
+      .setXY(200.5, 75.5)
       .keyify(KeyProvider)
       .model();
     var mySecondCapacitorModel = capacitor.model().objectify()
-      .setXY(250, 125)
+      .setXY(250.5, 125.5)
       .keyify(KeyProvider)
       .model();
     var myTopDiagram = Diagram.model().objectify()

@@ -1,7 +1,9 @@
 /* global define, require, dissect, update, updateAll */
 
 
-define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'], function (React, Draggable, Immutable, Core, partHole) {
+define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole', 'app/part-strip'], function (React, Draggable, Immutable, Core, partHole, Strip) {
+
+  var unitSize = 14;
 
   var breadboardClass = React.createClass({
     displayName: 'breadboard',
@@ -14,70 +16,163 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       return nextProps.model.hashCode() !== this.props.model.hashCode();
     },
     render: function () {
-      var body = React.createElement('rect', {
-        x: this.props.model.get('x'),
-        y: this.props.model.get('y'),
-        width: this.props.model.get('width'),
-        height: this.props.model.get('height'),
-        stroke: '#d4d1ca',
-        fill: '#f7eedc',
-        rx: 3,
-        ry: 3,
-        key: -1
-      });
-      var holes = this.props.model.getIn(['holes'])
-        .map(function (hole) {
-          return React.createElement(partHole.class(), {
-            model: hole,
-            key: hole.get('key')
+      var stripModels = this.props.model.get('strips');
+      var strips = stripModels.map(function (stripModel) {
+          return React.createElement(Strip.class(), {
+            model: stripModel
           });
-        }).toArray();
-      return React.createElement('g', null, [body].concat(holes));
+        }),
+        rectangle = React.createElement('rect', {
+          x: this.props.model.get('x') - unitSize / 2,
+          y: this.props.model.get('y') - unitSize / 2,
+          width: this.props.model.get('width') + unitSize * 1.5,
+          height: this.props.model.get('height') + unitSize * 1.5,
+          rx: 5,
+          ry: 5,
+          className: 'breadboard'
+        });
+      return React.createElement('g', {
+        className: 'breadboard'
+      }, [rectangle].concat(strips));
     }
   });
+
+  var getGroupDescriptions = function (row) {
+      var groupPattern = /((\d+)\*)?((\d+)(v|h))/g,
+        match = groupPattern.exec(row),
+        groups = [];
+      while (match) {
+        groups.push({
+          count: Number(match[2] || 1),
+          stripSize: Number(match[4]),
+          stripOrientation: match[5] === 'h' ? 'horizontal' : 'vertical'
+        });
+        match = groupPattern.exec(row);
+      }
+      return groups;
+    },
+    getRowDescription = function (row) {
+      return {
+        groupDescriptions: getGroupDescriptions(row)
+      };
+    },
+    getDescription = function (pattern) {
+      var rows = pattern.split('\n');
+      var rowDescriptions = rows.map(function (row) {
+        return getRowDescription(row);
+      });
+      return {
+        rowDescriptions: rowDescriptions
+      };
+    },
+    buildGroup = function (groupDescription, x, y) {
+      var count = groupDescription.count,
+        stripSize = groupDescription.stripSize,
+        stripOrientation = groupDescription.stripOrientation,
+        strip = Strip.model().objectify()
+        .setHoleCount(groupDescription.stripSize)
+        .setOrientation(groupDescription.stripOrientation)
+        .model(),
+        strips = [],
+        groupStyle = stripOrientation === 'horizontal' ? 'long' : 'short',
+        horizontalIncrementer = groupStyle === 'short' ? unitSize : (unitSize * stripSize);
+      for (var index = 0; index < count; index++) {
+        var newStrip = strip.objectify()
+          .setXY(x + index * horizontalIncrementer, y)
+          .model();
+        strips.push(newStrip);
+      }
+      return {
+        strips: strips,
+        width: groupStyle === 'short' ? count * unitSize : stripSize * unitSize,
+        height: groupStyle === 'long' ? unitSize : stripSize * unitSize
+      };
+    },
+    buildRow = function (rowDescription, y) {
+      var strips = [],
+        maxHeight = 0,
+        width = 0;
+
+      rowDescription.groupDescriptions.forEach(function (groupDescription) {
+        var groupResult = buildGroup(groupDescription, width, y);
+        strips = strips.concat(groupResult.strips);
+        width += groupResult.width;
+        if (groupResult.height > maxHeight) {
+          maxHeight = groupResult.height;
+        }
+      });
+
+      return {
+        strips: strips,
+        height: Math.max(maxHeight, unitSize)
+      };
+    },
+    build = function (description) {
+      var strips = [],
+        height = 0;
+
+      description.rowDescriptions.forEach(function (rowDescription) {
+        var rowResult = buildRow(rowDescription, height);
+        strips = strips.concat(rowResult.strips);
+        height += rowResult.height;
+      });
+
+      return {
+        strips: strips,
+        height: height
+      };
+    },
+    strips = function (pattern) {
+      var description = getDescription(pattern),
+        result = build(description);
+
+      return Immutable.fromJS(result.strips);
+    };
 
   var breadboardProto = function (model) {
     var thisProto = Object.create(null);
     thisProto.model = function () {
       return model;
     };
-    thisProto.setX = function (x) {
-      model = model.set('x', x);
-      return this.updateParts();
-    };
-    thisProto.setY = function (y) {
-      model = model.set('y', y);
-      return this.updateParts();
-    };
     thisProto.setXY = function (x, y) {
-      model = model.set('x', x);
-      model = model.set('y', y);
+      return this.moveTo(x, y);
+    };
+    thisProto.pattern = function (pattern) {
+      model = model.set('strips', strips(pattern));
       return this.updateParts();
     };
     thisProto.updateParts = function () {
-      var x = model.get('x'),
-        y = model.get('y'),
-        columnCount = model.get('columnCount'),
-        rowCount = model.get('rowCount'),
-        margine = 10,
-        columnDistance = 10,
-        rowDistance = 10,
-        holes = [];
+      var strips = model.get('strips'),
+        width = 0,
+        height = 0;
+      strips.forEach(function (strip) {
+        strip.get('holes').forEach(function (hole) {
+          width = Math.max(width, hole.get('x'));
+          height = Math.max(height, hole.get('y'));
+        });
+      });
+      model = model.set('width', width)
+        .set('height', height);
+      return this;
+    };
+    thisProto.moveTo = function (x, y) {
+      var originalBreadboardX = model.get('x'),
+        originalBreadboardY = model.get('y'),
+        deltaX = x - originalBreadboardX,
+        deltaY = y - originalBreadboardY;
+      var strips = model.get('strips').map(function (strip) {
+        var originalX = strip.get('x'),
+          originalY = strip.get('y'),
+          newX = originalX + deltaX,
+          newY = originalY + deltaY;
 
-      for (var rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-        for (var columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-          var currentHoleIndex = rowIndex * rowCount + columnIndex,
-            newHole = partHole.model().objectify()
-            .setXY(x + margine + columnIndex * columnDistance, y + margine + rowIndex * rowDistance)
-            .model();
-          holes.push(newHole);
-        }
-      }
-      model = model.set('holes', Immutable.fromJS(holes));
-
-      model = model.set('width', (columnCount - 1) * columnDistance + 2 * margine);
-      model = model.set('height', (rowCount - 1) * rowDistance + 2 * margine);
-
+        return strip.objectify()
+          .setXY(newX, newY)
+          .model();
+      });
+      model = model.set('strips', strips)
+        .set('x', x)
+        .set('y', y);
       return this;
     };
     thisProto.keyify = function (keyProvider) {
@@ -91,28 +186,18 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       );
       return this;
     };
-    thisProto.init = function () {
-      return this.updateParts();
-    };
     return thisProto;
   };
 
   var breadboardModel = Immutable.fromJS({
     name: 'breadboard',
-    x: 100,
-    y: 300,
-    columnCount: 30,
-    rowCount: 15,
-    width: 20,
-    height: 60,
-    holes: [],
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    strips: [],
     proto: breadboardProto
   });
-
-  var breadboard = breadboardProto(breadboardModel);
-  breadboardModel = breadboard
-    .init()
-    .model();
 
   return {
     name: function () {
@@ -124,8 +209,29 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     proto: function () {
       return breadboardProto;
     },
-    model: function () {
-      return breadboardModel;
+    model: function (pattern) {
+      var defaultBreadboardPattern = [
+        '1*60h',
+        '1*60h',
+        '',
+        '',
+        '',
+        '60*5v',
+        '',
+        '',
+        '60*5v',
+        '',
+        '',
+        '',
+        '1*60h',
+        '1*60h'
+      ].join('\n');
+      pattern = pattern || defaultBreadboardPattern;
+      var newBreadboard = breadboardProto(breadboardModel);
+      var newBreadboardModel = newBreadboard
+        .pattern(pattern)
+        .model();
+      return newBreadboardModel;
     }
   };
 });

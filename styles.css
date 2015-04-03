@@ -1,0 +1,57 @@
+/* Palette URL: http://paletton.com/#uid=70s0u0kllll9msUfmp7rkhzzYdM */
+
+.diagram {
+  stroke-width: 0px;
+  fill-opacity: 0.0;
+}
+
+.body {
+  color: #004B46;
+  fill: #009188;
+  stroke: #004B46;
+}
+
+.finger {
+  stroke-width: 1px;
+  fill-opacity: 1.0;
+}
+
+.leg {
+  stroke-width: 3px;
+  fill-opacity: 0.0;
+}
+
+.unconnectedLeg,
+.unconnectedFinger {
+  color: #004B46;
+  fill: #004B46;
+  stroke: #004B46;
+}
+
+.connectedLeg,
+.connectedFinger {
+  color: #009188;
+  fill: #009188;
+  stroke: #009188;
+}
+
+.breadboard {
+  stroke: #CAAB82;
+  fill-opacity: 0.0;
+}
+
+.strip,
+.hole {
+  color: #CAAB82;
+  fill: white;
+  stroke: #CAAB82;
+  stroke-width: 1px;
+}
+
+.holeDecorator {
+  color: #6E4D00;
+  fill: #6E4D00;
+  stroke: #6E4D00;
+  fill-opacity: 0.0;
+  stroke-width: 2px;
+}

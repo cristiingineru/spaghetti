@@ -18,7 +18,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
         onDragStart: function (event, ui) {
           var originalX,
             originalY;
-          
+
           dissect(Spaghetti.state,
             update('diagram',
               updateAll('components',
@@ -27,7 +27,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                   originalY = component.get('y');
                   return component;
                 }))));
-          
+
           var delta = {
             deltaX: originalX - event.clientX,
             deltaY: originalY - event.clientY
@@ -187,10 +187,11 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
-                  updateAll('holes', [
+                  updateAll('strips',
+                    updateAll('holes', [
                     where(isHovered, unhover),
                     where(isNear, hover),
-                    where(isConnectedToThisLeg, disconnect)])))));
+                    where(isConnectedToThisLeg, disconnect)]))))));
 
           dragging = true;
           Spaghetti.redraw();
@@ -244,9 +245,10 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
-                  updateAll('holes', [
+                  updateAll('strips',
+                    updateAll('holes', [
                     where(isNear, [connectToLeg, storeHoleData]),
-                    where(isHovered, unhover)])))));
+                    where(isHovered, unhover)]))))));
 
           if (holeFound) {
             dissect(Spaghetti.state,

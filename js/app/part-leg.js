@@ -29,20 +29,17 @@ define(['React', 'immutable.min', 'app/core', 'app/part-finger'], function (Reac
         y = this.props.model.get('y'),
         x2 = this.props.model.get('x2'),
         y2 = this.props.model.get('y2'),
-        connected = this.props.model.get('connected'),
-        color = connected ? '#777777' : '#e03434';
+        connected = this.props.model.get('connected');
       var leg = React.createElement('path', {
         d: drawLeg(x, y, x2, y2, direction),
-        stroke: color,
-        strokeWidth: 3,
-        fillOpacity: 0.0
+        className: connected ? 'connectedLeg' : 'unconnectedLeg'
       });
       var finger = React.createElement(partFinger.class(), {
         model: this.props.model.get('finger'),
         owner: this.props.model
       });
       return React.createElement('g', {
-        className: 'part-leg'
+        className: 'leg'
       }, [leg, finger]);
     }
   });
