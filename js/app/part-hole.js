@@ -15,7 +15,7 @@ define(['React', 'immutable.min'], function (React, Immutable) {
       var circle = React.createElement('circle', {
         cx: this.props.model.get('x'),
         cy: this.props.model.get('y'),
-        r: radius,
+        r: radius
       });
       var decorators = [];
       if (this.props.model.get('hovered')) {

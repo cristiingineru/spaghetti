@@ -1,105 +1,14 @@
 /* Palette URL: http://paletton.com/#uid=70s0u0kllll9msUfmp7rkhzzYdM */
 
-.color-primary-0,
-.holeDecorator {
-  color: #AA6A39;
-  fill: #AA6A39;
-  stroke: #AA6A39;
-}
-
-.color-primary-1,
-.strip,
-.hole {
-  color: #E6C0A3;
-  fill: #E6C0A3;
-  stroke: #E6C0A3
-}
-
-.color-primary-2 {
-  color: #C89268
-}
-
-.color-primary-3 {
-  color: #8C4814
-}
-
-.color-primary-4 {
-  color: #6E3000
-}
-
-.color-secondary-1-0 {
-  color: #AA8339
-}
-
-.color-secondary-1-1 {
-  color: #E6CFA3
-}
-
-.color-secondary-1-2 {
-  color: #C8A768
-}
-
-.color-secondary-1-3 {
-  color: #8C6314
-}
-
-.color-secondary-1-4 {
-  color: #6E4800
-}
-
-.color-secondary-2-0 {
-  color: #2D4471
-}
-
-.color-secondary-2-1 {
-  color: #717F99
-}
-
-.color-secondary-2-2 {
-  color: #4C5F85
-}
-
-.color-secondary-2-3 {
-  color: #162E5D
-}
-
-.color-secondary-2-4 {
-  color: #061D49
-}
-
-.color-complement-0,
-.unconnectedLeg,
-.unconnectedFinger {
-  color: #236863;
-  fill: #236863;
-  stroke: #236863;
-}
-
-.color-complement-1,
-.connectedLeg,
-.connectedFinger {
-  color: #648E8B;
-  fill: #648E8B;
-  stroke: #648E8B;
-}
-
-.color-complement-2 {
-  color: #407B77
-}
-
-.color-complement-3 {
-  color: #0D5651
-}
-
-.color-complement-4 {
-  color: #00433F
-}
-/******************************************/
-
-.hole {}
-
-.holeDecorator {
+.diagram {
+  stroke-width: 0px;
   fill-opacity: 0.0;
+}
+
+.body {
+  color: #AA8339;
+  fill: #AA8339;
+  stroke: #AA8339;
 }
 
 .finger {
@@ -109,5 +18,33 @@
 
 .leg {
   stroke-width: 3px;
+  fill-opacity: 0.0;
+}
+
+.unconnectedLeg,
+.unconnectedFinger {
+  color: #236863;
+  fill: #236863;
+  stroke: #236863;
+}
+
+.connectedLeg,
+.connectedFinger {
+  color: #648E8B;
+  fill: #648E8B;
+  stroke: #648E8B;
+}
+
+.strip,
+.hole {
+  color: #E6C0A3;
+  fill: #E6C0A3;
+  stroke: #E6C0A3
+}
+
+.holeDecorator {
+  color: #AA6A39;
+  fill: #AA6A39;
+  stroke: #AA6A39;
   fill-opacity: 0.0;
 }

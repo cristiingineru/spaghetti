@@ -18,12 +18,10 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
-        stroke: '#b5975a',
-        fill: '#E6C88C',
         rx: 5,
         ry: 5,
-        onClick: handlerAdapter.onClick,
-        className: 'part-body'
+        className: 'body',
+        onClick: handlerAdapter.onClick
       });
     }
   });
