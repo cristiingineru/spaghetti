@@ -56,7 +56,7 @@ define(['app/component-resistor', 'Squire', 'immutable.min', 'app/layoutManager'
 
     it('should have a draggable body', function () {
       var renderedResistor = renderDefaultResistor();
-      var body = TestUtils.findRenderedDOMComponentWithClass(renderedResistor, 'part-body');
+      var body = TestUtils.findRenderedDOMComponentWithClass(renderedResistor, 'body');
       expect(isDraggable(body, renderedResistor)).toBe(true);
     });
 

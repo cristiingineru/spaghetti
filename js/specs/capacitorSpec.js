@@ -56,7 +56,7 @@ define(['app/component-capacitor', 'Squire', 'immutable.min', 'app/layoutManager
 
     it('should have a draggable body', function () {
       var renderedCapacitor = renderDefaultCapacitor();
-      var body = TestUtils.findRenderedDOMComponentWithClass(renderedCapacitor, 'part-body');
+      var body = TestUtils.findRenderedDOMComponentWithClass(renderedCapacitor, 'body');
       expect(isDraggable(body, renderedCapacitor)).toBe(true);
     });
 
