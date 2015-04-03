@@ -6,9 +6,9 @@
 }
 
 .body {
-  color: #AA8339;
-  fill: #AA8339;
-  stroke: #AA8339;
+  color: #004B46;
+  fill: #004B46;
+  stroke: #004B46;
 }
 
 .finger {
@@ -23,33 +23,36 @@
 
 .unconnectedLeg,
 .unconnectedFinger {
-  color: #236863;
-  fill: #236863;
-  stroke: #236863;
+  color: #004B46;
+  fill: #004B46;
+  stroke: #004B46;
+  stroke-dasharray: "1, 4";
 }
 
 .connectedLeg,
 .connectedFinger {
-  color: #648E8B;
-  fill: #648E8B;
-  stroke: #648E8B;
+  color: #968267;
+  fill: #968267;
+  stroke: #968267;
 }
 
 .breadboard {
-  stroke: blue;
+  stroke: #CAAB82;
   fill-opacity: 0.0;
 }
 
 .strip,
 .hole {
-  color: #E6C0A3;
-  fill: #E6C0A3;
-  stroke: #E6C0A3
+  color: #CAAB82;
+  fill: white;
+  stroke: #CAAB82;
+  stroke-width: 1px;
 }
 
 .holeDecorator {
-  color: #AA6A39;
-  fill: #AA6A39;
-  stroke: #AA6A39;
+  color: #6E4D00;
+  fill: #6E4D00;
+  stroke: #6E4D00;
   fill-opacity: 0.0;
+  stroke-width: 2px;
 }

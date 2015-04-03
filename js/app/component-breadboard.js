@@ -33,7 +33,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
         });
       return React.createElement('g', {
         className: 'breadboard'
-      }, strips.concat([rectangle]));
+      }, [rectangle].concat(strips));
     }
   });
 

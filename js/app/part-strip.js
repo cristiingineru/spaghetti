@@ -21,9 +21,7 @@ define(['React', 'immutable.min', 'app/core', 'app/part-hole'], function (React,
           y1: y + unitSize / 2,
           x2: x + width - unitSize / 2,
           y2: y + height - unitSize / 2,
-          stroke: '#b7b5ad',
-          strokeWidth: 1,
-          key: -1
+          className: 'strip'
         });
       var holes = this.props.model.getIn(['holes'])
         .map(function (hole) {
