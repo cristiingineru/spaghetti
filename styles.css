@@ -35,6 +35,11 @@
   stroke: #648E8B;
 }
 
+.breadboard {
+  stroke: blue;
+  fill-opacity: 0.0;
+}
+
 .strip,
 .hole {
   color: #E6C0A3;

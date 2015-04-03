@@ -3,6 +3,8 @@
 
 define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole', 'app/part-strip'], function (React, Draggable, Immutable, Core, partHole, Strip) {
 
+  var unitSize = 14;
+
   var breadboardClass = React.createClass({
     displayName: 'breadboard',
     getDefaultProps: function () {
@@ -16,16 +18,26 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     render: function () {
       var stripModels = this.props.model.get('strips');
       var strips = stripModels.map(function (stripModel) {
-        return React.createElement(Strip.class(), {
-          model: stripModel
+          return React.createElement(Strip.class(), {
+            model: stripModel
+          });
+        }),
+        rectangle = React.createElement('rect', {
+          x: this.props.model.get('x') - unitSize / 2,
+          y: this.props.model.get('y') - unitSize / 2,
+          width: this.props.model.get('width') + unitSize * 1.5,
+          height: this.props.model.get('height') + unitSize * 1.5,
+          rx: 5,
+          ry: 5,
+          className: 'breadboard'
         });
-      });
-      return React.createElement('g', null, strips);
+      return React.createElement('g', {
+        className: 'breadboard'
+      }, strips.concat([rectangle]));
     }
   });
 
-  var unitSize = 14,
-    getGroupDescriptions = function (row) {
+  var getGroupDescriptions = function (row) {
       var groupPattern = /((\d+)\*)?((\d+)(v|h))/g,
         match = groupPattern.exec(row),
         groups = [];
@@ -158,7 +170,9 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
           .setXY(newX, newY)
           .model();
       });
-      model = model.set('strips', strips);
+      model = model.set('strips', strips)
+        .set('x', x)
+        .set('y', y);
       return this;
     };
     thisProto.keyify = function (keyProvider) {
