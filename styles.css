@@ -7,7 +7,7 @@
 
 .body {
   color: #004B46;
-  fill: #004B46;
+  fill: #009188;
   stroke: #004B46;
 }
 
@@ -31,9 +31,9 @@
 
 .connectedLeg,
 .connectedFinger {
-  color: #968267;
-  fill: #968267;
-  stroke: #968267;
+  color: #009188;
+  fill: #009188;
+  stroke: #009188;
 }
 
 .breadboard {
