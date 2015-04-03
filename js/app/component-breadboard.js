@@ -130,7 +130,17 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
       return this.updateParts();
     };
     thisProto.updateParts = function () {
-      // nothing to do yet
+      var strips = model.get('strips'),
+        width = 0,
+        height = 0;
+      strips.forEach(function (strip) {
+        strip.get('holes').forEach(function (hole) {
+          width = Math.max(width, hole.get('x'));
+          height = Math.max(height, hole.get('y'));
+        });
+      });
+      model = model.set('width', width)
+        .set('height', height);
       return this;
     };
     thisProto.moveTo = function (x, y) {
@@ -169,6 +179,8 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     name: 'breadboard',
     x: 0,
     y: 0,
+    width: 0,
+    height: 0,
     strips: [],
     proto: breadboardProto
   });

@@ -85,12 +85,36 @@ define(['app/component-breadboard', 'Squire', 'immutable.min', 'app/layoutManage
         expect(Immutable.Map.isMap(model)).toBe(true);
       });
 
-      it('should have name, proto, x, y and strips properties', function () {
+      it('should have name, proto, x, y, width, height and strips properties', function () {
         var model = Breadboard.model();
         expect(model.get('name')).not.toBeFalsy();
         expect(model.get('proto')).not.toBeFalsy();
         expect(model.get('x')).toEqual(jasmine.any(Number));
         expect(model.get('y')).toEqual(jasmine.any(Number));
+        expect(model.get('width')).toEqual(jasmine.any(Number));
+        expect(model.get('height')).toEqual(jasmine.any(Number));
+        expect(model.get('strips')).not.toBeFalsy();
+      });
+
+      it('should have the width and height containing all the strips', function () {
+        var pattern = [
+          '3*10h',
+          '',
+          '1*2v'
+        ].join('\n'),
+          unitSize = 14,
+          expectedWidth = 30 * unitSize,
+          expectedHeight = 4 * unitSize;
+
+        var model = Breadboard.model(pattern),
+          width = model.get('width'),
+          height = model.get('height');
+
+        var deltaWidth = Math.abs(width - expectedWidth),
+          deltaHeight = Math.abs(height - expectedHeight),
+          acceptedTolerance = unitSize;
+        expect(deltaWidth).toBeLessThan(acceptedTolerance);
+        expect(deltaHeight).toBeLessThan(acceptedTolerance);
       });
     });
 
