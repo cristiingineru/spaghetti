@@ -131,6 +131,15 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
         isHovered = function (hole) {
           return hole.get('hovered');
         },
+        isNear = function (x, y) {
+          return function (hole) {
+            var x2 = hole.get('x'),
+              y2 = hole.get('y'),
+              distance = Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2)),
+              nearDistance = 6;
+            return distance <= nearDistance;
+          };
+        },
         hover = function (hole) {
           return hole.set('hovered', true);
         },
@@ -159,15 +168,6 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
               }
               return leg;
             },
-            isNear = function (hole) {
-              var x1 = hole.get('x'),
-                y1 = hole.get('y'),
-                x2 = event.clientX,
-                y2 = event.clientY,
-                distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)),
-                radius = 3;
-              return distance <= radius;
-            },
             isConnectedToThisLeg = function (hole) {
               return hole.get('connected') && hole.get('legKey') === legKey;
             },
@@ -175,7 +175,9 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
               return hole.objectify()
                 .disconnect()
                 .model();
-            };
+            },
+            x = event.clientX,
+            y = event.clientY;
 
           dissect(Spaghetti.state,
             update('diagram',
@@ -190,7 +192,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                   updateAll('strips',
                     updateAll('holes', [
                     where(isHovered, unhover),
-                    where(isNear, hover),
+                    where(isNear(x, y), hover),
                     where(isConnectedToThisLeg, disconnect)]))))));
 
           dragging = true;
@@ -202,16 +204,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
         },
 
         onMouseUp: function (event, domID) {
-          var isNear = function (hole) {
-              var x1 = hole.get('x'),
-                y1 = hole.get('y'),
-                x2 = event.clientX,
-                y2 = event.clientY,
-                distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)),
-                radius = 3;
-              return distance <= radius;
-            },
-            connectToLeg = function (hole) {
+          var connectToLeg = function (hole) {
               return hole.objectify()
                 .connectTo(legKey)
                 .model();
@@ -239,7 +232,9 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
             holeFound = false,
             holeKey = -1,
             holeX = -1,
-            holeY = -1;
+            holeY = -1,
+            x = event.clientX,
+            y = event.clientY;
 
           dissect(Spaghetti.state,
             update('diagram',
@@ -247,7 +242,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
                 where(isBreadboard,
                   updateAll('strips',
                     updateAll('holes', [
-                    where(isNear, [connectToLeg, storeHoleData]),
+                    where(isNear(x, y), [connectToLeg, storeHoleData]),
                     where(isHovered, unhover)]))))));
 
           if (holeFound) {
