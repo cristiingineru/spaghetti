@@ -6,33 +6,38 @@
 }
 
 .body {
-  color: #004B46;
   fill: #009188;
   stroke: #004B46;
-}
-
-.finger {
-  stroke-width: 1px;
-  fill-opacity: 1.0;
 }
 
 .leg {
   stroke-width: 3px;
   fill-opacity: 0.0;
+  pointer-events: none;
 }
 
-.unconnectedLeg,
-.unconnectedFinger {
-  color: #004B46;
-  fill: #004B46;
+.unconnectedLeg {
   stroke: #004B46;
 }
 
-.connectedLeg,
-.connectedFinger {
-  color: #009188;
-  fill: #009188;
+.connectedLeg {
   stroke: #009188;
+}
+
+.finger {
+  fill-opacity: 1.0;
+}
+
+.unconnectedFinger {
+  fill: #004B46;
+  stroke: #004B46;
+  stroke-width: 1px;
+}
+
+.connectedFinger {
+  fill: #009188;
+  stroke: #CAAB82;
+  stroke-width: 2px;
 }
 
 .breadboard {
@@ -42,16 +47,12 @@
 
 .strip,
 .hole {
-  color: #CAAB82;
   fill: white;
   stroke: #CAAB82;
-  stroke-width: 1px;
 }
 
 .holeDecorator {
-  color: #6E4D00;
-  fill: #6E4D00;
-  stroke: #6E4D00;
-  fill-opacity: 0.0;
-  stroke-width: 2px;
+  fill: white;
+  stroke: #CAAB82;
+  stroke-width: 3px;
 }
