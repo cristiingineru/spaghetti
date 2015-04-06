@@ -6,8 +6,8 @@
 }
 
 .body {
-  fill: #009188;
-  stroke: #004B46;
+  fill: #e6c88c;
+  stroke: #b5975a;
 }
 
 .leg {
@@ -17,11 +17,11 @@
 }
 
 .unconnectedLeg {
-  stroke: #004B46;
+  stroke: #e03434;
 }
 
 .connectedLeg {
-  stroke: #009188;
+  stroke: #777777;
 }
 
 .finger {
@@ -29,30 +29,30 @@
 }
 
 .unconnectedFinger {
-  fill: #004B46;
-  stroke: #004B46;
+  fill: #e03434;
+  stroke: #e03434;
   stroke-width: 1px;
 }
 
 .connectedFinger {
-  fill: #009188;
-  stroke: #CAAB82;
+  fill: #777777;
+  stroke: #afafaf;
   stroke-width: 2px;
 }
 
 .breadboard {
-  stroke: #CAAB82;
+  stroke: #afafaf;
   fill-opacity: 0.0;
 }
 
 .strip,
 .hole {
   fill: white;
-  stroke: #CAAB82;
+  stroke: #afafaf;
 }
 
 .holeDecorator {
   fill: white;
-  stroke: #CAAB82;
+  stroke: #afafaf;
   stroke-width: 3px;
 }
