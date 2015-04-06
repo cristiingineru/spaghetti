@@ -122,6 +122,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
 
     fingerEventHandler: function (finger, leg) {
       var legKey = leg.get('key'),
+        unitSize = 14,
         isBreadboard = function (component) {
           return component.get('name') === 'breadboard';
         },
@@ -136,7 +137,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
             var x2 = hole.get('x'),
               y2 = hole.get('y'),
               distance = Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2)),
-              nearDistance = 6;
+              nearDistance = unitSize / 2;
             return distance <= nearDistance;
           };
         },
