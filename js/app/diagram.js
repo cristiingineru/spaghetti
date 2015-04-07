@@ -1,7 +1,7 @@
 /* global define, require */
 
 
-define(['React', 'immutable.min', 'app/core', 'app/classProvider'], function (React, Immutable, Core, ClassProvider) {
+define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core) {
 
   var diagramClass = React.createClass({
     displayName: 'diagram',
@@ -11,15 +11,14 @@ define(['React', 'immutable.min', 'app/core', 'app/classProvider'], function (Re
       };
     },
     render: function () {
-      var LayoutManager = require('app/layoutManager');
+      var LayoutManager = require('app/layoutManager'),
+        ClassProvider = require('app/classProvider');
       var eventHandler = LayoutManager.diagramEventHandler(this.props.model);
       var rect = React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
-        //stroke: '#AAAAAA',
-        //fill: '#f4f4f4',
         className: 'diagram',
         onClick: eventHandler.onClick
       });

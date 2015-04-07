@@ -9,8 +9,8 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/component-breadboard', 'app/component-resistor', 'app/component-capacitor', 'app/keyProvider', 'app/layoutManager', 'app/checkpointTree', 'app/checkpointTreeEventHandler'],
-  function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Resistor, Capacitor, KeyProvider, LayoutManager, CheckpointTree, CheckpointTreeEventHandler) {
+requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/component-breadboard', 'app/component-resistor', 'app/component-capacitor', 'app/keyProvider', 'app/layoutManager', 'app/classProvider', 'app/checkpointTree', 'app/checkpointTreeEventHandler'],
+  function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Resistor, Capacitor, KeyProvider, LayoutManager, ClassProvider, CheckpointTree, CheckpointTreeEventHandler) {
 
     var myBreadboardModel = Breadboard.model().objectify()
       .setXY(100.5, 250.5)
