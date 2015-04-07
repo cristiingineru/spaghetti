@@ -2,7 +2,6 @@
 /* jshint -W104 */
 
 define([
-  'app/component-breadboard',
   'app/component-resistor',
   'app/component-capacitor'],
   function () {

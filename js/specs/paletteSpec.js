@@ -1,7 +1,7 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn, jasmine */
 
 
-define(['app/palette'], function (Palette) {
+define(['app/palette', 'app/catalog'], function (Palette, Catalog) {
   describe('Palette', function () {
     it('should provide a known API', function () {
       expect(typeof (Palette.name)).toBe('function');
@@ -15,6 +15,14 @@ define(['app/palette'], function (Palette) {
 
       expect(typeof (Palette.model)).toBe('function');
       expect(Palette.model).not.toThrow();
+    });
+
+    describe('Palette model', function () {
+      it('should contain a prototype of each component', function () {
+        var paletteComponents = Palette.model().get('components'),
+          catalogComponents = Catalog();
+        expect(paletteComponents.count()).toBe(catalogComponents.length);
+      });
     });
   });
 });

@@ -44,13 +44,17 @@ define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Ca
     return thisProto;
   };
 
+  var components = Catalog().map(function (component) {
+    return component.model();
+  });
+
   var paletteModel = Immutable.fromJS({
     name: 'palette',
     x: 0,
     y: 0,
     width: '400',
     height: '100',
-    components: [],
+    components: components,
     proto: paletteProto
   });
 
