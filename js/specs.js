@@ -22,6 +22,7 @@ require(
     'specs/stripSpec',
     'specs/breadboardSpec',
     'specs/catalogSpec',
+    'specs/paletteSpec',
     'specs/keyProviderSpec',
     'specs/coreSpec',
     'specs/layoutManagerSpec',

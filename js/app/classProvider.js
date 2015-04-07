@@ -3,6 +3,7 @@
 
 define([
   'app/diagram',
+  'app/palette',
   'app/component-breadboard',
   'app/component-resistor',
   'app/component-capacitor',
