@@ -9,6 +9,7 @@ define([
   'app/part-body',
   'app/part-leg',
   'app/part-finger',
+  'app/part-strip',
   'app/part-hole'],
   function () {
 

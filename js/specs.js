@@ -21,6 +21,7 @@ require(
     'specs/capacitorSpec',
     'specs/stripSpec',
     'specs/breadboardSpec',
+    'specs/catalogSpec',
     'specs/keyProviderSpec',
     'specs/coreSpec',
     'specs/layoutManagerSpec',
