@@ -1,7 +1,7 @@
 /* global define, require */
 
 
-define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function (React, Immutable, Core, Catalog) {
+define(['React', 'immutable.min', 'app/core', 'app/classProvider'], function (React, Immutable, Core, ClassProvider) {
 
   var diagramClass = React.createClass({
     displayName: 'diagram',
@@ -27,7 +27,7 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
       var models = this.props.model.getIn(['components']);
       for (var i = 0; i < models.count(); i++) {
         var model = models.getIn([i]);
-        var component = React.createElement(Catalog(model).class(), {
+        var component = React.createElement(ClassProvider(model), {
           model: model
         });
         components.push(component);
