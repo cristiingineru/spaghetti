@@ -56,3 +56,8 @@
   stroke: #afafaf;
   stroke-width: 3px;
 }
+
+.palette {
+  fill: white;
+  stroke: #232323;
+}

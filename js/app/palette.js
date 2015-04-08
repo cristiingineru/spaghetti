@@ -11,8 +11,24 @@ define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Ca
       };
     },
     render: function () {
-
-      return React.createElement('g', null, []);
+      var palette = React.createElement('rect', {
+        x: this.props.model.get('x'),
+        y: this.props.model.get('y'),
+        width: this.props.model.get('width'),
+        height: this.props.model.get('height'),
+        className: 'palette'
+      });
+      var ClassProvider = require('app/classProvider');
+      var components = [];
+      var models = this.props.model.getIn(['components']);
+      for (var i = 0; i < models.count(); i++) {
+        var model = models.getIn([i]);
+        var component = React.createElement(ClassProvider(model), {
+          model: model
+        });
+        components.push(component);
+      }
+      return React.createElement('g', null, [palette].concat(components));
     }
   });
 
@@ -53,7 +69,7 @@ define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Ca
     x: 0,
     y: 0,
     width: '400',
-    height: '100',
+    height: '150',
     components: components,
     proto: paletteProto
   });

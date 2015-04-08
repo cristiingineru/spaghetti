@@ -33,13 +33,13 @@ define([
     };
 
     return function (nameOrModel) {
-      var found = null;
+      var found;
       if (typeof nameOrModel === 'string' || nameOrModel instanceof String) {
-        return findByName(nameOrModel).class;
+        found = findByName(nameOrModel).class;
       } else {
         nameOrModel = nameOrModel.get('name');
-        return findByName(nameOrModel).class;
+        found = findByName(nameOrModel).class;
       }
-      return null;
+      return found;
     };
   });

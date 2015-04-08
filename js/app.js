@@ -9,11 +9,14 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/component-breadboard', 'app/component-resistor', 'app/component-capacitor', 'app/keyProvider', 'app/layoutManager', 'app/classProvider', 'app/checkpointTree', 'app/checkpointTreeEventHandler'],
-  function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Resistor, Capacitor, KeyProvider, LayoutManager, ClassProvider, CheckpointTree, CheckpointTreeEventHandler) {
+requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/component-breadboard', 'app/palette', 'app/component-resistor', 'app/component-capacitor', 'app/keyProvider', 'app/layoutManager', 'app/classProvider', 'app/checkpointTree', 'app/checkpointTreeEventHandler'],
+  function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Palette, Resistor, Capacitor, KeyProvider, LayoutManager, ClassProvider, CheckpointTree, CheckpointTreeEventHandler) {
 
     var myBreadboardModel = Breadboard.model().objectify()
       .setXY(100.5, 250.5)
+      .model();
+    var myPalette = Palette.model().objectify()
+      .setXY(10.5, 10.5)
       .model();
     var myResistorModel = Resistor.model().objectify()
       .setXY(100.5, 50.5)
@@ -33,6 +36,7 @@ requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagra
       .model();
     var myTopDiagram = Diagram.model().objectify()
       .addComponent(myBreadboardModel)
+      .addComponent(myPalette)
       .addComponent(myResistorModel)
       .addComponent(mySecondResistorModel)
       .addComponent(myCapacitorModel)
