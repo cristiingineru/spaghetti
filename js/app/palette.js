@@ -32,6 +32,18 @@ define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Ca
     }
   });
 
+  var spreadEvenly = function (components, x, y, width, height) {
+    var step = width / components.count();
+    return components.map(function (component, index) {
+      var componentWidth = 20,
+        componentHeight = 100;
+      return component.objectify()
+        .setXY(x + (index + 0.5) * step - componentWidth / 2,
+          y + componentHeight / 2)
+        .model();
+    });
+  };
+
   var paletteProto = function (model) {
     var thisProto = Object.create(null);
     thisProto.model = function () {
@@ -50,10 +62,13 @@ define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Ca
       model = model.set('height', height);
       return this;
     };
-    thisProto.addComponent = function (component) {
-      var newComponents = model.getIn(['components']).withMutations(function (cs) {
-        cs.push(component);
-      });
+    thisProto.init = function (component) {
+      var newComponents = spreadEvenly(
+        model.get('components'),
+        model.get('x'),
+        model.get('y'),
+        model.get('width'),
+        model.get('height'));
       model = model.set('components', newComponents);
       return this;
     };
@@ -73,6 +88,11 @@ define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Ca
     components: components,
     proto: paletteProto
   });
+
+  var palette = paletteProto(paletteModel);
+  paletteModel = palette
+    .init()
+    .model();
 
   return {
     name: function () {

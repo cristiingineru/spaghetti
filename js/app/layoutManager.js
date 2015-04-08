@@ -260,7 +260,22 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
         }
 
       };
-    }
+    },
+
+
+
+    paletteEventHandler: function () {
+      var is = function (x) {
+        return x;
+      };
+
+      return {
+        onMouseDown: function (event, ui) {
+
+          event.stopPropagation();
+        },
+      };
+    },
   };
 
 });

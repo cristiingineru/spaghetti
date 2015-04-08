@@ -1,7 +1,7 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn, jasmine */
 
 
-define(['app/palette', 'app/catalog'], function (Palette, Catalog) {
+define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-body'], function (Palette, React, Catalog, ClassProvider, Body) {
   describe('Palette', function () {
     it('should provide a known API', function () {
       expect(typeof (Palette.name)).toBe('function');
@@ -15,6 +15,39 @@ define(['app/palette', 'app/catalog'], function (Palette, Catalog) {
 
       expect(typeof (Palette.model)).toBe('function');
       expect(Palette.model).not.toThrow();
+    });
+
+    describe('Palette class', function () {
+
+      var TestUtils = React.addons.TestUtils;
+      var renderDefaultPalette = function () {
+        var p = React.createElement(Palette.class(), {
+          model: Palette.model()
+        });
+        return TestUtils.renderIntoDocument(p);
+      };
+
+      it('should render at least one component', function () {
+        var palette = renderDefaultPalette();
+        var bodies = TestUtils.scryRenderedComponentsWithType(palette, Body.class());
+        expect(bodies.length).toBeGreaterThan(0);
+      });
+
+      it('should not render components one on top of each other', function () {
+        var palette = renderDefaultPalette();
+        var bodies = TestUtils.scryRenderedComponentsWithType(palette, Body.class());
+        bodies.forEach(function (b1) {
+          var x1 = b1.getDOMNode().attributes['x'];
+          var y1 = b1.getDOMNode().attributes['y'];
+          bodies.forEach(function (b2) {
+            var x2 = b2.getDOMNode().attributes['x'];
+            var y2 = b2.getDOMNode().attributes['y'];
+            expect(x1.value).not.toBe(x2.value);
+            expect(y1.value).not.toBe(y2.value);
+          });
+        });
+
+      });
     });
 
     describe('Palette model', function () {
