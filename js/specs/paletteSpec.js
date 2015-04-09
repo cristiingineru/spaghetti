@@ -37,13 +37,15 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
         var palette = renderDefaultPalette();
         var bodies = TestUtils.scryRenderedComponentsWithType(palette, Body.class());
         bodies.forEach(function (b1) {
-          var x1 = b1.getDOMNode().attributes['x'];
-          var y1 = b1.getDOMNode().attributes['y'];
+          var x1 = b1.getDOMNode().attributes.x;
+          var y1 = b1.getDOMNode().attributes.y;
           bodies.forEach(function (b2) {
-            var x2 = b2.getDOMNode().attributes['x'];
-            var y2 = b2.getDOMNode().attributes['y'];
-            expect(x1.value).not.toBe(x2.value);
-            expect(y1.value).not.toBe(y2.value);
+            if (b1 !== b2) {
+              var x2 = b2.getDOMNode().attributes.x;
+              var y2 = b2.getDOMNode().attributes.y;
+              var samePosition = (x1.value === x2.value) && (y1.value === y2.value);
+              expect(samePosition).toBe(false);
+            }
           });
         });
 

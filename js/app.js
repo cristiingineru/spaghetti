@@ -16,31 +16,11 @@ requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagra
       .setXY(100.5, 250.5)
       .model();
     var myPalette = Palette.model().objectify()
-      .setXY(10.5, 10.5)
-      .model();
-    var myResistorModel = Resistor.model().objectify()
-      .setXY(100.5, 50.5)
-      .keyify(KeyProvider)
-      .model();
-    var mySecondResistorModel = Resistor.model().objectify()
-      .setXY(150.5, 100.5)
-      .keyify(KeyProvider)
-      .model();
-    var myCapacitorModel = Capacitor.model().objectify()
-      .setXY(200.5, 75.5)
-      .keyify(KeyProvider)
-      .model();
-    var mySecondCapacitorModel = Capacitor.model().objectify()
-      .setXY(250.5, 125.5)
-      .keyify(KeyProvider)
+      .setXY(150.5, 10.5)
       .model();
     var myTopDiagram = Diagram.model().objectify()
       .addComponent(myBreadboardModel)
       .addComponent(myPalette)
-      .addComponent(myResistorModel)
-      .addComponent(mySecondResistorModel)
-      .addComponent(myCapacitorModel)
-      .addComponent(mySecondCapacitorModel)
       .model();
     dissect(Spaghetti.state,
       set('diagram', myTopDiagram));
