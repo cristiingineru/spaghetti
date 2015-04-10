@@ -1,7 +1,7 @@
-/* global define, require */
+/* global define, require, dissect, updateAll */
 
 
-define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Catalog) {
+define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, Immutable, Catalog, Core) {
 
   var paletteClass = React.createClass({
     displayName: 'palette',
@@ -52,7 +52,7 @@ define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Ca
     thisProto.setXY = function (x, y) {
       model = model.set('x', x);
       model = model.set('y', y);
-      return this;
+      return this.updateComponents();
     };
     thisProto.setWidth = function (width) {
       model = model.set('width', width);
@@ -62,7 +62,10 @@ define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Ca
       model = model.set('height', height);
       return this;
     };
-    thisProto.init = function (component) {
+    thisProto.init = function () {
+      return this.updateComponents();
+    };
+    thisProto.updateComponents = function () {
       var newComponents = spreadEvenly(
         model.get('components'),
         model.get('x'),
@@ -70,6 +73,17 @@ define(['React', 'immutable.min', 'app/catalog'], function (React, Immutable, Ca
         model.get('width'),
         model.get('height'));
       model = model.set('components', newComponents);
+      return this;
+    };
+    thisProto.keyify = function (keyProvider) {
+      model = model.set('key', keyProvider());
+      model = dissect(model,
+        updateAll('components', function (component) {
+          return component.objectify()
+            .keyify(keyProvider)
+            .model();
+        })
+      );
       return this;
     };
     return thisProto;

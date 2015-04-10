@@ -13,9 +13,11 @@ requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagra
   function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Palette, Resistor, Capacitor, KeyProvider, LayoutManager, ClassProvider, CheckpointTree, CheckpointTreeEventHandler) {
 
     var myBreadboardModel = Breadboard.model().objectify()
+      .keyify(KeyProvider)
       .setXY(100.5, 250.5)
       .model();
     var myPalette = Palette.model().objectify()
+      .keyify(KeyProvider)
       .setXY(150.5, 10.5)
       .model();
     var myTopDiagram = Diagram.model().objectify()
