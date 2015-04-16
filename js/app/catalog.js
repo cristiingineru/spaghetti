@@ -8,7 +8,7 @@ define([
 
     var privateCatalog = Array.prototype.slice.call(arguments);
 
-    return function (nameOrModel) {
+    return function () {
       var clone = privateCatalog.slice(0);
       return clone;
     };

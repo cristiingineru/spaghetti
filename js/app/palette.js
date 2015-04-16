@@ -3,6 +3,25 @@
 
 define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, Immutable, Catalog, Core) {
 
+  var componentHandlerClass = React.createClass({
+    displayName: 'componentHandler',
+    getDefaultProps: function () {
+      return {
+        model: null,
+        ownerModel: null
+      };
+    },
+    render: function () {
+      return React.createElement('rect', {
+        x: this.props.model.get('x'),
+        y: this.props.model.get('y'),
+        width: this.props.model.get('width'),
+        height: this.props.model.get('height'),
+        className: 'componentHandler'
+      });
+    }
+  });
+
   var paletteClass = React.createClass({
     displayName: 'palette',
     getDefaultProps: function () {
@@ -20,6 +39,7 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
       });
       var ClassProvider = require('app/classProvider');
       var components = [];
+      var handlers = [];
       var models = this.props.model.getIn(['components']);
       for (var i = 0; i < models.count(); i++) {
         var model = models.getIn([i]);
@@ -27,8 +47,13 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
           model: model
         });
         components.push(component);
+        var handler = React.createElement(componentHandlerClass, {
+          model: model.get('handler'),
+          owner: model
+        });
+        handlers.push(handler);
       }
-      return React.createElement('g', null, [palette].concat(components));
+      return React.createElement('g', null, [palette].concat(components).concat(handlers));
     }
   });
 
@@ -36,11 +61,18 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     var step = width / components.count();
     return components.map(function (component, index) {
       var componentWidth = 20,
-        componentHeight = 100;
+        componentHeight = 100,
+        handler = Immutable.fromJS({
+          x: x + index * step,
+          y: y,
+          width: step,
+          height: height
+        });
       return component.objectify()
         .setXY(x + (index + 0.5) * step - componentWidth / 2,
           y + componentHeight / 2)
-        .model();
+        .model()
+        .set('handler', handler);
     });
   };
 
@@ -97,8 +129,8 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     name: 'palette',
     x: 0,
     y: 0,
-    width: '400',
-    height: '150',
+    width: 400,
+    height: 150,
     components: components,
     proto: paletteProto
   });
@@ -120,6 +152,9 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     },
     model: function () {
       return paletteModel;
+    },
+    componentHandlerClass: function () {
+      return componentHandlerClass;
     }
   };
 });

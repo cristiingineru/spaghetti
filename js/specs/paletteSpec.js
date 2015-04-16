@@ -26,6 +26,12 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
         });
         return TestUtils.renderIntoDocument(p);
       };
+      var renderedComponentsIn = function (container) {
+        var arraysOfComponents = Catalog().map(function (component) {
+          return TestUtils.scryRenderedComponentsWithType(container, component.class());
+        });
+        return [].concat.apply([], arraysOfComponents);
+      };
 
       it('should render at least one component', function () {
         var palette = renderDefaultPalette();
@@ -48,7 +54,32 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
             }
           });
         });
+      });
 
+      it('should create a item handler in front of each component', function () {
+        var palette = renderDefaultPalette();
+        var components = renderedComponentsIn(palette);
+        var handlers = TestUtils.scryRenderedComponentsWithType(palette, Palette.componentHandlerClass());
+        expect(handlers.length).toBe(components.length);
+        components.forEach(function (component) {
+          var cx = component.props.model.get('x'),
+            cy = component.props.model.get('y'),
+            cwidth = component.props.model.get('width'),
+            cheight = component.props.model.get('height');
+          handlers.forEach(function (handler) {
+            if (handler.props.owner === component.props.model) {
+              var hx = handler.getDOMNode().attributes.x.value,
+                hy = handler.getDOMNode().attributes.y.value,
+                hwidth = handler.getDOMNode().attributes.width.value,
+                hheight = handler.getDOMNode().attributes.height.value;
+
+              expect(cx).toBeGreaterThan(hx);
+              expect(cx).toBeLessThan(hx + hwidth);
+              expect(cy).toBeGreaterThan(hy);
+              expect(cy).toBeLessThan(hy + hheight);
+            }
+          });
+        });
       });
     });
 

@@ -61,3 +61,7 @@
   fill: white;
   stroke: #232323;
 }
+
+.componentHandler {
+  fill-opacity: 0.5;
+}
