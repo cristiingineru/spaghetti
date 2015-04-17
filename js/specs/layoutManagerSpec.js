@@ -491,5 +491,15 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
 
       });
     });
+
+    describe('palette item event handler', function () {
+      it('should return a specialized instance with onMouseDown function', function () {
+        var component = Immutable.fromJS({});
+        var handler = LayoutManager.paletteItemEventHandler(component);
+        expect(handler.onMouseDown).not.toBeFalsy();
+      });
+
+      xit('', function () {});
+    });
   });
 });

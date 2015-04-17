@@ -3,8 +3,8 @@
 
 define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, Immutable, Catalog, Core) {
 
-  var componentHandlerClass = React.createClass({
-    displayName: 'componentHandler',
+  var paletteItemClass = React.createClass({
+    displayName: 'paletteItem',
     getDefaultProps: function () {
       return {
         model: null,
@@ -17,7 +17,7 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
-        className: 'componentHandler'
+        className: 'paletteItem'
       });
     }
   });
@@ -47,7 +47,7 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
           model: model
         });
         components.push(component);
-        var handler = React.createElement(componentHandlerClass, {
+        var handler = React.createElement(paletteItemClass, {
           model: model.get('handler'),
           owner: model
         });
@@ -153,8 +153,8 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     model: function () {
       return paletteModel;
     },
-    componentHandlerClass: function () {
-      return componentHandlerClass;
+    paletteItemClass: function () {
+      return paletteItemClass;
     }
   };
 });

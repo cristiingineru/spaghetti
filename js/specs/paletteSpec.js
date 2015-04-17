@@ -56,17 +56,17 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
         });
       });
 
-      it('should create a item handler in front of each component', function () {
+      it('should create a palette item in front of each component', function () {
         var palette = renderDefaultPalette();
         var components = renderedComponentsIn(palette);
-        var handlers = TestUtils.scryRenderedComponentsWithType(palette, Palette.componentHandlerClass());
-        expect(handlers.length).toBe(components.length);
+        var items = TestUtils.scryRenderedComponentsWithType(palette, Palette.paletteItemClass());
+        expect(items.length).toBe(components.length);
         components.forEach(function (component) {
           var cx = component.props.model.get('x'),
             cy = component.props.model.get('y'),
             cwidth = component.props.model.get('width'),
             cheight = component.props.model.get('height');
-          handlers.forEach(function (handler) {
+          items.forEach(function (handler) {
             if (handler.props.owner === component.props.model) {
               var hx = handler.getDOMNode().attributes.x.value,
                 hy = handler.getDOMNode().attributes.y.value,
