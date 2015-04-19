@@ -1,13 +1,14 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn, jasmine, set, beforeEach, afterEach */
 
 
-define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-resistor', 'app/component-breadboard', 'app/diagram', 'app/dissect', 'app/spaghetti', 'app/keyProvider'], function (LayoutManager, React, Immutable, Squire, Resistor, Breadboard, Diagram, Dissect, Spaghetti, KeyProvider) {
+define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-resistor', 'app/component-breadboard', 'app/palette', 'app/diagram', 'app/dissect', 'app/spaghetti', 'app/keyProvider'], function (LayoutManager, React, Immutable, Squire, Resistor, Breadboard, Palette, Diagram, Dissect, Spaghetti, KeyProvider) {
   describe('LayoutManager', function () {
-    it('should return component, body, diagram and finger event handlers', function () {
+    it('should return component, body, diagram, finger and palette item event handlers', function () {
       expect(LayoutManager.componentEventHandler).not.toBeFalsy();
       expect(LayoutManager.bodyEventHandler).not.toBeFalsy();
       expect(LayoutManager.diagramEventHandler).not.toBeFalsy();
       expect(LayoutManager.fingerEventHandler).not.toBeFalsy();
+      expect(LayoutManager.paletteItemEventHandler).not.toBeFalsy();
     });
 
     var isComponent = function (key) {
@@ -56,6 +57,12 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           .model();
         return breadboard;
       },
+      keyifiedPalette = function () {
+        var palette = Palette.model().objectify()
+          .keyify(KeyProvider)
+          .model();
+        return palette;
+      },
       resistorWithKey = function (key) {
         var resistor = Resistor.model().objectify()
           .keyify(uniqueKeyProvider(key))
@@ -80,6 +87,14 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           set('diagram', diagram));
         return Spaghetti;
       };
+
+    beforeEach(function () {
+      Spaghetti.init();
+    });
+
+    afterEach(function () {
+      Spaghetti.init();
+    });
 
     describe('component event handler', function () {
       it('should return a specialized instance with onDragStart, onDrag, onDragEnd and onMouseUp functions', function () {
@@ -499,7 +514,31 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
         expect(handler.onMouseDown).not.toBeFalsy();
       });
 
-      xit('', function () {});
+      describe('onMouseDown', function () {
+
+        var TestUtils = React.addons.TestUtils;
+        var renderSpaghettiState = function (stateAccessor) {
+          var diagram = stateAccessor().get('diagram'),
+            diagramElement = React.createElement(Diagram.class(), {
+              model: diagram
+            });
+          return TestUtils.renderIntoDocument(diagramElement);
+        };
+
+        it('should create a new component', function () {
+          var palette = keyifiedPalette(),
+            diagram = diagramWithComponent(palette),
+            spaghetti = spaghettiWithDiagram(diagram),
+            view = renderSpaghettiState(spaghetti.state);
+
+          var items = TestUtils.scryRenderedComponentsWithType(view, Palette.paletteItemClass());
+          React.addons.TestUtils.Simulate.mouseDown(items[0].getDOMNode());
+
+          var newDiagram = spaghetti.state().get('diagram'),
+            newComponents = newDiagram.get('components');
+          expect(newComponents.count()).toBe(2);
+        });
+      });
     });
   });
 });

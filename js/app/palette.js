@@ -12,12 +12,15 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
       };
     },
     render: function () {
+      var LayoutManager = require('app/layoutManager');
+      var eventHandler = LayoutManager.paletteItemEventHandler(this.props.model);
       return React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
-        className: 'paletteItem'
+        className: 'paletteItem',
+        onMouseDown: eventHandler.onMouseDown
       });
     }
   });

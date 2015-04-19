@@ -73,6 +73,8 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
                 hwidth = handler.getDOMNode().attributes.width.value,
                 hheight = handler.getDOMNode().attributes.height.value;
 
+              // this needs to be done with some helper methods:
+              //expect(component.getBBox()).toBeInside(item.getBBox());
               expect(cx).toBeGreaterThan(hx);
               expect(cx).toBeLessThan(hx + hwidth);
               expect(cy).toBeGreaterThan(hy);
