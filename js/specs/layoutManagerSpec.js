@@ -531,12 +531,19 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             spaghetti = spaghettiWithDiagram(diagram),
             view = renderSpaghettiState(spaghetti.state);
 
+          var initialDiagram = spaghetti.state().get('diagram'),
+            initialComponents = initialDiagram.get('components'),
+            initialComponentCount = initialComponents.count();
+
           var items = TestUtils.scryRenderedComponentsWithType(view, Palette.paletteItemClass());
           React.addons.TestUtils.Simulate.mouseDown(items[0].getDOMNode());
 
           var newDiagram = spaghetti.state().get('diagram'),
-            newComponents = newDiagram.get('components');
-          expect(newComponents.count()).toBe(2);
+            newComponents = newDiagram.get('components'),
+            newComponentCount = newComponents.count();
+          expect(newComponentCount).toBe(initialComponentCount + 1);
+          expect(newComponents.last().get('key')).not.toBe(initialComponents.last().get('key'));
+          expect(newComponents.last().get('key')).not.toBe(palette.get('components').first().get('key'));
         });
       });
     });

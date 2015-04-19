@@ -8,12 +8,12 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     getDefaultProps: function () {
       return {
         model: null,
-        ownerModel: null
+        owner: null
       };
     },
     render: function () {
       var LayoutManager = require('app/layoutManager');
-      var eventHandler = LayoutManager.paletteItemEventHandler(this.props.model);
+      var eventHandler = LayoutManager.paletteItemEventHandler(this.props.model, this.props.owner);
       return React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),

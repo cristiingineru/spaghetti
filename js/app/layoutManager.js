@@ -1,6 +1,6 @@
 /* global define, console, dissect, update, updateAll, filter, where */
 
-define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Dissect) {
+define(['React', 'app/spaghetti', 'app/dissect', 'app/keyProvider'], function (React, Spaghetti, Dissect, KeyProvider) {
 
   return {
 
@@ -264,7 +264,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
 
 
 
-    paletteItemEventHandler: function () {
+    paletteItemEventHandler: function (item, component) {
       var is = function (x) {
         return x;
       };
@@ -272,7 +272,18 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
       return {
         onMouseDown: function (event, ui) {
 
-          event.stopPropagation();
+          var newComponent = component.objectify()
+            .keyify(KeyProvider)
+            .model();
+
+          dissect(Spaghetti.state,
+            update('diagram',
+              update('components', function (components) {
+                return components.push(newComponent);
+              })));
+
+          //event.stopPropagation();
+          Spaghetti.redraw();
         }
       };
     }
