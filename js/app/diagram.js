@@ -22,16 +22,13 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
         className: 'diagram',
         onClick: eventHandler.onClick
       });
-      var components = [];
-      var models = this.props.model.getIn(['components']);
-      for (var i = 0; i < models.count(); i++) {
-        var model = models.getIn([i]);
-        var component = React.createElement(ClassProvider(model), {
-          model: model
+      var components = this.props.model.getIn(['components']);
+      var componentViews = components.map(function (component) {
+        return React.createElement(ClassProvider(component), {
+          model: component
         });
-        components.push(component);
-      }
-      return React.createElement('g', null, [rect].concat(components));
+      }).toArray();
+      return React.createElement('g', null, [rect].concat(componentViews));
     }
   });
 
@@ -62,9 +59,7 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
       return this;
     };
     thisProto.addComponent = function (component) {
-      var newComponents = model.getIn(['components']).withMutations(function (cs) {
-        cs.push(component);
-      });
+      var newComponents = model.get('components').push(component);
       model = model.set('components', newComponents);
       return this;
     };

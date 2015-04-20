@@ -49,6 +49,7 @@
 .hole {
   fill: white;
   stroke: #afafaf;
+  fill-opacity: 1.0;
 }
 
 .holeDecorator {

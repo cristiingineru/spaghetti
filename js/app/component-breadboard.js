@@ -21,7 +21,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
           return React.createElement(Strip.class(), {
             model: stripModel
           });
-        }),
+        }).toArray(),
         rectangle = React.createElement('rect', {
           x: this.props.model.get('x') - unitSize / 2,
           y: this.props.model.get('y') - unitSize / 2,

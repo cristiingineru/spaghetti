@@ -282,7 +282,17 @@ define(['React', 'app/spaghetti', 'app/dissect', 'app/keyProvider'], function (R
                 return components.push(newComponent);
               })));
 
-          //event.stopPropagation();
+          //var newReactComponent = {
+          //    setState: function () {}
+          //  },
+          //  eventHandler = componentEventHandler(newComponent, newReactComponent),
+          //  fakeEvent = {
+          //    clientX: event.clientX,
+          //    clientY: event.clientY
+          //  },
+          //  fakeUi = {};
+          //eventHandler.onDragStart(fakeEvent, fakeUi);
+          
           Spaghetti.redraw();
         }
       };
