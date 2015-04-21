@@ -44,6 +44,16 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/layoutMana
         onStop: eventHandler.onDragStop
       }, bodySecondWrapper);
       return React.createElement('g', null, [leg1, leg2, draggableBody]);
+    },
+    componentDidMount: function () {
+      var action = this.props.model.get('onComponentDidMount');
+      if (action) {
+        var model = this.props.model;
+        var domNode = this.getDOMNode();
+        setTimeout(function () {
+          action(model, domNode);
+        }, 0);
+      }
     }
   });
 

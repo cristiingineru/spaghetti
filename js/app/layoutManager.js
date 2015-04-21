@@ -1,6 +1,6 @@
 /* global define, console, dissect, update, updateAll, filter, where */
 
-define(['React', 'app/spaghetti', 'app/dissect', 'app/keyProvider'], function (React, Spaghetti, Dissect, KeyProvider) {
+define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvider'], function (React, redirectEvent, Spaghetti, Dissect, KeyProvider) {
 
   return {
 
@@ -276,6 +276,13 @@ define(['React', 'app/spaghetti', 'app/dissect', 'app/keyProvider'], function (R
             .keyify(KeyProvider)
             .model();
 
+          var nativeEvent = event.nativeEvent;
+
+          newComponent = newComponent.set('onComponentDidMount', function (component, domNode) {
+            var x = nativeEvent;
+            redirectEvent(nativeEvent, domNode);
+          });
+
           dissect(Spaghetti.state,
             update('diagram',
               update('components', function (components) {
@@ -292,7 +299,9 @@ define(['React', 'app/spaghetti', 'app/dissect', 'app/keyProvider'], function (R
           //  },
           //  fakeUi = {};
           //eventHandler.onDragStart(fakeEvent, fakeUi);
-          
+
+          //event.stopPropagation();
+
           Spaghetti.redraw();
         }
       };
