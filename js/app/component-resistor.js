@@ -51,7 +51,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/layoutMana
         var model = this.props.model;
         var domNode = this.getDOMNode();
         setTimeout(function () {
-          action(model, domNode);
+          //action(model, domNode);
         }, 0);
       }
     }

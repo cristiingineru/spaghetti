@@ -23,6 +23,16 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
         className: 'body',
         onClick: eventHandler.onClick
       });
+    },
+    componentDidMount: function () {
+      var action = this.props.owner.get('onComponentDidMount');
+      if (action) {
+        var model = this.props.owner;
+        var domNode = this.getDOMNode();
+        setTimeout(function () {
+          action(model, domNode);
+        }, 0);
+      }
     }
   });
 
