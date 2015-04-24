@@ -27,11 +27,9 @@ define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core)
     componentDidMount: function () {
       var action = this.props.owner.get('onComponentDidMount');
       if (action) {
-        var model = this.props.owner;
-        var domNode = this.getDOMNode();
-        setTimeout(function () {
-          action(model, domNode);
-        }, 0);
+        var ownerModel = this.props.owner;
+        var thisDomNode = this.getDOMNode();
+        action(ownerModel, thisDomNode);
       }
     }
   });

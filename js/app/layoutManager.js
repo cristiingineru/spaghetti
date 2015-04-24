@@ -265,22 +265,40 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
 
 
     paletteItemEventHandler: function (item, component) {
-      var is = function (x) {
-        return x;
-      };
 
       return {
         onMouseDown: function (event, ui) {
 
-          var newComponent = component.objectify()
-            .keyify(KeyProvider)
-            .model();
+          var clone = function (component) {
+              return component.objectify()
+                .keyify(KeyProvider)
+                .model();
+            },
+            isThis = function (componentA) {
+              return function (componentB) {
+                return componentA.get('key') === componentB.get('key');
+              };
+            },
+            remove = function (key) {
+              return function (component) {
+                return component.remove('onComponentDidMount');
+              };
+            };
 
-          var nativeEvent = event.nativeEvent;
+          var newComponent = clone(component),
+            nativeEvent = event.nativeEvent;
 
-          newComponent = newComponent.set('onComponentDidMount', function (component, domNode) {
-            var x = nativeEvent;
-            redirectEvent(nativeEvent, domNode);
+          // setting up a post-redraw action for the new component
+          newComponent = newComponent.set('onComponentDidMount', function (targetModel, targetDomNode) {
+
+            // post-redraw action
+            redirectEvent(nativeEvent, targetDomNode);
+
+            // remove the post-redraw action from the new component
+            dissect(Spaghetti.state,
+              update('diagram',
+                updateAll('components',
+                  where(isThis(newComponent), remove('onComponentDidMount')))));
           });
 
           dissect(Spaghetti.state,
@@ -288,19 +306,6 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
               update('components', function (components) {
                 return components.push(newComponent);
               })));
-
-          //var newReactComponent = {
-          //    setState: function () {}
-          //  },
-          //  eventHandler = componentEventHandler(newComponent, newReactComponent),
-          //  fakeEvent = {
-          //    clientX: event.clientX,
-          //    clientY: event.clientY
-          //  },
-          //  fakeUi = {};
-          //eventHandler.onDragStart(fakeEvent, fakeUi);
-
-          //event.stopPropagation();
 
           Spaghetti.redraw();
         }
