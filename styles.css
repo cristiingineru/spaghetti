@@ -65,4 +65,7 @@
 
 .paletteItem {
   fill-opacity: 0.5;
+  filter:url(#paletteItemFilter);
+  -webkit-filter: blur(5px);
+  filter: blur(5px);
 }
