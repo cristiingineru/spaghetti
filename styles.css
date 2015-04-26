@@ -60,23 +60,17 @@
 }
 
 .palette {
-  fill: white;
-  stroke: #232323;
-}
-
-.paletteItem0 {
   fill-opacity: 0.0;
-  -webkit-filter: grayscale(100%);
-  -moz-filter: grayscale(100%);
-  -ms-filter: grayscale(100%);
-  -o-filter: grayscale(100%);
-  filter: grayscale(100%);
-  filter: url(grayscale.svg#greyscale);
-  filter: gray;
-  /* IE 6-9 */
+  stroke-opacity: 0.0;
 }
 
 .paletteItem {
   fill-opacity: 0.0;
-  -webkit-filter: grayscale(100%);
+  -webkit-filter: grayscale(1);
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
+  filter: url(#grayscaleFilter);
+  filter: grayscale(100%);
+  filter: gray;
 }
