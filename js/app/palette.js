@@ -8,20 +8,26 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     getDefaultProps: function () {
       return {
         model: null,
-        owner: null
+        component: null
       };
     },
     render: function () {
-      var LayoutManager = require('app/layoutManager');
-      var eventHandler = LayoutManager.paletteItemEventHandler(this.props.model, this.props.owner);
-      return React.createElement('rect', {
+      var LayoutManager = require('app/layoutManager'),
+        ClassProvider = require('app/classProvider');
+      var eventHandler = LayoutManager.paletteItemEventHandler(this.props.model, this.props.component);
+      var component = React.createElement(ClassProvider(this.props.component), {
+        model: this.props.component
+      });
+      var rect = React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
-        className: 'paletteItem',
         onMouseDown: eventHandler.onMouseDown
       });
+      return React.createElement('g', {
+        className: 'paletteItem'
+      }, [component, rect]);
     }
   });
 
@@ -40,23 +46,17 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
         height: this.props.model.get('height'),
         className: 'palette'
       });
-      var ClassProvider = require('app/classProvider');
-      var components = [];
-      var handlers = [];
-      var models = this.props.model.getIn(['components']);
-      for (var i = 0; i < models.count(); i++) {
-        var model = models.getIn([i]);
-        var component = React.createElement(ClassProvider(model), {
-          model: model
+      var items = [];
+      var components = this.props.model.getIn(['components']);
+      for (var i = 0; i < components.count(); i++) {
+        var component = components.get(i);
+        var item = React.createElement(paletteItemClass, {
+          model: component.get('handler'),
+          component: component
         });
-        components.push(component);
-        var handler = React.createElement(paletteItemClass, {
-          model: model.get('handler'),
-          owner: model
-        });
-        handlers.push(handler);
+        items.push(item);
       }
-      return React.createElement('g', null, [palette].concat(components).concat(handlers));
+      return React.createElement('g', null, [palette].concat(items));
     }
   });
 
