@@ -1,7 +1,7 @@
 /* global define, require */
 
 
-define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function (React, Immutable, Core, Catalog) {
+define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core) {
 
   var diagramClass = React.createClass({
     displayName: 'diagram',
@@ -11,28 +11,24 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
       };
     },
     render: function () {
-      var LayoutManager = require('app/layoutManager');
+      var LayoutManager = require('app/layoutManager'),
+        ClassProvider = require('app/classProvider');
       var eventHandler = LayoutManager.diagramEventHandler(this.props.model);
       var rect = React.createElement('rect', {
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
         height: this.props.model.get('height'),
-        //stroke: '#AAAAAA',
-        //fill: '#f4f4f4',
         className: 'diagram',
         onClick: eventHandler.onClick
       });
-      var components = [];
-      var models = this.props.model.getIn(['components']);
-      for (var i = 0; i < models.count(); i++) {
-        var model = models.getIn([i]);
-        var component = React.createElement(Catalog(model).class(), {
-          model: model
+      var components = this.props.model.getIn(['components']);
+      var componentViews = components.map(function (component) {
+        return React.createElement(ClassProvider(component), {
+          model: component
         });
-        components.push(component);
-      }
-      return React.createElement('g', null, [rect].concat(components));
+      }).toArray();
+      return React.createElement('g', null, [rect].concat(componentViews));
     }
   });
 
@@ -63,9 +59,7 @@ define(['React', 'immutable.min', 'app/core', 'app/component-catalog'], function
       return this;
     };
     thisProto.addComponent = function (component) {
-      var newComponents = model.getIn(['components']).withMutations(function (cs) {
-        cs.push(component);
-      });
+      var newComponents = model.get('components').push(component);
       model = model.set('components', newComponents);
       return this;
     };

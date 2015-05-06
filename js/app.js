@@ -9,43 +9,25 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'immutable.min', 'app/component-catalog', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/keyProvider', 'app/layoutManager', 'app/checkpointTree', 'app/checkpointTreeEventHandler'],
-  function (React, Immutable, Catalog, Spaghetti, Dissect, Diagram, KeyProvider, LayoutManager, CheckpointTree, CheckpointTreeEventHandler) {
+requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/component-breadboard', 'app/palette', 'app/component-resistor', 'app/component-capacitor', 'app/keyProvider', 'app/layoutManager', 'app/classProvider', 'app/checkpointTree', 'app/checkpointTreeEventHandler'],
+  function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Palette, Resistor, Capacitor, KeyProvider, LayoutManager, ClassProvider, CheckpointTree, CheckpointTreeEventHandler) {
 
-    var breadboard = Catalog('breadboard');
-    var myBreadboardModel = breadboard.model().objectify()
+    var myBreadboardModel = Breadboard.model().objectify()
+      .keyify(KeyProvider)
       .setXY(100.5, 250.5)
       .model();
-    var resistor = Catalog('resistor');
-    var myResistorModel = resistor.model().objectify()
-      .setXY(100.5, 50.5)
+    var myPalette = Palette.model().objectify()
       .keyify(KeyProvider)
-      .model();
-    var mySecondResistorModel = resistor.model().objectify()
-      .setXY(150.5, 100.5)
-      .keyify(KeyProvider)
-      .model();
-    var capacitor = Catalog('capacitor');
-    var myCapacitorModel = capacitor.model().objectify()
-      .setXY(200.5, 75.5)
-      .keyify(KeyProvider)
-      .model();
-    var mySecondCapacitorModel = capacitor.model().objectify()
-      .setXY(250.5, 125.5)
-      .keyify(KeyProvider)
+      .setXY(150.5, 10.5)
       .model();
     var myTopDiagram = Diagram.model().objectify()
       .addComponent(myBreadboardModel)
-      .addComponent(myResistorModel)
-      .addComponent(mySecondResistorModel)
-      .addComponent(myCapacitorModel)
-      .addComponent(mySecondCapacitorModel)
+      .addComponent(myPalette)
       .model();
     dissect(Spaghetti.state,
       set('diagram', myTopDiagram));
     Spaghetti.checkpoint();
 
-    var LayoutManager = require('app/layoutManager');
     var eventHandler = LayoutManager.diagramEventHandler(myTopDiagram);
     document.addEventListener('keypress', eventHandler.onKeyPress);
 

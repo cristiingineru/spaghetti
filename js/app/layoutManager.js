@@ -1,6 +1,6 @@
 /* global define, console, dissect, update, updateAll, filter, where */
 
-define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Dissect) {
+define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvider'], function (React, redirectEvent, Spaghetti, Dissect, KeyProvider) {
 
   return {
 
@@ -122,6 +122,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
 
     fingerEventHandler: function (finger, leg) {
       var legKey = leg.get('key'),
+        unitSize = 14,
         isBreadboard = function (component) {
           return component.get('name') === 'breadboard';
         },
@@ -136,7 +137,7 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
             var x2 = hole.get('x'),
               y2 = hole.get('y'),
               distance = Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2)),
-              nearDistance = 6;
+              nearDistance = unitSize / 2;
             return distance <= nearDistance;
           };
         },
@@ -258,6 +259,56 @@ define(['React', 'app/spaghetti', 'app/dissect'], function (React, Spaghetti, Di
           Spaghetti.redraw();
         }
 
+      };
+    },
+
+
+
+    paletteItemEventHandler: function (item, component) {
+
+      return {
+        onMouseDown: function (event, ui) {
+
+          var clone = function (component) {
+              return component.objectify()
+                .keyify(KeyProvider)
+                .model();
+            },
+            isThis = function (componentA) {
+              return function (componentB) {
+                return componentA.get('key') === componentB.get('key');
+              };
+            },
+            remove = function (key) {
+              return function (component) {
+                return component.remove('onComponentDidMount');
+              };
+            };
+
+          var newComponent = clone(component),
+            nativeEvent = event.nativeEvent;
+
+          // setting up a post-redraw action for the new component
+          newComponent = newComponent.set('onComponentDidMount', function (targetModel, targetDomNode) {
+
+            // post-redraw action
+            redirectEvent(nativeEvent, targetDomNode);
+
+            // remove the post-redraw action from the new component
+            dissect(Spaghetti.state,
+              update('diagram',
+                updateAll('components',
+                  where(isThis(newComponent), remove('onComponentDidMount')))));
+          });
+
+          dissect(Spaghetti.state,
+            update('diagram',
+              update('components', function (components) {
+                return components.push(newComponent);
+              })));
+
+          Spaghetti.redraw();
+        }
       };
     }
   };
