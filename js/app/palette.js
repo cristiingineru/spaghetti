@@ -22,11 +22,11 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
         x: this.props.model.get('x'),
         y: this.props.model.get('y'),
         width: this.props.model.get('width'),
-        height: this.props.model.get('height'),
-        onMouseDown: eventHandler.onMouseDown
+        height: this.props.model.get('height')
       });
       return React.createElement('g', {
-        className: 'paletteItem'
+        className: 'paletteItem',
+        onMouseDown: eventHandler.onMouseDown
       }, [component, rect]);
     }
   });
