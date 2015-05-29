@@ -5,11 +5,11 @@ A simple online editor for electronic breadboards.
 
 **Features**
 
- - 30 x 15 holes breadboard
+ - 840 holes breadboard
  - resistor and capacitor components
  - connectable finger-hole
  - bendable wire leads
- - undo
+ - undo/redo tree
 
 ![preview](http://cristiingineru.github.io/spaghetti/images/preview.png)
 
