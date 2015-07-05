@@ -4,11 +4,11 @@
 define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkpointTree'], function (CheckpointTreeEventHandler, Immutable, Squire, CheckpointTree) {
   describe('CheckpointTreeEventHandler', function () {
     it('should return a checkpoint and an svg event handlers', function () {
-      expect(CheckpointTreeEventHandler.checkpointEventHandler).not.toBeFalsy();
-      expect(CheckpointTreeEventHandler.svgEventHandler).not.toBeFalsy();
+      expect(CheckpointTreeEventHandler.CheckpointEventHandler).not.toBeFalsy();
+      expect(CheckpointTreeEventHandler.SvgEventHandler).not.toBeFalsy();
     });
 
-    describe('checkpoint event handler', function () {
+    describe('CheckpointEventHandler', function () {
       it('should return a specialized instance with onClick function', function () {
         var checkpoint = {};
         var handler = CheckpointTreeEventHandler.checkpointEventHandler(checkpoint);
@@ -99,7 +99,7 @@ define(['app/checkpointTreeEventHandler', 'immutable.min', 'Squire', 'app/checkp
 
     });
 
-    describe('svgEventHandler', function () {
+    describe('SvgEventHandler', function () {
 
       var dummySvg = {
         addEventListener: jasmine.createSpy()
