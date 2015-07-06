@@ -27,7 +27,7 @@ require(
     'specs/coreSpec',
     'specs/layoutManagerSpec',
     'specs/checkpointTreeSpec',
-    'specs/checkpointTreeEventHandlerSpec'
+    'specs/checkpointTreeEventHandlersSpec'
   ],
   function (document) {
     jasmine.getEnv().execute();

@@ -1,7 +1,7 @@
 /* global define, dissect, updateAll */
 
 
-define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect'], function (React, Immutable, CheckpointTreeEventHandler, Dissect) {
+define(['React', 'immutable.min', 'app/checkpointTreeEventHandlers', 'app/dissect', 'app/spaghetti'], function (React, Immutable, CheckpointTreeEventHandlers, Dissect, Spaghetti) {
 
   var node = function (checkpoint, isCurrent) {
       return Immutable.Map()
@@ -145,8 +145,8 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandler', 'app/dissect
     },
     renderNode = function (node, x, y, root) {
       var elements = [],
-        eventHandler = CheckpointTreeEventHandler.checkpointEventHandler(
-          node.get('checkpoint'), root, markCurrentCheckpoint);
+        eventHandler = new CheckpointTreeEventHandlers.CheckpointEventHandler(
+          node.get('checkpoint'), root, markCurrentCheckpoint, Spaghetti.setUndoRedoStacks);
 
       if (isCurrent(node)) {
         var mainCircle = React.createElement('circle', {

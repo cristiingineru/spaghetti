@@ -1,8 +1,8 @@
 /* global define */
 
-define(['immutable.min', 'app/spaghetti'], function (Immutable, Spaghetti) {
+define(['immutable.min'], function (Immutable) {
 
-  var CheckpointEventHandler = function (checkpoint, tree, markCurrentCheckpoint) {
+  var CheckpointEventHandler = function (checkpoint, tree, markCurrentCheckpoint, setUndoRedoStacks) {
 
     var initPath = function (firstNode) {
         return Immutable.OrderedSet.of(firstNode);
@@ -71,13 +71,14 @@ define(['immutable.min', 'app/spaghetti'], function (Immutable, Spaghetti) {
           .toStack();
       };
 
+
     this.onClick = function (event, domID) {
       var newCurrentCheckpoint = checkpoint,
         newTree = markCurrentCheckpoint(tree, newCurrentCheckpoint),
         undoStack = buildUndoStack(newTree),
         redoStack = buildRedoStack(newTree);
 
-      Spaghetti.setUndoRedoStacks(undoStack, redoStack);
+      setUndoRedoStacks(undoStack, redoStack);
     };
   };
 

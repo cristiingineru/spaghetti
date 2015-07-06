@@ -9,8 +9,8 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/component-breadboard', 'app/palette', 'app/component-resistor', 'app/component-capacitor', 'app/keyProvider', 'app/layoutManager', 'app/classProvider', 'app/checkpointTree', 'app/checkpointTreeEventHandler'],
-  function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Palette, Resistor, Capacitor, KeyProvider, LayoutManager, ClassProvider, CheckpointTree, CheckpointTreeEventHandler) {
+requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/component-breadboard', 'app/palette', 'app/component-resistor', 'app/component-capacitor', 'app/keyProvider', 'app/layoutManager', 'app/classProvider', 'app/checkpointTree', 'app/checkpointTreeEventHandlers'],
+  function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Palette, Resistor, Capacitor, KeyProvider, LayoutManager, ClassProvider, CheckpointTree, CheckpointTreeEventHandlers) {
 
     var myBreadboardModel = Breadboard.model().objectify()
       .keyify(KeyProvider)
@@ -40,7 +40,7 @@ requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagra
     Spaghetti.setRedraw(redraw);
     Spaghetti.redraw();
 
-    var checkpointTreeSvgHandler = CheckpointTreeEventHandler.svgEventHandler(document.getElementById('checkpointTreeSvg'));
+    var checkpointTreeSvgHandler = new CheckpointTreeEventHandlers.SvgEventHandler(document.getElementById('checkpointTreeSvg'));
 
     var checkpointsRedraw = function () {
       var element = React.createElement(CheckpointTree.class(), {
