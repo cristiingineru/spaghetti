@@ -2,113 +2,102 @@
 
 define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
-  // keep it here so the state() or init() functions can work even whithout 'this'
-  var theWholeState;
+  var noOp = function () {};
 
   function Spaghetti() {
-    this.init();
+
+    var theState = Immutable.fromJS({}),
+      undoCheckpoints = Immutable.Stack(),
+      redoCheckpoints = Immutable.Stack(),
+      nextCheckpointId = 0,
+      redraw = noOp,
+      checkpointsRedraw = noOp;
+
+    /**
+     * All checkpoints ever created. This list is necessary because
+     * creating a new checkpoint after an undo operation will empy
+     * the redo checkpoints list.
+     **/
+    var allCheckpoints = Immutable.OrderedSet();
+
+
+    this.state = function (newState) {
+      if (newState !== undefined) {
+        theState = newState;
+      }
+      return theState;
+    };
+
+    this.setRedraw = function (fn) {
+      redraw = fn;
+      return this;
+    };
+
+    this.setCheckpointsRedraw = function (fn) {
+      checkpointsRedraw = fn;
+      return this;
+    };
+
+    this.checkpoint = function (name) {
+      var checkpoint = {
+        state: theState,
+        id: nextCheckpointId,
+        name: name,
+        timestamp: Date.now(),
+        previousCheckpointId: undoCheckpoints.peek() && undoCheckpoints.peek().id
+      };
+      undoCheckpoints = undoCheckpoints.push(checkpoint);
+      allCheckpoints = allCheckpoints.add(checkpoint);
+      redoCheckpoints = redoCheckpoints.clear();
+      nextCheckpointId += 1;
+      checkpointsRedraw();
+      return checkpoint;
+    };
+
+    this.checkpoints = function () {
+      return allCheckpoints;
+    };
+
+    this.undo = function () {
+      if (undoCheckpoints.size > 1) {
+        var checkpoint = undoCheckpoints.peek();
+        undoCheckpoints = undoCheckpoints.pop();
+        redoCheckpoints = redoCheckpoints.push(checkpoint);
+
+        var currentCheckpoint = undoCheckpoints.peek();
+        theState = currentCheckpoint.state;
+      }
+      checkpointsRedraw();
+      return this;
+    };
+
+    this.redo = function () {
+      if (redoCheckpoints.size > 0) {
+        var checkpoint = redoCheckpoints.peek();
+        redoCheckpoints = redoCheckpoints.pop();
+        undoCheckpoints = undoCheckpoints.push(checkpoint);
+
+        var currentCheckpoint = undoCheckpoints.peek();
+        theState = currentCheckpoint.state;
+      }
+      checkpointsRedraw();
+      return this;
+    };
+
+    this.currentCheckpoint = function () {
+      return undoCheckpoints.peek();
+    };
+
+    this.setUndoRedoStacks = function (undoCheckpointsParam, redoCheckpointsParam) {
+      undoCheckpoints = undoCheckpointsParam;
+      redoCheckpoints = redoCheckpointsParam;
+      var currentCheckpoint = undoCheckpoints.peek();
+      theState = currentCheckpoint.state;
+
+      checkpointsRedraw();
+      return this;
+    };
   }
 
-  Spaghetti.prototype.init = function () {
-    theWholeState = Immutable.fromJS({});
-    this.undoCheckpoints = this.undoCheckpoints.clear();
-    this.redoCheckpoints = this.redoCheckpoints.clear();
-    this.nextCheckpointId = 0;
-    this.allCheckpoints = this.allCheckpoints.clear();
-    return this;
-  };
-
-  Spaghetti.prototype.state = function (newValue) {
-    if (newValue !== undefined) {
-      theWholeState = newValue;
-    }
-    return theWholeState;
-  };
-
-
-  Spaghetti.prototype.redraw = function () {};
-
-  Spaghetti.prototype.setRedraw = function (fn) {
-    this.redraw = fn;
-    return this;
-  };
-  
-  Spaghetti.prototype.checkpointsRedraw = function () {};
-  
-  Spaghetti.prototype.setCheckpointsRedraw = function (fn) {
-    this.checkpointsRedraw = fn;
-    return this;
-  };
-
-  Spaghetti.prototype.undoCheckpoints = Immutable.Stack();
-
-  Spaghetti.prototype.redoCheckpoints = Immutable.Stack();
-
-  Spaghetti.prototype.nextCheckpointId = 0;
-  
-  /**
-   * All checkpoints ever created. This list is necessary because
-   * creating a new checkpoint after an undo operation will empy
-   * the redo checkpoints list.
-   **/
-  Spaghetti.prototype.allCheckpoints = Immutable.OrderedSet();
-
-  Spaghetti.prototype.checkpoint = function (name) {
-    var checkpoint = {
-      state: theWholeState,
-      id: this.nextCheckpointId,
-      name: name,
-      timestamp: Date.now(),
-      previousCheckpointId: this.undoCheckpoints.peek() && this.undoCheckpoints.peek().id
-    };
-    this.undoCheckpoints = this.undoCheckpoints.push(checkpoint);
-    this.allCheckpoints = this.allCheckpoints.add(checkpoint);
-    this.redoCheckpoints = this.redoCheckpoints.clear();
-    this.nextCheckpointId += 1;
-    this.checkpointsRedraw();
-    return checkpoint;
-  };
-
-  Spaghetti.prototype.checkpoints = function () {
-    return this.allCheckpoints;
-  };
-
-  Spaghetti.prototype.undo = function () {
-    if (this.undoCheckpoints.size > 1) {
-      var checkpoint = this.undoCheckpoints.peek();
-      this.undoCheckpoints = this.undoCheckpoints.pop();
-      this.redoCheckpoints = this.redoCheckpoints.push(checkpoint);
-
-      var currentCheckpoint = this.undoCheckpoints.peek();
-      theWholeState = currentCheckpoint.state;
-    }
-    this.checkpointsRedraw();
-  };
-
-  Spaghetti.prototype.redo = function () {
-    if (this.redoCheckpoints.size > 0) {
-      var checkpoint = this.redoCheckpoints.peek();
-      this.redoCheckpoints = this.redoCheckpoints.pop();
-      this.undoCheckpoints = this.undoCheckpoints.push(checkpoint);
-
-      var currentCheckpoint = this.undoCheckpoints.peek();
-      theWholeState = currentCheckpoint.state;
-    }
-    this.checkpointsRedraw();
-  };
-  
-  Spaghetti.prototype.currentCheckpoint = function () {
-    return this.undoCheckpoints.peek();
-  };
-  
-  Spaghetti.prototype.setUndoRedoStacks = function (undoCheckpoints, redoCheckpoints) {
-    this.undoCheckpoints = undoCheckpoints;
-    this.redoCheckpoints = redoCheckpoints;
-    var currentCheckpoint = this.undoCheckpoints.peek();
-    theWholeState = currentCheckpoint.state;
-    
-    this.checkpointsRedraw();
-  };
-
-  return new Spaghetti();
+  return Spaghetti;
 });
