@@ -83,17 +83,17 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
         return diagramObject.model();
       },
       spaghettiWithDiagram = function (diagram) {
-        dissect(Spaghetti.state,
+        dissect(spaghetti.state,
           set('diagram', diagram));
-        return Spaghetti;
+        return spaghetti;
       };
 
     beforeEach(function () {
-      Spaghetti.init();
+      spaghetti = new Spaghetti();
     });
 
     afterEach(function () {
-      Spaghetti.init();
+      spaghetti = new Spaghetti();
     });
 
     describe('component event handler', function () {
@@ -111,7 +111,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var key = 9999,
             resistor = resistorWithKey(key),
             diagram = diagramWithComponent(resistor),
-            Spaghetti = spaghettiWithDiagram(diagram),
+            spaghetti = spaghettiWithDiagram(diagram),
             reactResistorMock = {
               state: {
                 deltaX: 0,
@@ -127,7 +127,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             };
           handler.onDrag(event);
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isComponent(key), function (myResistor) {
@@ -139,24 +139,15 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
       });
 
       describe('onMouseUp', function () {
-        it('should create a new checkpoint', function (done) {
-          var spaghettiMock = {
-            dissect: jasmine.createSpy(),
-            redraw: jasmine.createSpy(),
-            checkpoint: jasmine.createSpy()
-          };
+        it('should create a new checkpoint', function () {
+          var component = keyifiedResistor(),
+            handler = LayoutManager.componentEventHandler(component);
+          spyOn(spaghetti, 'redraw').and.callThrough();
+          spyOn(spaghetti, 'checkpoint').and.callThrough();
 
-          var squire = new Squire()
-            .mock('app/spaghetti', spaghettiMock)
-            .require(['app/spaghetti', 'app/layoutManager'], function (Spaghetti2, LayoutManager2) {
-              var component = keyifiedResistor(),
-                handler = LayoutManager2.componentEventHandler(component);
+          handler.onMouseUp();
 
-              handler.onMouseUp();
-
-              expect(spaghettiMock.checkpoint).toHaveBeenCalled();
-              done();
-            });
+          expect(spaghetti.checkpoint).toHaveBeenCalled();
         });
       });
     });
@@ -172,7 +163,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
         var key = 9999,
           resistor = resistorWithKey(key),
           diagram = diagramWithComponent(resistor),
-          Spaghetti = spaghettiWithDiagram(diagram);
+          spaghetti = spaghettiWithDiagram(diagram);
 
         var handler = LayoutManager.bodyEventHandler(resistor),
           event = {
@@ -181,7 +172,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           };
         handler.onClick(event);
 
-        dissect(Spaghetti.state,
+        dissect(spaghetti.state,
           update('diagram',
             updateAll('components',
               where(isComponent(key), function (myResistor) {
@@ -203,7 +194,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var key = 9999,
             resistor = resistorWithKey(key).objectify().select(true).model(),
             diagram = diagramWithComponent(resistor),
-            Spaghetti = spaghettiWithDiagram(diagram);
+            spaghetti = spaghettiWithDiagram(diagram);
 
           var handler = LayoutManager.diagramEventHandler(resistor),
             event = {
@@ -213,7 +204,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           handler.onClick(event);
 
           var updater = jasmine.createSpy();
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components', updater)));
           expect(updater).not.toHaveBeenCalled();
@@ -227,17 +218,17 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
         it('should call undo when Ctrl + Z is pressed', function () {
           var resistor = keyifiedResistor(),
             diagram = diagramWithComponent(resistor),
-            Spaghetti = spaghettiWithDiagram(diagram);
+            spaghetti = spaghettiWithDiagram(diagram);
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components', setXY(1111, 1111))));
-          Spaghetti.checkpoint();
+          spaghetti.checkpoint();
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components', setXY(9999, 9999))));
-          Spaghetti.checkpoint();
+          spaghetti.checkpoint();
 
           var handler = LayoutManager.diagramEventHandler(diagram),
             event = {
@@ -246,7 +237,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             };
           handler.onKeyPress(event);
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components', function (component) {
                 expect(component.get('x')).toBe(1111);
@@ -271,7 +262,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
         it('should move the finger', function () {
           var resistor = keyifiedResistor(),
             diagram = diagramWithComponent(resistor),
-            Spaghetti = spaghettiWithDiagram(diagram);
+            spaghetti = spaghettiWithDiagram(diagram);
 
           var leg0 = resistor.getIn(['legs', 0]),
             leg1 = resistor.getIn(['legs', 1]),
@@ -286,7 +277,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
 
           var finger0Key = finger0.get('key'),
             finger1Key = finger1.get('key');
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 updateAll('legs',
@@ -307,7 +298,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var resistor = keyifiedResistor(),
             breadboard = keyifiedBreadboard(),
             diagram = diagramWithComponents([resistor, breadboard]),
-            Spaghetti = spaghettiWithDiagram(diagram);
+            spaghetti = spaghettiWithDiagram(diagram);
 
           var hole = breadboard.getIn(['strips', 0, 'holes', 0]),
             leg = resistor.getIn(['legs', 0]),
@@ -320,7 +311,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           handler.onDrag(event);
 
           var holeKey = hole.get('key');
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -335,10 +326,10 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var resistor = keyifiedResistor(),
             breadboard = keyifiedBreadboard(),
             diagram = diagramWithComponents([resistor, breadboard]),
-            Spaghetti = spaghettiWithDiagram(diagram);
+            spaghetti = spaghettiWithDiagram(diagram);
 
           // hover all holes
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -355,7 +346,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           handler.onDrag(event);
 
           var updater = jasmine.createSpy();
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -368,7 +359,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var resistor = keyifiedResistor(),
             breadboard = keyifiedBreadboard(),
             diagram = diagramWithComponents([resistor, breadboard]),
-            Spaghetti = spaghettiWithDiagram(diagram);
+            spaghetti = spaghettiWithDiagram(diagram);
 
           var hole = breadboard.getIn(['strips', 0, 'holes', 0]),
             leg = resistor.getIn(['legs', 0]),
@@ -388,7 +379,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
 
           var holeKey = hole.get('key'),
             legKey = leg.get('key');
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components', [
                 where(isBreadboard,
@@ -410,18 +401,6 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
                       expect(finger.get('holeKey')).toBeFalsy();
                       return finger;
                     }))])])));
-
-          /*
-          var holes = select(Spaghetti.state, ['diagram', 'components', 'holes', isTheSame(hole)]);
-          expect(holes.count()).toBe(1);
-          expect(holes[0].get('connected')).toBeFalsy();
-          expect(holes[0].get('legKey')).toBeFalsy();
-
-          var fingers = select(Spaghetti.state, ['diagram', 'components', 'legs', isTheSame(leg), 'finger']);
-          expect(fingers.count()).toBe(1);
-          expect(fingers[0].get('connected')).toBeFalsy();
-          expect(fingers[0].get('holeKey')).toBeFalsy();
-          */
         });
       });
 
@@ -430,7 +409,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var resistor = keyifiedResistor(),
             breadboard = keyifiedBreadboard(),
             diagram = diagramWithComponents([resistor, breadboard]),
-            Spaghetti = spaghettiWithDiagram(diagram);
+            spaghetti = spaghettiWithDiagram(diagram);
 
           var hole = breadboard.getIn(['strips', 0, 'holes', 0]),
             leg = resistor.getIn(['legs', 0]),
@@ -444,7 +423,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
 
           var holeKey = hole.get('key'),
             legKey = leg.get('key');
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components', [
                 where(isBreadboard,
@@ -472,10 +451,10 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var resistor = keyifiedResistor(),
             breadboard = keyifiedBreadboard(),
             diagram = diagramWithComponents([resistor, breadboard]),
-            Spaghetti = spaghettiWithDiagram(diagram);
+            spaghetti = spaghettiWithDiagram(diagram);
 
           // hover all holes
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -492,7 +471,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           handler.onMouseUp(event);
 
           var updater = jasmine.createSpy();
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,

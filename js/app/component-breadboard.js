@@ -177,13 +177,12 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/part-hole'
     };
     thisProto.keyify = function (keyProvider) {
       model = model.set('key', keyProvider());
-      model = dissect(model,
-        updateAll('holes', function (hole) {
-          return hole.objectify()
-            .keyify(keyProvider)
-            .model();
-        })
-      );
+      var strips = model.get('strips').map(function (strip) {
+        return strip.objectify()
+          .keyify(keyProvider)
+          .model();
+      });
+      model = model.set('strips', strips);
       return this;
     };
     return thisProto;

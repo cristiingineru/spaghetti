@@ -1,6 +1,6 @@
 /* global define, console, dissect, update, updateAll, filter, where */
 
-define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvider'], function (React, redirectEvent, Spaghetti, Dissect, KeyProvider) {
+define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvider'], function (React, redirectEvent, _Spaghetti_, Dissect, KeyProvider) {
 
   return {
 
@@ -19,7 +19,7 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
           var originalX,
             originalY;
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isDragging, function (component) {
@@ -42,12 +42,12 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
               .model();
           };
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isDragging, setXY))));
 
-          Spaghetti.redraw();
+          spaghetti.redraw();
         },
 
         onDragStop: function (event, ui) {
@@ -55,7 +55,7 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
         },
 
         onMouseUp: function (event, ui) {
-          Spaghetti.checkpoint();
+          spaghetti.checkpoint();
         }
       };
     },
@@ -76,7 +76,7 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
       return {
         onClick: function (event, ui) {
           if (event.ctrlKey) {
-            dissect(Spaghetti.state,
+            dissect(spaghetti.state,
               update('diagram',
                 updateAll('components',
                   where(isClicked, select))));
@@ -97,22 +97,22 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
       return {
         onClick: function (event, ui) {
           if (event.ctrlKey) {
-            dissect(Spaghetti.state,
+            dissect(spaghetti.state,
               update('diagram',
                 filter('components', isNotSelected)));
 
-            Spaghetti.redraw();
+            spaghetti.redraw();
           }
           event.stopPropagation();
         },
 
         onKeyPress: function (event, ui) {
           if (event.keyIdentifier === 'U+001A' && event.ctrlKey === true) {
-            Spaghetti.undo();
-            Spaghetti.redraw();
+            spaghetti.undo();
+            spaghetti.redraw();
           } else if (event.keyIdentifier === 'U+0019' && event.ctrlKey === true) {
-            Spaghetti.redo();
-            Spaghetti.redraw();
+            spaghetti.redo();
+            spaghetti.redraw();
           }
         }
       };
@@ -180,13 +180,13 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
             x = event.clientX,
             y = event.clientY;
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 updateAll('legs',
                   where(isDragging, [setX2Y2, makeSureIsDisconnected])))));
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -197,7 +197,7 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
                     where(isConnectedToThisLeg, disconnect)]))))));
 
           dragging = true;
-          Spaghetti.redraw();
+          spaghetti.redraw();
         },
 
         onDragStop: function (event, domID) {
@@ -237,7 +237,7 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
             x = event.clientX,
             y = event.clientY;
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               updateAll('components',
                 where(isBreadboard,
@@ -247,7 +247,7 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
                     where(isHovered, unhover)]))))));
 
           if (holeFound) {
-            dissect(Spaghetti.state,
+            dissect(spaghetti.state,
               update('diagram',
                 updateAll('components',
                   updateAll('legs',
@@ -255,8 +255,8 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
           }
 
           dragging = false;
-          Spaghetti.checkpoint();
-          Spaghetti.redraw();
+          spaghetti.checkpoint();
+          spaghetti.redraw();
         }
 
       };
@@ -295,19 +295,19 @@ define(['React', 'redirect_event', 'app/spaghetti', 'app/dissect', 'app/keyProvi
             redirectEvent(nativeEvent, targetDomNode);
 
             // remove the post-redraw action from the new component
-            dissect(Spaghetti.state,
+            dissect(spaghetti.state,
               update('diagram',
                 updateAll('components',
                   where(isThis(newComponent), remove('onComponentDidMount')))));
           });
 
-          dissect(Spaghetti.state,
+          dissect(spaghetti.state,
             update('diagram',
               update('components', function (components) {
                 return components.push(newComponent);
               })));
 
-          Spaghetti.redraw();
+          spaghetti.redraw();
         }
       };
     }

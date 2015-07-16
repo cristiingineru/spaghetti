@@ -60,7 +60,7 @@ define(['React', 'immutable.min', 'app/core', 'app/part-hole'], function (React,
           .model();
       });
       model = model.set('holes', holes);
-      return this.updateStrip();
+      return this;
     };
     thisProto.updateStrip = function () {
       var orientation = model.get('orientation'),

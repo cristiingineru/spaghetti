@@ -1,5 +1,7 @@
 /* global define */
 
+var spaghetti;
+
 define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
 
   var noOp = function () {};
@@ -20,6 +22,14 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
      **/
     var allCheckpoints = Immutable.OrderedSet();
 
+
+    this.redraw = function () {
+      return redraw();
+    };
+
+    this.checkpointsRedraw = function () {
+      return checkpointsRedraw();
+    };
 
     this.state = function (newState) {
       if (newState !== undefined) {
@@ -98,6 +108,8 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       return this;
     };
   }
+
+  spaghetti = new Spaghetti();
 
   return Spaghetti;
 });
