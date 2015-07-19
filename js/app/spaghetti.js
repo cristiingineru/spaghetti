@@ -68,6 +68,14 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       return allCheckpoints;
     };
 
+    this.undoCheckpoints = function () {
+      return undoCheckpoints;
+    };
+
+    this.redoCheckpoints = function () {
+      return redoCheckpoints;
+    };
+
     this.undo = function () {
       if (undoCheckpoints.size > 1) {
         var checkpoint = undoCheckpoints.peek();
@@ -104,6 +112,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
       var currentCheckpoint = undoCheckpoints.peek();
       theState = currentCheckpoint.state;
 
+      redraw();
       checkpointsRedraw();
       return this;
     };

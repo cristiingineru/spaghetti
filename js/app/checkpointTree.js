@@ -146,7 +146,7 @@ define(['React', 'immutable.min', 'app/checkpointTreeEventHandlers', 'app/dissec
     renderNode = function (node, x, y, root) {
       var elements = [],
         eventHandler = new CheckpointTreeEventHandlers.CheckpointEventHandler(
-          node.get('checkpoint'), root, markCurrentCheckpoint, Spaghetti.setUndoRedoStacks);
+          node.get('checkpoint'), root, markCurrentCheckpoint, spaghetti.setUndoRedoStacks);
 
       if (isCurrent(node)) {
         var mainCircle = React.createElement('circle', {
