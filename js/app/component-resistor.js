@@ -18,7 +18,7 @@ define(['React', 'react.draggable', 'immutable.min', 'app/core', 'app/layoutMana
     },
     render: function () {
 
-      var eventHandler = LayoutManager.componentEventHandler(this.props.model, this);
+      var eventHandler = new LayoutManager.ComponentEventHandler(this.props.model, this);
 
       var leg1 = React.createElement(partLeg.class(), {
         model: this.props.model.getIn(['legs', 0]),

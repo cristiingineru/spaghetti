@@ -14,7 +14,7 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     render: function () {
       var LayoutManager = require('app/layoutManager'),
         ClassProvider = require('app/classProvider');
-      var eventHandler = LayoutManager.paletteItemEventHandler(this.props.model, this.props.component);
+      var eventHandler = new LayoutManager.PaletteItemEventHandler(this.props.model, this.props.component);
       var component = React.createElement(ClassProvider(this.props.component), {
         model: this.props.component
       });

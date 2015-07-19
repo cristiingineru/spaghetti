@@ -2,13 +2,14 @@
 
 
 define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-resistor', 'app/component-breadboard', 'app/palette', 'app/diagram', 'app/dissect', 'app/spaghetti', 'app/keyProvider'], function (LayoutManager, React, Immutable, Squire, Resistor, Breadboard, Palette, Diagram, Dissect, Spaghetti, KeyProvider) {
+
   describe('LayoutManager', function () {
     it('should return component, body, diagram, finger and palette item event handlers', function () {
-      expect(LayoutManager.componentEventHandler).not.toBeFalsy();
-      expect(LayoutManager.bodyEventHandler).not.toBeFalsy();
-      expect(LayoutManager.diagramEventHandler).not.toBeFalsy();
-      expect(LayoutManager.fingerEventHandler).not.toBeFalsy();
-      expect(LayoutManager.paletteItemEventHandler).not.toBeFalsy();
+      expect(LayoutManager.ComponentEventHandler).not.toBeFalsy();
+      expect(LayoutManager.BodyEventHandler).not.toBeFalsy();
+      expect(LayoutManager.DiagramEventHandler).not.toBeFalsy();
+      expect(LayoutManager.FingerEventHandler).not.toBeFalsy();
+      expect(LayoutManager.PaletteItemEventHandler).not.toBeFalsy();
     });
 
     var isComponent = function (key) {
@@ -99,7 +100,9 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
     describe('component event handler', function () {
       it('should return a specialized instance with onDragStart, onDrag, onDragEnd and onMouseUp functions', function () {
         var component = Immutable.fromJS({});
-        var handler = LayoutManager.componentEventHandler(component);
+
+        var handler = new LayoutManager.ComponentEventHandler(component);
+
         expect(handler.onDragStart).not.toBeFalsy();
         expect(handler.onDrag).not.toBeFalsy();
         expect(handler.onDragStop).not.toBeFalsy();
@@ -120,7 +123,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
               setState: function () {}
             };
 
-          var handler = LayoutManager.componentEventHandler(resistor, reactResistorMock),
+          var handler = new LayoutManager.ComponentEventHandler(resistor, reactResistorMock),
             event = {
               clientX: 888,
               clientY: 999
@@ -141,7 +144,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
       describe('onMouseUp', function () {
         it('should create a new checkpoint', function () {
           var component = keyifiedResistor(),
-            handler = LayoutManager.componentEventHandler(component);
+            handler = new LayoutManager.ComponentEventHandler(component);
           spyOn(spaghetti, 'redraw').and.callThrough();
           spyOn(spaghetti, 'checkpoint').and.callThrough();
 
@@ -155,7 +158,9 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
     describe('body event handler', function () {
       it('should return a specialized instance with onClick function', function () {
         var component = Immutable.fromJS({});
-        var handler = LayoutManager.bodyEventHandler(component);
+
+        var handler = new LayoutManager.BodyEventHandler(component);
+
         expect(handler.onClick).not.toBeFalsy();
       });
 
@@ -165,7 +170,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           diagram = diagramWithComponent(resistor),
           spaghetti = spaghettiWithDiagram(diagram);
 
-        var handler = LayoutManager.bodyEventHandler(resistor),
+        var handler = new LayoutManager.BodyEventHandler(resistor),
           event = {
             ctrlKey: true,
             stopPropagation: function () {}
@@ -184,7 +189,8 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
 
     describe('diagram event handler', function () {
       it('should return a specialized instance with onClick and onKeyPress function', function () {
-        var handler = LayoutManager.diagramEventHandler();
+        var handler = new LayoutManager.DiagramEventHandler();
+
         expect(handler.onClick).not.toBeFalsy();
         expect(handler.onKeyPress).not.toBeFalsy();
       });
@@ -196,7 +202,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             diagram = diagramWithComponent(resistor),
             spaghetti = spaghettiWithDiagram(diagram);
 
-          var handler = LayoutManager.diagramEventHandler(resistor),
+          var handler = new LayoutManager.DiagramEventHandler(resistor),
             event = {
               ctrlKey: true,
               stopPropagation: function () {}
@@ -230,7 +236,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
               updateAll('components', setXY(9999, 9999))));
           spaghetti.checkpoint();
 
-          var handler = LayoutManager.diagramEventHandler(diagram),
+          var handler = new LayoutManager.DiagramEventHandler(diagram),
             event = {
               ctrlKey: true,
               keyIdentifier: 'U+001A'
@@ -251,7 +257,8 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
       it('should return a specialized instance with onDragStart, onDrag, onDragEnd and onMouseUp functions', function () {
         var finger = Immutable.fromJS({});
         var leg = Immutable.fromJS({});
-        var handler = LayoutManager.fingerEventHandler(finger, leg);
+        var handler = new LayoutManager.FingerEventHandler(finger, leg);
+
         expect(handler.onDragStart).not.toBeFalsy();
         expect(handler.onDrag).not.toBeFalsy();
         expect(handler.onDragStop).not.toBeFalsy();
@@ -268,7 +275,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             leg1 = resistor.getIn(['legs', 1]),
             finger0 = leg0.get('finger'),
             finger1 = leg1.get('finger'),
-            handler = LayoutManager.fingerEventHandler(finger0, leg0),
+            handler = new LayoutManager.FingerEventHandler(finger0, leg0),
             event = {
               clientX: 888,
               clientY: 999
@@ -303,7 +310,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var hole = breadboard.getIn(['strips', 0, 'holes', 0]),
             leg = resistor.getIn(['legs', 0]),
             finger = leg.get('finger'),
-            handler = LayoutManager.fingerEventHandler(finger, leg),
+            handler = new LayoutManager.FingerEventHandler(finger, leg),
             event = {
               clientX: hole.get('x'),
               clientY: hole.get('y')
@@ -337,7 +344,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
 
           var leg = resistor.getIn(['legs', 0]),
             finger = leg.get('finger'),
-            handler = LayoutManager.fingerEventHandler(finger, leg),
+            handler = new LayoutManager.FingerEventHandler(finger, leg),
             event = {
               // away from all the holes
               clientX: 999999,
@@ -364,7 +371,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var hole = breadboard.getIn(['strips', 0, 'holes', 0]),
             leg = resistor.getIn(['legs', 0]),
             finger = leg.get('finger'),
-            handler = LayoutManager.fingerEventHandler(finger, leg),
+            handler = new LayoutManager.FingerEventHandler(finger, leg),
             event1 = {
               clientX: hole.get('x'),
               clientY: hole.get('y')
@@ -414,7 +421,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
           var hole = breadboard.getIn(['strips', 0, 'holes', 0]),
             leg = resistor.getIn(['legs', 0]),
             finger = leg.get('finger'),
-            handler = LayoutManager.fingerEventHandler(finger, leg),
+            handler = new LayoutManager.FingerEventHandler(finger, leg),
             event = {
               clientX: hole.get('x'),
               clientY: hole.get('y')
@@ -462,7 +469,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
 
           var leg = resistor.getIn(['legs', 0]),
             finger = leg.get('finger'),
-            handler = LayoutManager.fingerEventHandler(finger, leg),
+            handler = new LayoutManager.FingerEventHandler(finger, leg),
             event = {
               // away from all the holes
               clientX: 999999,
@@ -489,7 +496,8 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
     describe('palette item event handler', function () {
       it('should return a specialized instance with onMouseDown function', function () {
         var component = Immutable.fromJS({});
-        var handler = LayoutManager.paletteItemEventHandler(component);
+        var handler = new LayoutManager.PaletteItemEventHandler(component);
+
         expect(handler.onMouseDown).not.toBeFalsy();
       });
 

@@ -13,7 +13,7 @@ define(['React', 'react.draggable', 'immutable.min'], function (React, Draggable
     },
     render: function () {
       var LayoutManager = require('app/layoutManager'),
-        eventHandler = LayoutManager.fingerEventHandler(this.props.model, this.props.owner),
+        eventHandler = new LayoutManager.FingerEventHandler(this.props.model, this.props.owner),
         connected = this.props.model.get('connected'),
         radius = connected ? 4 : 3;
       var circle = React.createElement('circle', {

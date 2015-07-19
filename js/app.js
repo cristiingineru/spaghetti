@@ -30,7 +30,7 @@ requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagra
       set('diagram', myTopDiagram));
     spaghetti.checkpoint();
 
-    var eventHandler = LayoutManager.diagramEventHandler(myTopDiagram);
+    var eventHandler = new LayoutManager.DiagramEventHandler(myTopDiagram);
     document.addEventListener('keypress', eventHandler.onKeyPress);
 
     var redraw = function () {
