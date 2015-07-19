@@ -20,7 +20,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
      * creating a new checkpoint after an undo operation will empy
      * the redo checkpoints list.
      **/
-    var allCheckpoints = Immutable.OrderedSet();
+    var checkpoints = Immutable.OrderedSet();
 
 
     this.redraw = function () {
@@ -57,7 +57,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
         previousCheckpointId: undoCheckpoints.peek() && undoCheckpoints.peek().id
       };
       undoCheckpoints = undoCheckpoints.push(checkpoint);
-      allCheckpoints = allCheckpoints.add(checkpoint);
+      checkpoints = checkpoints.add(checkpoint);
       redoCheckpoints = redoCheckpoints.clear();
       nextCheckpointId += 1;
       checkpointsRedraw();
@@ -65,7 +65,7 @@ define(['immutable.min', 'immutable.cursor'], function (Immutable, Cursor) {
     };
 
     this.checkpoints = function () {
-      return allCheckpoints;
+      return checkpoints;
     };
 
     this.undoCheckpoints = function () {
