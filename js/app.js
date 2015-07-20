@@ -9,10 +9,11 @@ requirejs.config({
   waitSeconds: 15
 });
 
-requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/component-breadboard', 'app/palette', 'app/component-resistor', 'app/component-capacitor', 'app/keyProvider', 'app/layoutManager', 'app/classProvider', 'app/checkpointTree', 'app/checkpointTreeEventHandlers'],
-  function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Palette, Resistor, Capacitor, KeyProvider, LayoutManager, ClassProvider, CheckpointTree, CheckpointTreeEventHandlers) {
+requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagram', 'app/component-breadboard', 'app/palette', 'app/component-resistor', 'app/component-capacitor', 'app/keyProvider', 'app/layoutManager', 'app/classProvider', 'app/checkpointTree', 'app/checkpointTreeEventHandlers', 'app/catalog'],
+  function (React, Immutable, Spaghetti, Dissect, Diagram, Breadboard, Palette, Resistor, Capacitor, KeyProvider, LayoutManager, ClassProvider, CheckpointTree, CheckpointTreeEventHandlers, Catalog) {
 
     spaghetti = new Spaghetti();
+    catalog = new Catalog();
 
     var myBreadboardModel = Breadboard.model().objectify()
       .keyify(KeyProvider)
