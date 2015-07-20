@@ -4,13 +4,17 @@
 define(['app/catalog'], function (Catalog) {
   describe('Catalog', function () {
     it('should return an array with components', function () {
-      var components = Catalog();
-      expect(components.length).toBeGreaterThan(0);
+      var catalog = new Catalog();
+
+      expect(catalog.components().length).toBeGreaterThan(0);
     });
 
     it('should return a fresh array on each call', function () {
-      var firstComponents = Catalog();
-      var secondComponents = Catalog();
+      var catalog = new Catalog();
+
+      var firstComponents = catalog.components(),
+        secondComponents = catalog.components();
+
       expect(secondComponents).not.toBe(firstComponents);
     });
   });

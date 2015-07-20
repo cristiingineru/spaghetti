@@ -17,6 +17,10 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
       expect(Palette.model).not.toThrow();
     });
 
+    var getCatalog = function () {
+      return new Catalog();
+    };
+
     describe('Palette class', function () {
 
       var TestUtils = React.addons.TestUtils;
@@ -26,8 +30,11 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
         });
         return TestUtils.renderIntoDocument(p);
       };
+      var components = function () {
+        return getCatalog().components();
+      };
       var renderedComponentsIn = function (container) {
-        var arraysOfComponents = Catalog().map(function (component) {
+        var arraysOfComponents = catalog.components().map(function (component) {
           return TestUtils.scryRenderedComponentsWithType(container, component.class());
         });
         return [].concat.apply([], arraysOfComponents);
@@ -88,7 +95,7 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
     describe('Palette model', function () {
       it('should contain a prototype of each component', function () {
         var paletteComponents = Palette.model().get('components'),
-          catalogComponents = Catalog();
+          catalogComponents = getCatalog().components();
         expect(paletteComponents.count()).toBe(catalogComponents.length);
       });
     });

@@ -124,7 +124,7 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     return thisProto;
   };
 
-  var components = Catalog().map(function (component) {
+  var components = catalog.components().map(function (component) {
     return component.model();
   });
 

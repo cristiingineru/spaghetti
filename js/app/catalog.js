@@ -1,15 +1,22 @@
 /* global define */
 /* jshint -W104 */
 
+var catalog;
+
 define([
   'app/component-resistor',
   'app/component-capacitor'],
   function () {
 
-    var privateCatalog = Array.prototype.slice.call(arguments);
+    var components = Array.prototype.slice.call(arguments);
 
-    return function () {
-      var clone = privateCatalog.slice(0);
-      return clone;
+    var Catalog = function () {};
+
+    Catalog.prototype.components = function () {
+      return components.slice(0);
     };
+
+    catalog = new Catalog();
+
+    return Catalog;
   });
