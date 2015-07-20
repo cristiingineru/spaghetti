@@ -2,24 +2,31 @@
 
 
 define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-body'], function (Palette, React, Catalog, ClassProvider, Body) {
+
+  var getCatalog = function () {
+      return new Catalog();
+    },
+    getPalette = function () {
+      return new Palette();
+    };
+
   describe('Palette', function () {
     it('should provide a known API', function () {
-      expect(typeof (Palette.name)).toBe('function');
-      expect(typeof (Palette.name())).toBe('string');
 
-      expect(typeof (Palette.class)).toBe('function');
-      expect(Palette.class).not.toThrow();
+      var palette = getPalette();
 
-      expect(typeof (Palette.proto)).toBe('function');
-      expect(Palette.proto).not.toThrow();
+      expect(typeof (palette.name)).toBe('function');
+      expect(typeof (palette.name())).toBe('string');
 
-      expect(typeof (Palette.model)).toBe('function');
-      expect(Palette.model).not.toThrow();
+      expect(typeof (palette.class)).toBe('function');
+      expect(palette.class).not.toThrow();
+
+      expect(typeof (palette.proto)).toBe('function');
+      expect(palette.proto).not.toThrow();
+
+      expect(typeof (palette.model)).toBe('function');
+      expect(palette.model).not.toThrow();
     });
-
-    var getCatalog = function () {
-      return new Catalog();
-    };
 
     describe('Palette class', function () {
 
@@ -42,6 +49,7 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
 
       it('should render at least one component', function () {
         var palette = renderDefaultPalette();
+
         var bodies = TestUtils.scryRenderedComponentsWithType(palette, Body.class());
         expect(bodies.length).toBeGreaterThan(0);
       });

@@ -14,7 +14,11 @@ define([
   'app/part-hole'],
   function () {
 
-    var privateCatalog = Array.prototype.slice.call(arguments).map(function (componentOrPart) {
+    // this is a workaround until all dependencies will be trasformed to objects
+    var initialArguments = Array.prototype.slice.call(arguments);
+    initialArguments[1] = palette;
+
+    var privateCatalog = initialArguments.map(function (componentOrPart) {
       return {
         name: componentOrPart.name && componentOrPart.name(),
         class: componentOrPart.class(),

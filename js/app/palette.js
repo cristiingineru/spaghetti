@@ -1,5 +1,6 @@
 /* global define, require, dissect, updateAll */
 
+var palette;
 
 define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, Immutable, Catalog, Core) {
 
@@ -138,26 +139,30 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     proto: paletteProto
   });
 
-  var palette = paletteProto(paletteModel);
-  paletteModel = palette
+  var paletteObject = paletteProto(paletteModel);
+  paletteModel = paletteObject
     .init()
     .model();
 
-  return {
-    name: function () {
+  var Palette = function () {
+    this.name = function () {
       return paletteModel.get('name');
-    },
-    class: function () {
+    };
+    this.class = function () {
       return paletteClass;
-    },
-    proto: function () {
+    };
+    this.proto = function () {
       return paletteProto;
-    },
-    model: function () {
+    };
+    this.model = function () {
       return paletteModel;
-    },
-    paletteItemClass: function () {
+    };
+    this.paletteItemClass = function () {
       return paletteItemClass;
-    }
+    };
   };
+
+  palette = new Palette();
+
+  return Palette;
 });
