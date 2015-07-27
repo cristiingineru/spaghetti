@@ -14,9 +14,20 @@ define([
   'app/part-hole'],
   function () {
 
+    function EmptyCatalog() {
+      this.components = function () {
+        return [];
+      };
+    }
+
+    var buildPalette = function (Palette) {
+      var emptyCatalog = new EmptyCatalog();
+      return new Palette(emptyCatalog);
+    };
+
     // this is a workaround until all dependencies will be trasformed to objects
     var initialArguments = Array.prototype.slice.call(arguments);
-    initialArguments[1] = palette;
+    initialArguments[1] = buildPalette(initialArguments[1]);
 
     var privateCatalog = initialArguments.map(function (componentOrPart) {
       return {

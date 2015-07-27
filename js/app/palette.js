@@ -1,8 +1,6 @@
 /* global define, require, dissect, updateAll */
 
-var palette;
-
-define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, Immutable, Catalog, Core) {
+define(['React', 'immutable.min', 'app/core'], function (React, Immutable, Core) {
 
   var paletteItemClass = React.createClass({
     displayName: 'paletteItem',
@@ -164,8 +162,6 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
       return paletteItemClass;
     };
   };
-
-  palette = new Palette(new Catalog());
 
   return Palette;
 });
