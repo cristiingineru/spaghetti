@@ -125,26 +125,29 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     return thisProto;
   };
 
-  var components = catalog.components().map(function (component) {
-    return component.model();
-  });
 
-  var paletteModel = Immutable.fromJS({
-    name: 'palette',
-    x: 0,
-    y: 0,
-    width: 400,
-    height: 150,
-    components: components,
-    proto: paletteProto
-  });
+  var Palette = function (catalog) {
 
-  var paletteObject = paletteProto(paletteModel);
-  paletteModel = paletteObject
-    .init()
-    .model();
+    var components = catalog.components().map(function (component) {
+      return component.model();
+    });
 
-  var Palette = function () {
+    var paletteModel = Immutable.fromJS({
+      name: 'palette',
+      x: 0,
+      y: 0,
+      width: 400,
+      height: 150,
+      components: components,
+      proto: paletteProto
+    });
+
+    var paletteObject = paletteProto(paletteModel);
+    paletteModel = paletteObject
+      .init()
+      .model();
+
+
     this.name = function () {
       return paletteModel.get('name');
     };
@@ -162,7 +165,7 @@ define(['React', 'immutable.min', 'app/catalog', 'app/core'], function (React, I
     };
   };
 
-  palette = new Palette();
+  palette = new Palette(new Catalog());
 
   return Palette;
 });

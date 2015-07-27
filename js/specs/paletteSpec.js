@@ -6,8 +6,9 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
   var getCatalog = function () {
       return new Catalog();
     },
-    getPalette = function () {
-      return new Palette();
+    getPalette = function (catalog) {
+      catalog = catalog || getCatalog();
+      return new Palette(catalog);
     };
 
   describe('Palette', function () {
@@ -31,8 +32,8 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
     describe('Palette class', function () {
 
       var TestUtils = React.addons.TestUtils;
-      var renderDefaultPalette = function () {
-        var palette = getPalette(),
+      var renderDefaultPalette = function (catalog) {
+        var palette = getPalette(catalog),
           p = React.createElement(palette.class(), {
             model: palette.model()
           });
@@ -41,8 +42,8 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
       var components = function () {
         return getCatalog().components();
       };
-      var renderedComponentsIn = function (container) {
-        var arraysOfComponents = catalog.components().map(function (component) {
+      var renderedComponentsIn = function (components, container) {
+        var arraysOfComponents = components.map(function (component) {
           return TestUtils.scryRenderedComponentsWithType(container, component.class());
         });
         return [].concat.apply([], arraysOfComponents);
@@ -77,8 +78,10 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
       });
 
       it('should create a palette item in front of each component', function () {
-        var palette = renderDefaultPalette();
-        var components = renderedComponentsIn(palette);
+        var catalog = new Catalog();
+        var palette = renderDefaultPalette(catalog);
+        var catalogComponents = catalog.components();
+        var components = renderedComponentsIn(catalogComponents, palette);
         var items = TestUtils.scryRenderedComponentsWithType(palette, paletteItemClass());
         expect(items.length).toBe(components.length);
         components.forEach(function (component) {

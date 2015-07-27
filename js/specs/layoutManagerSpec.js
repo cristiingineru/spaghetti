@@ -1,7 +1,7 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn, jasmine, set, beforeEach, afterEach */
 
 
-define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-resistor', 'app/component-breadboard', 'app/palette', 'app/diagram', 'app/dissect', 'app/spaghetti', 'app/keyProvider'], function (LayoutManager, React, Immutable, Squire, Resistor, Breadboard, Palette, Diagram, Dissect, Spaghetti, KeyProvider) {
+define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-resistor', 'app/component-breadboard', 'app/palette', 'app/diagram', 'app/dissect', 'app/spaghetti', 'app/keyProvider', 'app/catalog'], function (LayoutManager, React, Immutable, Squire, Resistor, Breadboard, Palette, Diagram, Dissect, Spaghetti, KeyProvider, Catalog) {
 
   describe('LayoutManager', function () {
     it('should return component, body, diagram, finger and palette item event handlers', function () {
@@ -41,8 +41,12 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
       hover = function (hole) {
         return hole.set('hovered', true);
       },
+      getCatalog = function (hole) {
+        return new Catalog();
+      },
       getPalette = function () {
-        return new Palette();
+        var catalog = getCatalog();
+        return new Palette(catalog);
       },
       paletteModel = function () {
         return getPalette().model();

@@ -14,7 +14,7 @@ requirejs(['React', 'immutable.min', 'app/spaghetti', 'app/dissect', 'app/diagra
 
     spaghetti = new Spaghetti();
     catalog = new Catalog();
-    palette = new Palette();
+    palette = new Palette(catalog);
 
     var myBreadboardModel = Breadboard.model().objectify()
       .keyify(KeyProvider)
