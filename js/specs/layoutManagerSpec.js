@@ -41,6 +41,16 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
       hover = function (hole) {
         return hole.set('hovered', true);
       },
+      getPalette = function () {
+        return new Palette();
+      },
+      paletteModel = function () {
+        return getPalette().model();
+      },
+      paletteItemClass = function () {
+        return getPalette()
+          .paletteItemClass();
+      },
       uniqueKeyProvider = function (key) {
         return function () {
           return key;
@@ -59,7 +69,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
         return breadboard;
       },
       keyifiedPalette = function () {
-        var palette = Palette.model().objectify()
+        var palette = paletteModel().objectify()
           .keyify(KeyProvider)
           .model();
         return palette;
@@ -522,7 +532,7 @@ define(['app/layoutManager', 'React', 'immutable.min', 'Squire', 'app/component-
             initialComponents = initialDiagram.get('components'),
             initialComponentCount = initialComponents.count();
 
-          var items = TestUtils.scryRenderedComponentsWithType(view, Palette.paletteItemClass());
+          var items = TestUtils.scryRenderedComponentsWithType(view, paletteItemClass());
           React.addons.TestUtils.Simulate.mouseDown(items[0].getDOMNode());
 
           var newDiagram = spaghetti.state().get('diagram'),

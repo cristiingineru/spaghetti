@@ -32,9 +32,10 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
 
       var TestUtils = React.addons.TestUtils;
       var renderDefaultPalette = function () {
-        var p = React.createElement(Palette.class(), {
-          model: Palette.model()
-        });
+        var palette = getPalette(),
+          p = React.createElement(palette.class(), {
+            model: palette.model()
+          });
         return TestUtils.renderIntoDocument(p);
       };
       var components = function () {
@@ -45,6 +46,10 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
           return TestUtils.scryRenderedComponentsWithType(container, component.class());
         });
         return [].concat.apply([], arraysOfComponents);
+      };
+      var paletteItemClass = function () {
+        return getPalette()
+          .paletteItemClass();
       };
 
       it('should render at least one component', function () {
@@ -74,7 +79,7 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
       it('should create a palette item in front of each component', function () {
         var palette = renderDefaultPalette();
         var components = renderedComponentsIn(palette);
-        var items = TestUtils.scryRenderedComponentsWithType(palette, Palette.paletteItemClass());
+        var items = TestUtils.scryRenderedComponentsWithType(palette, paletteItemClass());
         expect(items.length).toBe(components.length);
         components.forEach(function (component) {
           var cx = component.props.model.get('x'),
@@ -101,9 +106,15 @@ define(['app/palette', 'React', 'app/catalog', 'app/classProvider', 'app/part-bo
     });
 
     describe('Palette model', function () {
+      var paletteModel = function () {
+        return getPalette()
+          .model();
+      };
+
       it('should contain a prototype of each component', function () {
-        var paletteComponents = Palette.model().get('components'),
+        var paletteComponents = paletteModel().get('components'),
           catalogComponents = getCatalog().components();
+
         expect(paletteComponents.count()).toBe(catalogComponents.length);
       });
     });
