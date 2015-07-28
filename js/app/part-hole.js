@@ -1,5 +1,6 @@
 /* global define */
 
+var partHole;
 
 define(['React', 'immutable.min'], function (React, Immutable) {
 
@@ -79,15 +80,22 @@ define(['React', 'immutable.min'], function (React, Immutable) {
     proto: holeProto
   });
 
-  return {
-    class: function () {
+  var PartHole = function () {
+
+    this.class = function () {
       return holeClass;
-    },
-    proto: function () {
+    };
+
+    this.proto = function () {
       return holeProto;
-    },
-    model: function () {
+    };
+
+    this.model = function () {
       return holeModel;
-    }
+    };
   };
+
+  partHole = new PartHole();
+
+  return PartHole;
 });

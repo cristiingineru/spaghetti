@@ -28,6 +28,7 @@ define([
     // this is a workaround until all dependencies will be trasformed to objects
     var initialArguments = Array.prototype.slice.call(arguments);
     initialArguments[1] = buildPalette(initialArguments[1]);
+    initialArguments[9] = new initialArguments[9]();
 
     var privateCatalog = initialArguments.map(function (componentOrPart) {
       return {

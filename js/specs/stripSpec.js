@@ -1,7 +1,7 @@
 /* global define, require, describe, it, xit, expect, dissect, update, updateAll, filter, where, spyOn, jasmine */
 
 
-define(['app/part-strip', 'Squire', 'immutable.min', 'app/layoutManager', 'React', 'app/keyProvider', 'app/part-hole'], function (Strip, Squire, Immutable, LayoutManager, React, KeyProvider, Hole) {
+define(['app/part-strip', 'Squire', 'immutable.min', 'app/layoutManager', 'React', 'app/keyProvider', 'app/part-hole'], function (Strip, Squire, Immutable, LayoutManager, React, KeyProvider, PartHole) {
   describe('Strip', function () {
     it('should provide a known API', function () {
       expect(typeof (Strip.class)).toBe('function');
@@ -18,20 +18,24 @@ define(['app/part-strip', 'Squire', 'immutable.min', 'app/layoutManager', 'React
 
       var TestUtils = React.addons.TestUtils;
       var renderStrip = function (orientation, holeCount) {
-        var model = Strip.model().objectify()
-          .keyify(KeyProvider)
-          .setOrientation(orientation)
-          .setHoleCount(holeCount)
-          .model(),
-          strip = React.createElement(Strip.class(), {
-            model: model
-          });
-        return TestUtils.renderIntoDocument(strip);
-      };
+          var model = Strip.model().objectify()
+            .keyify(KeyProvider)
+            .setOrientation(orientation)
+            .setHoleCount(holeCount)
+            .model(),
+            strip = React.createElement(Strip.class(), {
+              model: model
+            });
+          return TestUtils.renderIntoDocument(strip);
+        },
+        holeClass = function () {
+          var hole = new PartHole();
+          return hole.class();
+        };
 
       it('should contain holes', function () {
         var strip = renderStrip('vertical', 3);
-        var holes = TestUtils.scryRenderedComponentsWithType(strip, Hole.class());
+        var holes = TestUtils.scryRenderedComponentsWithType(strip, holeClass());
         expect(holes.length).toBe(3);
       });
     });
