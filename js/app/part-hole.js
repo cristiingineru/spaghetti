@@ -1,7 +1,5 @@
 /* global define */
 
-var partHole;
-
 define(['React', 'immutable.min'], function (React, Immutable) {
 
   var holeClass = React.createClass({

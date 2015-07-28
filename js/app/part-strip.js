@@ -1,7 +1,9 @@
 /* global define, dissect, update */
 
 
-define(['React', 'immutable.min', 'app/core', 'app/part-hole' /* keep this here to prevent a race condition */ ], function (React, Immutable, Core, _) {
+define(['React', 'immutable.min', 'app/core', 'app/part-hole'], function (React, Immutable, Core, PartHole) {
+
+  var partHole = new PartHole();
 
   var stripClass = React.createClass({
     displayName: 'strip',
