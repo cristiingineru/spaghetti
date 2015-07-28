@@ -7,6 +7,8 @@ define([
   'app/component-breadboard',
   'app/component-resistor',
   'app/component-capacitor',
+
+  // the next modules are here for completing the list
   'app/part-body',
   'app/part-leg',
   'app/part-finger',
